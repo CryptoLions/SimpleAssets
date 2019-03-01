@@ -36,11 +36,8 @@
 *
 */
 
-#include <eosiolib/asset.hpp>
 #include <eosiolib/eosio.hpp>
 #include <eosiolib/singleton.hpp>
-
-#include <string>
 
 using namespace eosio;
 using std::string;
