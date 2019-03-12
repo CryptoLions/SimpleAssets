@@ -52,16 +52,6 @@ Batch Processing
  delegate        (owner, to, [assetid1,..,assetidn], untildate)  
  undelegate      (owner, from, [assetid1,..,assetidn])  
  
- # -- For Fungible Tokens ---
- 
- createf         (author, maximum_supply)
- issuef          (to, author, quantity, memo)
- transferf       (from, to, author, quantity, memo)
- burn            (from, author, quantity, memo)
-
- openf           (owner, author, symbol, ram_payer)
- closef          (owner, author, symbol)
- 
 ```
 
 # Data Structures  
