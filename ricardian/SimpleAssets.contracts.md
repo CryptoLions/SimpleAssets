@@ -53,7 +53,7 @@
 		`owner`          - assets owner;
 		`idata`          - stringified json with immutable assets data
 		`mdata`          - stringified json with mutable assets data, can be changed only by author
-		`requireClaim`   - true or false. If disabled, upon creation, the asset will be transfered to owner (but 
+		`requireclaim`   - true or false. If disabled, upon creation, the asset will be transfered to owner (but 
 				           but AUTHOR'S memory will be used until the asset is transferred again).  If enabled,
 				           author will remain the owner, but an offer will be created for the account specified in 
 				           the owner field to claim the asset using the account's RAM.
@@ -72,8 +72,8 @@
 		Claim the specified asset (assuming it was offered to claimer by the asset owner).
 
         ### Input parameters:
-		`claimer` - account claiming the asset
-		`assetID` - assetID to claim
+		`claimer`  - account claiming the asset
+		`assetids` - array of assetid's to claim
 
         ### TERM
         This Contract expires at the conclusion of code execution.
@@ -91,10 +91,10 @@
 		Transfer will fail if asset is offered for claim or is delegated.
 
         ### Input parameters:
-		`from`    - account who sends the asset;
-		`to`      - account of receiver;
-		`assetID` - assetID to transfer;
-		`memo`    - transfers comment;
+		`from`     - account who sends the asset;
+		`to`       - account of receiver;
+		`assetids` - array of assetid's to transfer;
+		`memo`     - transfers comment;
 
         ### TERM
         This Contract expires at the conclusion of code execution.
@@ -112,7 +112,7 @@
         ### Input parameters:
 		`author`  - authors account;
 		`owner`   - current assets owner;
-		`assetID` - assetID to update;
+		`assetid` - assetid to update;
 		`mdata`   - stringified json with mutable assets data. All mdata will be replaced;
 
         ### TERM
@@ -134,7 +134,7 @@
         ### Input parameters:
 		`owner`    - current asset owner account;
 		`newowner` - new asset owner, who will able to claim;
-		`assetID`  - assetID to offer;
+		`assetids` - array of assetid's to offer;
 
         ### TERM
         This Contract expires at the conclusion of code execution.
@@ -151,7 +151,7 @@
 
         ### Input parameters:
 		`owner`    - current asset owner account;
-		`assetID`  - assetID to update;
+		`assetids` - array of assetid's to cancel offer;
 
         ### TERM
         This Contract expires at the conclusion of code execution.
@@ -164,12 +164,12 @@
         ## ACTION NAME: burn
 
         ### INTENT
-		Burns asset {{assetID}}. This action is only available for the asset owner. After executing, the 
+		Burns asset {{assetid}}. This action is only available for the asset owner. After executing, the 
 		asset will disappear forever, and RAM used for asset will be released.
 
         ### Input parameters:
 		`owner`    - current asset owner account;
-		`assetID`  - assetID to update;
+		`assetids` - array of assetid's to burn;
 		`memo`     - memo for burn action;
 
         ### TERM
@@ -188,9 +188,12 @@
 		the asset from all owner actions (transfers, offers, burning by borrower).
 
         ### Input parameters:
-		`owner`    - current asset owner account;
-		`to`       - borrower account name;
-		`assetID`  - assetID to delegate;
+		`owner`     - current asset owner account;
+		`to`        - borrower account name;
+		`assetids`  - array of assetid's to delegate;
+		`untildate` - untildate - The delegating account will not be able to undelegate before this date. 
+		              However, the receiver of the lent asset can transfer back any time
+                      Should be timestamp in future or 0;
 
         ### TERM
         This Contract expires at the conclusion of code execution.
@@ -202,18 +205,18 @@
 <h1 class="contract"> undelegate </h1>
         ## ACTION NAME: undelegate
 
-         ### INTENT
+        ### INTENT
 		Undelegates an asset from {{from}} account. Executing action by real owner will return asset immediately,
 		and the entry in the delegates table recording the borrowing will be erased.
 
         ### Input parameters:
 		`owner`    - real asset owner account;
 		`from`     - current account owner (borrower);
-		`assetID`  - assetID to undelegate;
+		`assetids` - array of assetid's to undelegate;
 
         ### TERM
         This Contract expires at the conclusion of code execution.
 
         by CryptoLions [ https://cryptolions.io ]
 
-
+		

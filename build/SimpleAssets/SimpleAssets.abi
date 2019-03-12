@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Tue Feb 26 18:46:51 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Tue Mar 12 18:09:40 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -29,8 +29,8 @@
                     "type": "name"
                 },
                 {
-                    "name": "assetID",
-                    "type": "uint64"
+                    "name": "assetids",
+                    "type": "uint64[]"
                 },
                 {
                     "name": "memo",
@@ -47,8 +47,8 @@
                     "type": "name"
                 },
                 {
-                    "name": "assetID",
-                    "type": "uint64"
+                    "name": "assetids",
+                    "type": "uint64[]"
                 }
             ]
         },
@@ -61,8 +61,8 @@
                     "type": "name"
                 },
                 {
-                    "name": "assetID",
-                    "type": "uint64"
+                    "name": "assetids",
+                    "type": "uint64[]"
                 }
             ]
         },
@@ -91,7 +91,7 @@
                     "type": "string"
                 },
                 {
-                    "name": "requireClaim",
+                    "name": "requireclaim",
                     "type": "bool"
                 }
             ]
@@ -109,7 +109,11 @@
                     "type": "name"
                 },
                 {
-                    "name": "assetID",
+                    "name": "assetids",
+                    "type": "uint64[]"
+                },
+                {
+                    "name": "untildate",
                     "type": "uint64"
                 }
             ]
@@ -149,8 +153,8 @@
                     "type": "name"
                 },
                 {
-                    "name": "assetID",
-                    "type": "uint64"
+                    "name": "assetids",
+                    "type": "uint64[]"
                 }
             ]
         },
@@ -221,11 +225,11 @@
             ]
         },
         {
-            "name": "sdelagate",
+            "name": "sdelegate",
             "base": "",
             "fields": [
                 {
-                    "name": "assetID",
+                    "name": "assetid",
                     "type": "uint64"
                 },
                 {
@@ -239,6 +243,10 @@
                 {
                     "name": "cdate",
                     "type": "uint64"
+                },
+                {
+                    "name": "untildate",
+                    "type": "uint64"
                 }
             ]
         },
@@ -247,7 +255,7 @@
             "base": "",
             "fields": [
                 {
-                    "name": "assetID",
+                    "name": "assetid",
                     "type": "uint64"
                 },
                 {
@@ -277,8 +285,8 @@
                     "type": "name"
                 },
                 {
-                    "name": "assetID",
-                    "type": "uint64"
+                    "name": "assetids",
+                    "type": "uint64[]"
                 },
                 {
                     "name": "memo",
@@ -299,8 +307,8 @@
                     "type": "name"
                 },
                 {
-                    "name": "assetID",
-                    "type": "uint64"
+                    "name": "assetids",
+                    "type": "uint64[]"
                 }
             ]
         },
@@ -317,7 +325,7 @@
                     "type": "name"
                 },
                 {
-                    "name": "assetID",
+                    "name": "assetid",
                     "type": "uint64"
                 },
                 {
@@ -337,32 +345,32 @@
         {
             "name": "burn",
             "type": "burn",
-            "ricardian_contract": "## ACTION NAME: burn\n\n        ### INTENT\n\t\tBurns asset {{assetID}}. This action is only available for the asset owner. After executing, the \n\t\tasset will disappear forever, and RAM used for asset will be released.\n\n        ### Input parameters:\n\t\t`owner`    - current asset owner account;\n\t\t`assetID`  - assetID to update;\n\t\t`memo`     - memo for burn action;\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "## ACTION NAME: burn\n\n        ### INTENT\n\t\tBurns asset {{assetid}}. This action is only available for the asset owner. After executing, the \n\t\tasset will disappear forever, and RAM used for asset will be released.\n\n        ### Input parameters:\n\t\t`owner`    - current asset owner account;\n\t\t`assetids` - array of assetid's to burn;\n\t\t`memo`     - memo for burn action;\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "canceloffer",
             "type": "canceloffer",
-            "ricardian_contract": "## ACTION NAME: canceloffer\n\n        ### INTENT\n\t\tCancel and remove offer. Available for the asset owner.\n\n        ### Input parameters:\n\t\t`owner`    - current asset owner account;\n\t\t`assetID`  - assetID to update;\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "## ACTION NAME: canceloffer\n\n        ### INTENT\n\t\tCancel and remove offer. Available for the asset owner.\n\n        ### Input parameters:\n\t\t`owner`    - current asset owner account;\n\t\t`assetids` - array of assetid's to cancel offer;\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "claim",
             "type": "claim",
-            "ricardian_contract": "## ACTION NAME: claim\n\n        ### INTENT\n\t\tClaim the specified asset (assuming it was offered to claimer by the asset owner).\n\n        ### Input parameters:\n\t\t`claimer` - account claiming the asset\n\t\t`assetID` - assetID to claim\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "## ACTION NAME: claim\n\n        ### INTENT\n\t\tClaim the specified asset (assuming it was offered to claimer by the asset owner).\n\n        ### Input parameters:\n\t\t`claimer`  - account claiming the asset\n\t\t`assetids` - array of assetid's to claim\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "create",
             "type": "create",
-            "ricardian_contract": "## ACTION NAME: create\n\n        ### INTENT\n\t\tСreate a new asset.\n\n        ### Input parameters:\n        `author`         - asset's author, who will able to updated asset's mdata;\n\t\t`category`       - assets category;\n\t\t`owner`          - assets owner;\n\t\t`idata`          - stringified json with immutable assets data\n\t\t`mdata`          - stringified json with mutable assets data, can be changed only by author\n\t\t`requireClaim`   - true or false. If disabled, upon creation, the asset will be transfered to owner (but \n\t\t\t\t           but AUTHOR'S memory will be used until the asset is transferred again).  If enabled,\n\t\t\t\t           author will remain the owner, but an offer will be created for the account specified in \n\t\t\t\t           the owner field to claim the asset using the account's RAM.\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "## ACTION NAME: create\n\n        ### INTENT\n\t\tСreate a new asset.\n\n        ### Input parameters:\n        `author`         - asset's author, who will able to updated asset's mdata;\n\t\t`category`       - assets category;\n\t\t`owner`          - assets owner;\n\t\t`idata`          - stringified json with immutable assets data\n\t\t`mdata`          - stringified json with mutable assets data, can be changed only by author\n\t\t`requireclaim`   - true or false. If disabled, upon creation, the asset will be transfered to owner (but \n\t\t\t\t           but AUTHOR'S memory will be used until the asset is transferred again).  If enabled,\n\t\t\t\t           author will remain the owner, but an offer will be created for the account specified in \n\t\t\t\t           the owner field to claim the asset using the account's RAM.\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "delegate",
             "type": "delegate",
-            "ricardian_contract": "## ACTION NAME: delegate\n\n        ### INTENT\n\t\tDelegates asset to {{to}}. This action changes the asset owner by calling the transfer action.\n\t\tIt also adds a record in the delegates table to record the asset as borrowed.  This blocks\n\t\tthe asset from all owner actions (transfers, offers, burning by borrower).\n\n        ### Input parameters:\n\t\t`owner`    - current asset owner account;\n\t\t`to`       - borrower account name;\n\t\t`assetID`  - assetID to delegate;\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "## ACTION NAME: delegate\n\n        ### INTENT\n\t\tDelegates asset to {{to}}. This action changes the asset owner by calling the transfer action.\n\t\tIt also adds a record in the delegates table to record the asset as borrowed.  This blocks\n\t\tthe asset from all owner actions (transfers, offers, burning by borrower).\n\n        ### Input parameters:\n\t\t`owner`     - current asset owner account;\n\t\t`to`        - borrower account name;\n\t\t`assetids`  - array of assetid's to delegate;\n\t\t`untildate` - untildate - The delegating account will not be able to undelegate before this date. \n\t\t              However, the receiver of the lent asset can transfer back any time\n                      Should be timestamp in future or 0;\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "offer",
             "type": "offer",
-            "ricardian_contract": "## ACTION NAME: offer\n\n        ### INTENT\n\t\tOffer asset for claim. This is an alternative to the transfer action. Offer can be used by an \n\t\tasset owner to transfer the asset without using their RAM. After an offer is made, the account\n\t\tspecified in {{newowner}} is able to make a claim, and take control of the asset using their RAM.\n\t\tOffer action is not available if an asste is delegated (borrowed).\n\n        ### Input parameters:\n\t\t`owner`    - current asset owner account;\n\t\t`newowner` - new asset owner, who will able to claim;\n\t\t`assetID`  - assetID to offer;\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "## ACTION NAME: offer\n\n        ### INTENT\n\t\tOffer asset for claim. This is an alternative to the transfer action. Offer can be used by an \n\t\tasset owner to transfer the asset without using their RAM. After an offer is made, the account\n\t\tspecified in {{newowner}} is able to make a claim, and take control of the asset using their RAM.\n\t\tOffer action is not available if an asste is delegated (borrowed).\n\n        ### Input parameters:\n\t\t`owner`    - current asset owner account;\n\t\t`newowner` - new asset owner, who will able to claim;\n\t\t`assetids` - array of assetid's to offer;\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "regauthor",
@@ -372,17 +380,17 @@
         {
             "name": "transfer",
             "type": "transfer",
-            "ricardian_contract": "## ACTION NAME: transfer\n\n        ### INTENT\n\t\tThis actions transfers an asset. On transfer owner asset's and scope asset's changes to {{to}}'s.\n\t\tSenders RAM will be charged to transfer asset.\n\t\tTransfer will fail if asset is offered for claim or is delegated.\n\n        ### Input parameters:\n\t\t`from`    - account who sends the asset;\n\t\t`to`      - account of receiver;\n\t\t`assetID` - assetID to transfer;\n\t\t`memo`    - transfers comment;\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "## ACTION NAME: transfer\n\n        ### INTENT\n\t\tThis actions transfers an asset. On transfer owner asset's and scope asset's changes to {{to}}'s.\n\t\tSenders RAM will be charged to transfer asset.\n\t\tTransfer will fail if asset is offered for claim or is delegated.\n\n        ### Input parameters:\n\t\t`from`     - account who sends the asset;\n\t\t`to`       - account of receiver;\n\t\t`assetids` - array of assetid's to transfer;\n\t\t`memo`     - transfers comment;\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "undelegate",
             "type": "undelegate",
-            "ricardian_contract": "## ACTION NAME: undelegate\n\n         ### INTENT\n\t\tUndelegates an asset from {{from}} account. Executing action by real owner will return asset immediately,\n\t\tand the entry in the delegates table recording the borrowing will be erased.\n\n        ### Input parameters:\n\t\t`owner`    - real asset owner account;\n\t\t`from`     - current account owner (borrower);\n\t\t`assetID`  - assetID to undelegate;\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "## ACTION NAME: undelegate\n\n        ### INTENT\n\t\tUndelegates an asset from {{from}} account. Executing action by real owner will return asset immediately,\n\t\tand the entry in the delegates table recording the borrowing will be erased.\n\n        ### Input parameters:\n\t\t`owner`    - real asset owner account;\n\t\t`from`     - current account owner (borrower);\n\t\t`assetids` - array of assetid's to undelegate;\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "update",
             "type": "update",
-            "ricardian_contract": "## ACTION NAME: update\n\n        ### INTENT\n\t\tUpdate assets mutable data (mdata) field. Action is available only for authors.\n\n        ### Input parameters:\n\t\t`author`  - authors account;\n\t\t`owner`   - current assets owner;\n\t\t`assetID` - assetID to update;\n\t\t`mdata`   - stringified json with mutable assets data. All mdata will be replaced;\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "## ACTION NAME: update\n\n        ### INTENT\n\t\tUpdate assets mutable data (mdata) field. Action is available only for authors.\n\n        ### Input parameters:\n\t\t`author`  - authors account;\n\t\t`owner`   - current assets owner;\n\t\t`assetid` - assetid to update;\n\t\t`mdata`   - stringified json with mutable assets data. All mdata will be replaced;\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
         }
     ],
     "tables": [
@@ -395,7 +403,7 @@
         },
         {
             "name": "delegates",
-            "type": "sdelagate",
+            "type": "sdelegate",
             "index_type": "i64",
             "key_names": [],
             "key_types": []

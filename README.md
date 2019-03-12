@@ -1,30 +1,67 @@
-# SimpleAssets  
+# SimpleAssets
 
-A simple standard for digital assets (ie. Non-Fungible Tokens) for EOSIO blockchains   
+A simple standard for digital assets, ie. Non-Fungible Tokens (NFT) for EOSIO blockchains   
 by [CryptoLions](https://CryptoLions.io)  
   
 web: http://simpleassets.io  
 Git: https://github.com/CryptoLions/SimpleAssets  
 
-Presentation:  https://medium.com/@cryptolions/introducing-simple-assets-b4e17caafaa4  
+Presentation:  https://medium.com/@cryptolions/introducing-simple-assets-b4e17caafaa4
 
+---------------------------  
+
+# Change Log v0.1.1
+
+Misc  
+- sdelagate table structure renamed to sdelegate (typo)  
+- create action parameters renamed: requireClaim -> requireclaim    
+- assetID action parameter renamed in all actions to assetid   
+
+Borrowing Assets  
+- sdelegate table - added new field: untildate   
+- delegate action added parameters untildate.  Action does a simple check if parameter was entered correctly (either zero or in the future).  
+- undelegate will not work until untildate (this guarantees a minimum term of the asset loan).  
+- allow transfer asset back (return) if its delegated, sooner than untiltime  (borrower has option ton return early)  
+  
+Batch Processing    
+- claim action: assetid parameter changed to array of assetsids. Multiple claim logic added.    
+- offer action: assetid parameter changed to array of assetsids. Multiple offer logic added.  
+- canceloffer action: assetid parameter changed to array of assetsids. Multiple cancelation logic added.   
+- transfer action: assetid parameter changed to array of assetsids. Multiple assets transfer logic added.   
+- burn action: assetid parameter changed to array of assetsids. Multiple burning logic added.   
+- delegate/undelegate action: assetid parameter changed to array of assetsids. Multiple delegation/undelegation logic added.  
+  
+  
+------------------------  
 
 # Contract actions  
 ```
- create          (author, category, owner, idata, mdata, requireClaim)  
- update          (author, owner, assetID, mdata)  
- transfer        (from, to , assetID, memo)  
- burn            (owner, assetID, memo)  
+ # -- For Non-Fungible Tokens ---
+ create          (author, category, owner, idata, mdata, requireсlaim)  
+ update          (author, owner, assetid, mdata)  
+ transfer        (from, to , [assetid1,..,assetidn], memo)  
+ burn            (owner, [assetid1,..,assetidn], memo)  
  
- offer           (owner, newowner, assetID)  
- canceloffer     (owner, assetID)  
- claim           (claimer, assetID)  
+ offer           (owner, newowner, [assetid1,..,assetidn])  
+ canceloffer     (owner, [assetid1,..,assetidn])  
+ claim           (claimer, [assetid1,..,assetidn])  
   
  regauthor       (name author, data, stemplate)  
  authorupdate    (author, data, stemplate)  
  
- delegate        (owner, to, assetID)  
- undelegate      (owner, from, assetID)  
+ delegate        (owner, to, [assetid1,..,assetidn], untildate)  
+ undelegate      (owner, from, [assetid1,..,assetidn])  
+ 
+ # -- For Fungible Tokens ---
+ 
+ createf         (author, maximum_supply)
+ issuef          (to, author, quantity, memo)
+ transferf       (from, to, author, quantity, memo)
+ burn            (from, author, quantity, memo)
+
+ openf           (owner, author, symbol, ram_payer)
+ closef          (owner, author, symbol)
+ 
 ```
 
 # Data Structures  
@@ -68,8 +105,10 @@ delegates{
 	name owner,  		// asset owner  
 	name delegatedto,	// who can claim this asset  
 	uint64_t cdate		// offer create date  
+	uint64_t untildate; // The delegating account will not be able to undelegate before this date.
 }  
 ```
+
 
 # EXAMPLES: how to use Simple Assets in smart contracts
 
@@ -92,7 +131,7 @@ action createAsset = action(
 createAsset.send();	
 ```
 
-## Creating Asset with requireClaim option for ownerowner22:
+## Creating Asset with requireclaim option for ownerowner22:
 ```
 // Creating asset
 action createAsset = action(
@@ -113,6 +152,9 @@ createAsset.send();
 
 ## Update Asset
 ```
+auto mdata = json::parse(idxp->mdata);
+mdata["cd"] = now() + 84600;
+
 action saUpdate = action(
 	permission_level{get_self(),"active"_n},
 	"simpl1assets"_n,
@@ -122,13 +164,24 @@ action saUpdate = action(
 saUpdate.send();
 ```
 
-## Transfer Asset
+## Transfer one Asset
 ```
 action saUpdate = action(
 	permission_level{get_self(),"active"_n},
 	"simpl1assets"_n,
 	"transfer"_n,
-	std::make_tuple(from, to, assetID, memo)
+	std::make_tuple(from, to, std::vector<uint64_t>(assetid), memo)
+);
+saUpdate.send();
+```
+
+## Transfer two Asset to same receiver with same memo  
+```
+action saUpdate = action(
+	permission_level{get_self(),"active"_n},
+	"simpl1assets"_n,
+	"transfer"_n,
+	std::make_tuple(from, to, std::vector<uint64_t>(assetid1, assetid2), memo)
 );
 saUpdate.send();
 ```

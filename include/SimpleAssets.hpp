@@ -37,11 +37,11 @@
 */
 
 #include <eosiolib/eosio.hpp>
+#include <eosiolib/asset.hpp>
 #include <eosiolib/singleton.hpp>
 
 using namespace eosio;
 using std::string;
-
 
 CONTRACT SimpleAssets : public contract {
    //=============================================================================================================================
@@ -49,6 +49,11 @@ CONTRACT SimpleAssets : public contract {
    public:
 		using contract::contract;
 
+		
+		// ===============================================================================================
+		// ============= Non-Fungible Token Actions ======================================================
+		// ===============================================================================================
+		
 		
 		//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 		/*
@@ -92,12 +97,12 @@ CONTRACT SimpleAssets : public contract {
 		* owner          - assets owner;
 		* idata          - stringified json with immutable assets data
 		* mdata          - stringified json with mutable assets data, can be changed only by author
-		* requireClaim   - true or false. If disabled, upon creation, the asset will be transfered to owner (but 
+		* requireclaim   - true or false. If disabled, upon creation, the asset will be transfered to owner (but 
 		*		           but AUTHOR'S memory will be used until the asset is transferred again).  If enabled,
 		*		           author will remain the owner, but an offer will be created for the account specified in 
 		*		           the owner field to claim the asset using the account's RAM.
 		*/
-		ACTION create( name author, name category, name owner, string idata, string mdata, bool requireClaim);
+		ACTION create( name author, name category, name owner, string idata, string mdata, bool requireclaim);
 		using create_action = action_wrapper<"create"_n, &SimpleAssets::create>;
 
 		
@@ -105,10 +110,10 @@ CONTRACT SimpleAssets : public contract {
 		/*
 		* Claim the specified asset (assuming it was offered to claimer by the asset owner).
 		* 
-		* claimer - account claiming the asset
-		* assetID - assetID to claim
+		* claimer  - account claiming the asset
+		* assetids - array of assetid's to claim
 		*/
-		ACTION claim( name claimer, uint64_t assetID);
+		ACTION claim( name claimer, std::vector<uint64_t>& assetids);
 		using claim_action = action_wrapper<"claim"_n, &SimpleAssets::claim>;
 
 
@@ -118,12 +123,12 @@ CONTRACT SimpleAssets : public contract {
 		* Senders RAM will be charged to transfer asset.
 		* Transfer will fail if asset is offered for claim or is delegated.
 		* 
-		* from    - account who sends the asset;
-		* to      - account of receiver;
-		* assetID - assetID to transfer;
-		* memo    - transfers comment;
+		* from     - account who sends the asset;
+		* to       - account of receiver;
+		* assetids - array of assetid's to transfer;
+		* memo     - transfers comment;
 		*/		
-		ACTION transfer( name from, name to, uint64_t assetID, string memo);
+		ACTION transfer( name from, name to, std::vector<uint64_t>& assetids, string memo);
 		using transfer_action = action_wrapper<"transfer"_n, &SimpleAssets::transfer>;
 
 
@@ -133,10 +138,10 @@ CONTRACT SimpleAssets : public contract {
 		* 
 		* author  - authors account;
 		* owner   - current assets owner;
-		* assetID - assetID to update;
+		* assetid - assetid to update;
 		* mdata   - stringified json with mutable assets data. All mdata will be replaced;
 		*/		
-		ACTION update( name author, name owner, uint64_t assetID, string mdata );
+		ACTION update( name author, name owner, uint64_t assetid, string mdata );
 		using update_action = action_wrapper<"update"_n, &SimpleAssets::update>;
 
 
@@ -150,9 +155,9 @@ CONTRACT SimpleAssets : public contract {
 		*
 		* owner    - current asset owner account;
 		* newowner - new asset owner, who will able to claim;
-		* assetID  - assetID to offer;
+		* assetids - array of assetid's to offer
 		*/		
-		ACTION offer( name owner, name newowner, uint64_t assetID);
+		ACTION offer( name owner, name newowner, std::vector<uint64_t>& assetids);
 		using offer_action = action_wrapper<"offer"_n, &SimpleAssets::offer>;
 
 
@@ -161,22 +166,22 @@ CONTRACT SimpleAssets : public contract {
 		* Cancel and remove offer. Available for the asset owner.
 		* 
 		* owner    - current asset owner account;
-		* assetID  - assetID to update;
+		* assetids - array of assetid's to cancel from offer
 		*/		
-		ACTION canceloffer( name owner, uint64_t assetID);
+		ACTION canceloffer( name owner, std::vector<uint64_t>& assetids);
 		using canceloffer_action = action_wrapper<"canceloffer"_n, &SimpleAssets::canceloffer>;
 
 		
 		//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 		/*
-		* Burns asset {{assetID}}. This action is only available for the asset owner. After executing, the 
+		* Burns asset {{assetid}}. This action is only available for the asset owner. After executing, the 
 		* asset will disappear forever, and RAM used for asset will be released.
 		* 
 		* owner    - current asset owner account;
-		* assetID  - assetID to update;
+		* assetids - array of assetid's to burn;
 		* memo     - memo for burn action;
 		*/		
-		ACTION burn( name owner, uint64_t assetID, string memo );
+		ACTION burn( name owner, std::vector<uint64_t>& assetids, string memo );
 		using burn_action = action_wrapper<"burn"_n, &SimpleAssets::burn>;
 
 	  
@@ -186,11 +191,14 @@ CONTRACT SimpleAssets : public contract {
 		* It also adds a record in the delegates table to record the asset as borrowed.  This blocks
 		* the asset from all owner actions (transfers, offers, burning by borrower).
 		* 
-		* owner    - current asset owner account;
-		* to       - borrower account name;
-		* assetID  - assetID to delegate;
+		* owner     - current asset owner account;
+		* to        - borrower account name;
+		* assetids  - array of assetid's to delegate;
+		* untildate - untildate - The delegating account will not be able to undelegate before this date. 
+		*             However, the receiver of the lent asset can transfer back any time
+		*             Should be timestamp in future or 0;
 		*/		
-		ACTION delegate( name owner, name to, uint64_t assetID );
+		ACTION delegate( name owner, name to, std::vector<uint64_t>& assetids, uint64_t untildate );
 		using delegate_action = action_wrapper<"delegate"_n, &SimpleAssets::delegate>;
 
 
@@ -201,13 +209,12 @@ CONTRACT SimpleAssets : public contract {
 		* 
 		* owner    - real asset owner account;
 		* from     - current account owner (borrower);
-		* assetID  - assetID to undelegate;
+		* assetids - array of assetid's to undelegate;
 		*/		
-		ACTION undelegate( name owner, name from, uint64_t assetID );
+		ACTION undelegate( name owner, name from, std::vector<uint64_t>& assetids );
 		using undelegate_action = action_wrapper<"undelegate"_n, &SimpleAssets::undelegate>;
 
-		
-
+	
 	//=============================================================================================================================
 	//=============================================================================================================================
 	private:
@@ -274,13 +281,14 @@ CONTRACT SimpleAssets : public contract {
 		* Scope: self
 		*/
 		TABLE soffer {
-			uint64_t		assetID;
+			uint64_t		assetid;
 			name			owner;
 			name			offeredTo;
 			uint64_t		cdate;
 			
+			
 			auto primary_key() const {
-				return assetID;
+				return assetid;
 			}
 			
 			uint64_t by_owner() const {
@@ -291,7 +299,7 @@ CONTRACT SimpleAssets : public contract {
 				return offeredTo.value;
 			}
 
-			EOSLIB_SERIALIZE( soffer, (assetID)(owner)(offeredTo)(cdate))
+			EOSLIB_SERIALIZE( soffer, (assetid)(owner)(offeredTo)(cdate))
 		};
 
 		typedef eosio::multi_index< "offers"_n, soffer,
@@ -304,14 +312,15 @@ CONTRACT SimpleAssets : public contract {
 		* Delegates table keeps records about borrowed assets.
 		* Scope: self
 		*/
-		TABLE sdelagate {
-			uint64_t		assetID;
+		TABLE sdelegate {
+			uint64_t		assetid;
 			name			owner;
 			name			delegatedto;
 			uint64_t		cdate;
+			uint64_t		untildate;
 			
 			auto primary_key() const {
-				return assetID;
+				return assetid;
 			}
 			
 			uint64_t by_owner() const {
@@ -322,18 +331,18 @@ CONTRACT SimpleAssets : public contract {
 				return delegatedto.value;
 			}
 
-			EOSLIB_SERIALIZE( sdelagate, (assetID)(owner)(delegatedto)(cdate))
+			EOSLIB_SERIALIZE( sdelegate, (assetid)(owner)(delegatedto)(cdate)(untildate))
 		};
 
-		typedef eosio::multi_index< "delegates"_n, sdelagate,
-			eosio::indexed_by< "owner"_n, eosio::const_mem_fun<sdelagate, uint64_t, &sdelagate::by_owner> >,
-			eosio::indexed_by< "delegatedto"_n, eosio::const_mem_fun<sdelagate, uint64_t, &sdelagate::by_delegatedto> >
+		typedef eosio::multi_index< "delegates"_n, sdelegate,
+			eosio::indexed_by< "owner"_n, eosio::const_mem_fun<sdelegate, uint64_t, &sdelegate::by_owner> >,
+			eosio::indexed_by< "delegatedto"_n, eosio::const_mem_fun<sdelegate, uint64_t, &sdelegate::by_delegatedto> >
 		> delegates;
 
 				
 		//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 		/*
-		* global singelton table, used for assetID building
+		* global singelton table, used for assetid building
 		* Scope: self
 		*/
 		TABLE global {
@@ -349,7 +358,7 @@ CONTRACT SimpleAssets : public contract {
 		typedef eosio::singleton< "global"_n, global> conf;
 		global _cstate;
 		
-	  
+ 
 };
 
 //============================================================================================================
