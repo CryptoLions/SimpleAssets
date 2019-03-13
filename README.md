@@ -156,22 +156,29 @@ saUpdate.send();
 
 ## Transfer one Asset
 ```
+std::vector<uint64_t> assetids;
+assetids.push_back(assetid);
+
 action saUpdate = action(
 	permission_level{get_self(),"active"_n},
 	"simpl1assets"_n,
 	"transfer"_n,
-	std::make_tuple(from, to, std::vector<uint64_t>(assetid), memo)
+	std::make_tuple(from, to, assetids, memo)
 );
 saUpdate.send();
 ```
 
 ## Transfer two Asset to same receiver with same memo  
 ```
+std::vector<uint64_t> assetids;
+assetids.push_back(assetid1);
+assetids.push_back(assetid2);
+
 action saUpdate = action(
 	permission_level{get_self(),"active"_n},
 	"simpl1assets"_n,
 	"transfer"_n,
-	std::make_tuple(from, to, std::vector<uint64_t>(assetid1, assetid2), memo)
+	std::make_tuple(from, to, assetids, memo)
 );
 saUpdate.send();
 ```
