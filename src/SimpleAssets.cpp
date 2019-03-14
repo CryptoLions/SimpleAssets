@@ -90,10 +90,11 @@ ACTION SimpleAssets::create( name author, name category, name owner, string idat
 	require_auth( author );
 	check( is_account( owner ), "owner account does not exist");
 
-
 	uint64_t newID = getid();
 	
 	name assetOwner = owner;
+	
+	check (!(author.value == owner.value && requireclaim == 1), "Can't requireclaim if author == owner.");
 	
 	if (requireclaim){
 		assetOwner = author;
@@ -142,7 +143,6 @@ ACTION SimpleAssets::claim( name claimer, std::vector<uint64_t>& assetids) {
 
 		check(itrc->owner.value == itr->owner.value, "Owner was changed for at least one of the items!?");   
 
-
 		uint64_t 			id = itr->id;
 		name				author = itr->author;
 		name				category = itr->category;
@@ -190,7 +190,6 @@ ACTION SimpleAssets::transfer( name from, name to, std::vector<uint64_t>& asseti
 		isDelegeting = false;
 		if (itrd != delegatet.end()){
 			auto dg = *itrd;
-			//print(assetid, ": ",dg.owner, " - ", to );
 			if (itrd->owner == to || itrd->delegatedto == to){
 				isDelegeting = true;		
 				if (itrd->owner == to)
@@ -261,7 +260,6 @@ ACTION SimpleAssets::offer( name owner, name newowner, std::vector<uint64_t>& as
 	require_recipient( owner );
 	
 	check( is_account( newowner ), "newowner account does not exist");
-
 	
 	sassets assets_f( _self, owner.value );
 	offers offert(_self, _self.value);
@@ -270,7 +268,6 @@ ACTION SimpleAssets::offer( name owner, name newowner, std::vector<uint64_t>& as
 	for( size_t i = 0; i < assetids.size(); ++i ) {
 		uint64_t assetid = assetids[i];
 	
-
 		auto itr = assets_f.find( assetid );
 		check(itr != assets_f.end(), "At least one of the assets was not found.");
 
@@ -323,7 +320,6 @@ ACTION SimpleAssets::burn( name owner, std::vector<uint64_t>& assetids, string m
 	for( size_t i = 0; i < assetids.size(); ++i ) {
 		uint64_t assetid = assetids[i];
 
-		
 		auto itr = assets_f.find( assetid );
 		check(itr != assets_f.end(), "At least one of the assets was not found.");
 
@@ -369,7 +365,6 @@ ACTION SimpleAssets::delegate( name owner, name to, std::vector<uint64_t>& asset
 		auto itro = offert.find( assetid );
 		check ( itro == offert.end(), "At least one of the assets has an open offer and cannot be delegated." );
 		
-		
 		delegatet.emplace( owner, [&]( auto& s ) {     
 			s.assetid = assetid;
 			s.owner = owner;
@@ -380,7 +375,6 @@ ACTION SimpleAssets::delegate( name owner, name to, std::vector<uint64_t>& asset
 		
 		if (i != 0) assetidsmemo += ", ";
 		assetidsmemo += std::to_string(assetid);
-			
 	}
 	
 	SEND_INLINE_ACTION( *this, transfer, { {owner, "active"_n} },  { owner, to, assetids, "delegate assetids: "+ assetidsmemo}   );
@@ -414,7 +408,6 @@ ACTION SimpleAssets::undelegate( name owner, name from, std::vector<uint64_t>& a
 			
 		if (i != 0) assetidsmemo += ", ";
 		assetidsmemo += std::to_string(assetid);
-
 	}
 	
 	SEND_INLINE_ACTION( *this, transfer, { {owner, "active"_n} },  { from, owner, assetids, "undelegate assetid: "+assetidsmemo }   );
