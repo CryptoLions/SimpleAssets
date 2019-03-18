@@ -48,7 +48,6 @@ ACTION SimpleAssets::regauthor( name author, string data, string stemplate) {
 	authors author_(_self, _self.value);
 	auto itr = author_.find( author.value );
 
-	
 	if (itr == author_.end()){
 		author_.emplace( author, [&]( auto& s ) {     
 			s.author = author;
@@ -71,12 +70,10 @@ ACTION SimpleAssets::authorupdate( name author, string data, string stemplate) {
 	auto itr = author_.find( author.value );
 
 	check ( itr != author_.end(), "author not registered" );
-
 	
 	if (data == "" && stemplate == "") {
 		itr = author_.erase(itr);
 	} else {
-	
 		author_.modify( itr, author, [&]( auto& s ) {
 			s.data = data;	
 			s.stemplate = stemplate;		
@@ -84,6 +81,7 @@ ACTION SimpleAssets::authorupdate( name author, string data, string stemplate) {
 	}
 }
 
+// Non-Fungible Token Logic
 
 ACTION SimpleAssets::create( name author, name category, name owner, string idata, string mdata, bool requireclaim) {
 
@@ -183,7 +181,7 @@ ACTION SimpleAssets::transfer( name from, name to, std::vector<uint64_t>& asseti
 	bool isDelegeting = false;
 	uint64_t assetid;
 	
-	for( size_t i = 0; i < assetids.size(); ++i ) {
+	for( size_t i = 0; i < assetids.size(); i++ ) {
 		assetid = assetids[i];
 		auto itrd = delegatet.find( assetid );
 
@@ -267,7 +265,7 @@ ACTION SimpleAssets::offer( name owner, name newowner, std::vector<uint64_t>& as
 		
 	for( size_t i = 0; i < assetids.size(); ++i ) {
 		uint64_t assetid = assetids[i];
-	
+
 		auto itr = assets_f.find( assetid );
 		check(itr != assets_f.end(), "At least one of the assets was not found.");
 
@@ -319,7 +317,7 @@ ACTION SimpleAssets::burn( name owner, std::vector<uint64_t>& assetids, string m
 	
 	for( size_t i = 0; i < assetids.size(); ++i ) {
 		uint64_t assetid = assetids[i];
-
+		
 		auto itr = assets_f.find( assetid );
 		check(itr != assets_f.end(), "At least one of the assets was not found.");
 
@@ -413,11 +411,169 @@ ACTION SimpleAssets::undelegate( name owner, name from, std::vector<uint64_t>& a
 	SEND_INLINE_ACTION( *this, transfer, { {owner, "active"_n} },  { from, owner, assetids, "undelegate assetid: "+assetidsmemo }   );
 }
 
+//------------------------
+// Fungible Token Logic
+
+ACTION SimpleAssets::createf( name author, asset maximum_supply, bool authorctrl){
+
+	require_auth( author );
+
+    auto sym = maximum_supply.symbol;
+
+    eosio_assert( sym.is_valid(), "invalid symbol name" );
+    eosio_assert( maximum_supply.is_valid(), "invalid supply");
+    eosio_assert( maximum_supply.amount > 0, "max-supply must be positive");
+
+    stats statstable( _self, author.value ); 
+
+    auto existing = statstable.find( sym.code().raw() );
+    eosio_assert( existing == statstable.end(), "token with symbol already exists" );
+
+    statstable.emplace( author, [&]( auto& s ) {
+       s.supply.symbol = maximum_supply.symbol;
+       s.max_supply    = maximum_supply;
+       s.issuer        = author;
+	   s.id			   = getid();
+	   s.authorctrl    = authorctrl;
+    });
+}
+
+
+ACTION SimpleAssets::issuef( name to, name author, asset quantity, string memo ){
+	
+	auto sym = quantity.symbol;
+	eosio_assert( sym.is_valid(), "invalid symbol name" );
+	eosio_assert( memo.size() <= 256, "memo has more than 256 bytes" );
+
+	stats statstable( _self, author.value );
+	auto existing = statstable.find( sym.code().raw() );
+	eosio_assert( existing != statstable.end(), "token with symbol does not exist, create token before issue" );
+	const auto& st = *existing;
+
+	require_auth( st.issuer );
+	eosio_assert( quantity.is_valid(), "invalid quantity" );
+	eosio_assert( quantity.amount > 0, "must issue positive quantity" );
+
+	eosio_assert( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
+	eosio_assert( quantity.amount <= st.max_supply.amount - st.supply.amount, "quantity exceeds available supply");
+
+	statstable.modify( st, same_payer, [&]( auto& s ) {
+		s.supply += quantity;
+	});
+
+	add_balancef( st.issuer, author, quantity, st.issuer );
+
+	if( to != st.issuer ) {
+		SEND_INLINE_ACTION( *this, transferf, { {st.issuer, "active"_n} },
+			{ st.issuer, to, author, quantity, memo }
+		);
+	}	
+}
+
+
+ACTION SimpleAssets::transferf( name from, name to, name author, asset quantity, string memo ){
+	
+	eosio_assert( from != to, "cannot transfer to self" );
+
+    eosio_assert( is_account( to ), "to account does not exist");
+    auto sym = quantity.symbol.code();
+    stats statstable( _self, author.value );
+    const auto& st = statstable.get( sym.raw() );
+
+    require_recipient( from );
+    require_recipient( to );
+
+    eosio_assert( quantity.is_valid(), "invalid quantity" );
+    eosio_assert( quantity.amount > 0, "must transfer positive quantity" );
+    eosio_assert( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
+    eosio_assert( memo.size() <= 256, "memo has more than 256 bytes" );
+
+	auto payer = has_auth( to ) ? to : from;
+	auto checkAuth = from;
+	
+	if (st.authorctrl &&  has_auth( st.issuer )){
+			checkAuth = st.issuer;
+			payer = st.issuer;
+	}
+	
+	require_auth( checkAuth );	
+
+    sub_balancef( from, author, quantity );
+    add_balancef( to, author, quantity, payer );
+}
+
+
+ACTION SimpleAssets::burnf( name from, name author, asset quantity, string memo ){
+
+	auto sym = quantity.symbol;
+	eosio_assert( sym.is_valid(), "invalid symbol name" );
+	eosio_assert( memo.size() <= 256, "memo has more than 256 bytes" );
+
+	stats statstable( _self, author.value );
+	auto existing = statstable.find( sym.code().raw() );
+	eosio_assert( existing != statstable.end(), "token with symbol does not exist" );
+	const auto& st = *existing;
+
+	require_auth( st.authorctrl && has_auth( st.issuer ) ? st.issuer  : from);
+		
+	eosio_assert( quantity.is_valid(), "invalid quantity" );
+	eosio_assert( quantity.amount > 0, "must retire positive quantity" );
+
+	eosio_assert( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
+
+	statstable.modify( st, same_payer, [&]( auto& s ) {
+		s.supply -= quantity;
+	});
+
+	sub_balancef( from, author, quantity );
+}
+
+
+ACTION SimpleAssets::openf( name owner, name author, const symbol& symbol, name ram_payer ){
+	
+	require_auth( ram_payer );
+
+	auto sym_code_raw = symbol.code().raw();
+
+	stats statstable( _self, author.value );
+	const auto& st = statstable.get( sym_code_raw, "symbol does not exist" );
+	eosio_assert( st.supply.symbol == symbol, "symbol precision mismatch" );
+
+	accounts acnts( _self, owner.value );
+
+	uint64_t ftid = st.id; 
+
+	auto it = acnts.find( ftid );
+	if( it == acnts.end() ) {
+		acnts.emplace( ram_payer, [&]( auto& a ){
+			a.id = st.id;
+			a.balance = asset{0, symbol};
+		});
+	}
+}
+
+
+ACTION SimpleAssets::closef( name owner, name author, const symbol& symbol ){
+	require_auth( owner );
+	accounts acnts( _self, owner.value );
+	
+	uint64_t ftid = getFTIndex(author, symbol); 
+	
+	auto it = acnts.find( ftid );
+	eosio_assert( it != acnts.end(), "Balance row already deleted or never existed. Action won't have any effect." );
+	eosio_assert( it->balance.amount == 0, "Cannot close because the balance is not zero." );
+	acnts.erase( it );
+}
+
+
+
+//-------------------------------------------------------------------------------------
+//------------- PRIVATE ---------------------------------------------------------------
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 /*
 * getid private action
-* Increment, save and return id for a new asset.
+* Increment, save and return id for a new asset or new fungible token.
 */
 uint64_t SimpleAssets::getid(){
 
@@ -428,14 +584,67 @@ uint64_t SimpleAssets::getid(){
 	config.set(_cstate, _self);
 	
 	return _cstate.lastid;
-
 }
 
+uint64_t SimpleAssets::getFTIndex(name author, symbol symbol){
+
+	stats statstable( _self, author.value );
+
+	auto existing = statstable.find( symbol.code().raw() );
+	eosio_assert( existing != statstable.end(), "token with symbol does not exist." );
+	const auto& st = *existing;
+
+	uint64_t res =  st.id;
+
+	return res;
+}
+
+
+void SimpleAssets::sub_balancef( name owner, name author, asset value ) {
+
+	accounts from_acnts( _self, owner.value );
+	uint64_t ftid = getFTIndex(author, value.symbol);
+	
+	const auto& from = from_acnts.get( ftid, "no balance object found" );
+	eosio_assert( from.balance.amount >= value.amount, "overdrawn balance" );
+
+	check( value.symbol.code().raw() == from.balance.symbol.code().raw(), "Wrong symbol");
+	auto payer = has_auth( author ) ? author : owner;
+	
+	from_acnts.modify( from, payer, [&]( auto& a ) {
+		a.balance -= value;
+	});
+}
+
+
+void SimpleAssets::add_balancef( name owner, name author, asset value, name ram_payer ) {
+	
+	accounts to_acnts( _self, owner.value );
+	
+	uint64_t ftid = getFTIndex(author, value.symbol);
+	auto to = to_acnts.find( ftid );
+	
+	if( to == to_acnts.end() ) {
+		to_acnts.emplace( ram_payer, [&]( auto& a ){
+			a.id = ftid;
+			a.balance = value;
+		});
+	} else {
+		to_acnts.modify( to, same_payer, [&]( auto& a ) {
+			a.balance += value;
+		});
+	}
+}
+
+
+//------------------------------------------------------------------------------------------------------------   
 
 EOSIO_DISPATCH( SimpleAssets, 	(create)(transfer)(burn)(update)
 								(offer)(canceloffer)(claim)
 								(regauthor)(authorupdate)
-								(delegate)(undelegate) )
+								(delegate)(undelegate)
+								(createf)(issuef)(transferf)(burnf)
+								(openf)(closef) )
 
 //============================================================================================================
 //=======================================- SimpleAssets.io -==================================================

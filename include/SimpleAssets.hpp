@@ -2,7 +2,7 @@
  *  SimpleAssets (Digital Assets)
  *  (C) 2019 by CryptoLions [ https://CryptoLions.io ]
  *
- *  A simple standard for digital assets (ie. Non-Fungible Tokens) for EOSIO blockchains
+ *  A simple standard for digital assets (ie. Fungible and Non-Fungible Tokens - NFTs) for EOSIO blockchains
  *
  *    WebSite:        https://simpleassets.io
  *    GitHub:         https://github.com/CryptoLions/SimpleAssets 
@@ -95,8 +95,8 @@ CONTRACT SimpleAssets : public contract {
 		* author         - asset's author, who will able to updated asset's mdata;
 		* category       - assets category;
 		* owner          - assets owner;
-		* idata          - stringified json with immutable assets data
-		* mdata          - stringified json with mutable assets data, can be changed only by author
+		* idata          - stringified json or just sha256 string with immutable assets data;
+		* mdata          - stringified json or just sha256 string with mutable assets data, can be changed only by author
 		* requireclaim   - true or false. If disabled, upon creation, the asset will be transfered to owner (but 
 		*		           but AUTHOR'S memory will be used until the asset is transferred again).  If enabled,
 		*		           author will remain the owner, but an offer will be created for the account specified in 
@@ -214,13 +214,136 @@ CONTRACT SimpleAssets : public contract {
 		ACTION undelegate( name owner, name from, std::vector<uint64_t>& assetids );
 		using undelegate_action = action_wrapper<"undelegate"_n, &SimpleAssets::undelegate>;
 
+		
+
+		// ===============================================================================================
+		// ============= Fungible Token Actions ==========================================================
+		// ===============================================================================================
+		//	
+		//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+		/*
+		* Creates fungible token with specified maximum supply; You can not change anything after creation.
+		* 
+		* author          - fungible token author;
+		* maximum_supply  - maximum token supply, example "10000000.0000 GOLD", "10000000 SEED", "100000000.00 WOOD" ;
+		*                   Precision is also important here.
+		* authorctrl      - IMPORTANT! If true(1) allows token author (and not just owner) to burnf and transferf. 
+		*					Cannot be changed after creation!
+		*/		
+		ACTION createf( name author, asset maximum_supply, bool authorctrl);
+		using createf_action = action_wrapper<"createf"_n, &SimpleAssets::createf>;
 	
+	
+		/*
+		* This action issues a fungible token.
+		* 
+		* to        - account receiver;
+		* author    - fungible token author;
+		* quantity  - amount to issue, example "1000.00 WOOD";
+		* memo      - issue comment;
+		*/	
+		ACTION issuef( name to, name author, asset quantity, string memo );
+		using issuef_action = action_wrapper<"issuef"_n, &SimpleAssets::issuef>;
+
+		
+		/*
+		* This actions transfers a specified quantity of fungible tokens.
+		* 
+		* from     - account who sends the token;
+		* to       - account of receiver;
+		* author   - account of fungible token author;		
+		* quantity - amount to transfer, example "1.00 WOOD";
+		* memo     - transfers comment;
+		*/
+		ACTION transferf( name from, name to, name author, asset quantity, string memo );
+		using transferf_action = action_wrapper<"transferf"_n, &SimpleAssets::transferf>;
+
+		
+		//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+		/*
+		* Burns a fungible token. This action is available for the token owner and author. After executing, 
+		* accounts balance and supply in stats table for this token will reduce by the specified quantity.
+		* 
+		* from     - account who burns the token;
+		* author   - account of fungible token author;	
+		* quantity - amount to burn, example "1.00 WOOD";
+		* memo     - memo for burnf action;
+		*/		
+		ACTION burnf( name from, name author, asset quantity, string memo );
+		using burnf_action = action_wrapper<"burnf"_n, &SimpleAssets::burnf>;
+
+
+		//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+		/*
+		* Opens accounts table for specified fungible token.
+		* 
+		* owner     - account where create table with fungible token;
+		* author    - account of fungible token author;	
+		* symbol    - token symbol, example "WOOD", "ROCK", "GOLD";
+		* ram_payer - account who will pay for ram used for table creation;
+		*/		
+		ACTION openf( name owner, name author, const symbol& symbol, name ram_payer );
+		using openf_action = action_wrapper<"openf"_n, &SimpleAssets::openf>;
+
+		
+		//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+		/*
+		* Closes accounts table for provided fungible token and releases RAM.
+		* Action works only if balance is 0;
+		* 
+		* owner     - account who woud like to close table with fungible token;
+		* author    - account of fungible token author;	
+		* symbol    - token symbol, example "WOOD", "ROCK", "GOLD";
+		*/		
+		ACTION closef( name owner, name author, const symbol& symbol );
+		using closef_action = action_wrapper<"closef"_n, &SimpleAssets::closef>;
+
+		
+		//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+		/*
+		* Returns Current token supply 
+		* 
+		* token_contract_account  - contract to check;
+		* author                  - fungible tokens author account;	
+		* sym_code    	          - token symbol, example "WOOD", "ROCK", "GOLD";
+		*/		
+		static asset get_supply( name token_contract_account, name author, symbol_code sym_code ) {
+			stats statstable( token_contract_account, author.value );
+			const auto& st = statstable.get( sym_code.raw() );
+			return st.supply;
+		}
+
+		
+		//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+		/*
+		* Returns token balance for account
+		* 
+		* token_contract_account  - contract to check;
+		* owner	                  - token holder account
+		* author                  - fungible tokens author account;	
+		* sym_code    	          - token symbol, example "WOOD", "ROCK", "GOLD";
+		*/		
+		static asset get_balance( name token_contract_account, name owner, name author, symbol_code sym_code ) {
+			stats statstable( token_contract_account, author.value );
+			const auto& st = statstable.get( sym_code.raw() );
+			
+			accounts accountstable( token_contract_account, owner.value );
+			const auto& ac = accountstable.get( st.id );
+			return ac.balance;
+		}
+
+		
 	//=============================================================================================================================
 	//=============================================================================================================================
 	private:
 
 		uint64_t getid();
+		uint64_t getFTIndex(name author, symbol symbol);
 
+		void sub_balancef( name owner, name author, asset value );
+		void add_balancef( name owner, name author, asset value, name ram_payer );
+
+		
 		//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 		/*
 		* Authors table. Can be used by asset markets, asset explorers, or wallets for correct asset 
@@ -241,6 +364,7 @@ CONTRACT SimpleAssets : public contract {
 
 		typedef eosio::multi_index< "authors"_n, sauthor > authors;
 
+		
 		//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 		/*
 		* Assets table which stores information about simple assets. 
@@ -253,18 +377,14 @@ CONTRACT SimpleAssets : public contract {
 			name				category;
 			string				idata; // immutable data
 			string				mdata; // mutable data
-					
-			
+							
 			auto primary_key() const {
 				return id;
 			}
-
-		
 			uint64_t by_author() const {
 				return author.value;
 			}
-
-
+			
 			EOSLIB_SERIALIZE( sasset, (id)(owner)(author)(category)(idata)(mdata))
 		};
 
@@ -286,15 +406,12 @@ CONTRACT SimpleAssets : public contract {
 			name			offeredTo;
 			uint64_t		cdate;
 			
-			
 			auto primary_key() const {
 				return assetid;
 			}
-			
 			uint64_t by_owner() const {
 				return owner.value;
 			}
-
 			uint64_t by_offeredTo() const {
 				return offeredTo.value;
 			}
@@ -307,6 +424,7 @@ CONTRACT SimpleAssets : public contract {
 			eosio::indexed_by< "offeredto"_n, eosio::const_mem_fun<soffer, uint64_t, &soffer::by_offeredTo> >
 			> offers;
 
+			
 		//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 		/*
 		* Delegates table keeps records about borrowed assets.
@@ -322,11 +440,9 @@ CONTRACT SimpleAssets : public contract {
 			auto primary_key() const {
 				return assetid;
 			}
-			
 			uint64_t by_owner() const {
 				return owner.value;
 			}
-
 			uint64_t by_delegatedto() const {
 				return delegatedto.value;
 			}
@@ -358,7 +474,44 @@ CONTRACT SimpleAssets : public contract {
 		typedef eosio::singleton< "global"_n, global> conf;
 		global _cstate;
 		
- 
+	  
+		//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+		/*
+		* Fungible token accounts table which stores information about balances. 
+		* Scope: token owner
+		*/			
+		TABLE account {
+			uint64_t	id;
+			asset		balance;
+
+			uint64_t primary_key()const { 
+				return id;//buildFungibleIndex(author, balance.symbol);// author.value+balance.symbol.code().raw(); 
+			}
+		};
+
+		typedef eosio::multi_index< "accounts"_n, account > accounts;
+
+				
+		//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+		/*
+		* Fungible token accounts stats info: Max Supply, Current Supply, issuer (author), token unique id, authorctrl. 
+		* authorctrl if true(1) allow token author (and not just owner) to burn and transfer.
+		* Scope: token author
+		*/			
+		TABLE currency_stats {
+			asset		supply;
+			asset		max_supply;
+			name		issuer;
+			uint64_t 	id;
+			bool		authorctrl;
+			
+			uint64_t primary_key()const { 
+				return supply.symbol.code().raw(); 
+			}
+		};
+
+		typedef eosio::multi_index< "stat"_n, currency_stats > stats;	
+  
 };
 
 //============================================================================================================

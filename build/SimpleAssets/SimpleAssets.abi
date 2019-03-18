@@ -1,7 +1,21 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Thu Mar 14 15:11:13 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Mon Mar 18 15:18:32 2019",
     "version": "eosio::abi/1.1",
     "structs": [
+        {
+            "name": "account",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "balance",
+                    "type": "asset"
+                }
+            ]
+        },
         {
             "name": "authorupdate",
             "base": "",
@@ -39,6 +53,28 @@
             ]
         },
         {
+            "name": "burnf",
+            "base": "",
+            "fields": [
+                {
+                    "name": "from",
+                    "type": "name"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
             "name": "canceloffer",
             "base": "",
             "fields": [
@@ -63,6 +99,24 @@
                 {
                     "name": "assetids",
                     "type": "uint64[]"
+                }
+            ]
+        },
+        {
+            "name": "closef",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "symbol",
+                    "type": "symbol"
                 }
             ]
         },
@@ -92,6 +146,50 @@
                 },
                 {
                     "name": "requireclaim",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "createf",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "maximum_supply",
+                    "type": "asset"
+                },
+                {
+                    "name": "authorctrl",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "currency_stats",
+            "base": "",
+            "fields": [
+                {
+                    "name": "supply",
+                    "type": "asset"
+                },
+                {
+                    "name": "max_supply",
+                    "type": "asset"
+                },
+                {
+                    "name": "issuer",
+                    "type": "name"
+                },
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "authorctrl",
                     "type": "bool"
                 }
             ]
@@ -141,6 +239,28 @@
             ]
         },
         {
+            "name": "issuef",
+            "base": "",
+            "fields": [
+                {
+                    "name": "to",
+                    "type": "name"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
             "name": "offer",
             "base": "",
             "fields": [
@@ -155,6 +275,28 @@
                 {
                     "name": "assetids",
                     "type": "uint64[]"
+                }
+            ]
+        },
+        {
+            "name": "openf",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "symbol",
+                    "type": "symbol"
+                },
+                {
+                    "name": "ram_payer",
+                    "type": "name"
                 }
             ]
         },
@@ -295,6 +437,32 @@
             ]
         },
         {
+            "name": "transferf",
+            "base": "",
+            "fields": [
+                {
+                    "name": "from",
+                    "type": "name"
+                },
+                {
+                    "name": "to",
+                    "type": "name"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
             "name": "undelegate",
             "base": "",
             "fields": [
@@ -348,6 +516,11 @@
             "ricardian_contract": "## ACTION NAME: burn\n\n        ### INTENT\n\t\tBurns asset {{assetid}}. This action is only available for the asset owner. After executing, the \n\t\tasset will disappear forever, and RAM used for asset will be released.\n\n        ### Input parameters:\n\t\t`owner`    - current asset owner account;\n\t\t`assetids` - array of assetid's to burn;\n\t\t`memo`     - memo for burn action;\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
         },
         {
+            "name": "burnf",
+            "type": "burnf",
+            "ricardian_contract": "## ACTION NAME: burnf\n\n        ### INTENT\n\t\tBurns a fungible token. This action is available for the token owner and author. After executing, \n\t\taccounts balance and supply in stats table for this token will reduce by the specified quantity.\n\n        ### Input parameters:\n\t\t`from`     - account who burns the token;\n\t\t`author`   - account of fungible token author;\n\t\t`quantity` - amount to burn, example \"1.00 WOOD\";\n\t\t`memo`     - memo for burnf action;\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
+        },
+        {
             "name": "canceloffer",
             "type": "canceloffer",
             "ricardian_contract": "## ACTION NAME: canceloffer\n\n        ### INTENT\n\t\tCancel and remove offer. Available for the asset owner.\n\n        ### Input parameters:\n\t\t`owner`    - current asset owner account;\n\t\t`assetids` - array of assetid's to cancel offer;\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
@@ -358,9 +531,19 @@
             "ricardian_contract": "## ACTION NAME: claim\n\n        ### INTENT\n\t\tClaim the specified asset (assuming it was offered to claimer by the asset owner).\n\n        ### Input parameters:\n\t\t`claimer`  - account claiming the asset\n\t\t`assetids` - array of assetid's to claim\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
         },
         {
+            "name": "closef",
+            "type": "closef",
+            "ricardian_contract": "## ACTION NAME: closef\n\n        ### INTENT\n\t\tCloses accounts table for provided fungible token and releases RAM.\n\t\tAction works only if balance is 0;\n\n        ### Input parameters:\n\t\t`owner`  - account who woud like to close table with fungible token;\n\t\t`author` - account of fungible token author;\n\t\t`symbol` - token symbol, example \"WOOD\", \"ROCK\", \"GOLD\";\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
+        },
+        {
             "name": "create",
             "type": "create",
             "ricardian_contract": "## ACTION NAME: create\n\n        ### INTENT\n\t\tСreate a new asset.\n\n        ### Input parameters:\n        `author`         - asset's author, who will able to updated asset's mdata;\n\t\t`category`       - assets category;\n\t\t`owner`          - assets owner;\n\t\t`idata`          - stringified json with immutable assets data\n\t\t`mdata`          - stringified json with mutable assets data, can be changed only by author\n\t\t`requireclaim`   - true or false. If disabled, upon creation, the asset will be transfered to owner (but \n\t\t\t\t           but AUTHOR'S memory will be used until the asset is transferred again).  If enabled,\n\t\t\t\t           author will remain the owner, but an offer will be created for the account specified in \n\t\t\t\t           the owner field to claim the asset using the account's RAM.\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "createf",
+            "type": "createf",
+            "ricardian_contract": "## ACTION NAME: createf\n\n        ### INTENT\n\t\tCreates fungible token with specified maximum supply; You can not change anything after creation.\n\n        ### Input parameters:\n\t\t`author`          - fungible token author;\n\t\t`maximum_supply`  - maximum token supply, example \"10000000.0000 GOLD\", \"10000000 SEED\", \"100000000.00 WOOD\". Precision is also important here;\n\t\t`authorctrl`      - if true(1) allow token author (and not just owner) to burnf and transferf. Cannot be changed after creation!\n\t\t\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "delegate",
@@ -368,9 +551,19 @@
             "ricardian_contract": "## ACTION NAME: delegate\n\n        ### INTENT\n\t\tDelegates asset to {{to}}. This action changes the asset owner by calling the transfer action.\n\t\tIt also adds a record in the delegates table to record the asset as borrowed.  This blocks\n\t\tthe asset from all owner actions (transfers, offers, burning by borrower).\n\n        ### Input parameters:\n\t\t`owner`     - current asset owner account;\n\t\t`to`        - borrower account name;\n\t\t`assetids`  - array of assetid's to delegate;\n\t\t`untildate` - untildate - The delegating account will not be able to undelegate before this date. \n\t\t              However, the receiver of the lent asset can transfer back any time\n                      Should be timestamp in future or 0;\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
         },
         {
+            "name": "issuef",
+            "type": "issuef",
+            "ricardian_contract": "## ACTION NAME: issuef\n\n        ### INTENT\n\t\tThis action issues a fungible token.\t\t\n\n        ### Input parameters:\n\t\t`to`       - account receiver;\n\t\t`author`   - fungible token author;\n\t\t`quantity` - amount to issue, example \"1000.00 WOOD\";\n\t\t`memo`     - transfers memo;\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
+        },
+        {
             "name": "offer",
             "type": "offer",
             "ricardian_contract": "## ACTION NAME: offer\n\n        ### INTENT\n\t\tOffer asset for claim. This is an alternative to the transfer action. Offer can be used by an \n\t\tasset owner to transfer the asset without using their RAM. After an offer is made, the account\n\t\tspecified in {{newowner}} is able to make a claim, and take control of the asset using their RAM.\n\t\tOffer action is not available if an asste is delegated (borrowed).\n\n        ### Input parameters:\n\t\t`owner`    - current asset owner account;\n\t\t`newowner` - new asset owner, who will able to claim;\n\t\t`assetids` - array of assetid's to offer;\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "openf",
+            "type": "openf",
+            "ricardian_contract": "## ACTION NAME: openf\n\n        ### INTENT\n\t\tOpens accounts table for specified fungible token.\n\n        ### Input parameters:\n\t\t`owner`     - account who woud like to close table with fungible token;\n\t\t`author`    - account of fungible token author;\n\t\t`symbol`    - token symbol, example \"WOOD\", \"ROCK\", \"GOLD\";\n\t\t`ram_payer` - account who will pay for ram used for table creation;\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "regauthor",
@@ -381,6 +574,11 @@
             "name": "transfer",
             "type": "transfer",
             "ricardian_contract": "## ACTION NAME: transfer\n\n        ### INTENT\n\t\tThis actions transfers an asset. On transfer owner asset's and scope asset's changes to {{to}}'s.\n\t\tSenders RAM will be charged to transfer asset.\n\t\tTransfer will fail if asset is offered for claim or is delegated.\n\n        ### Input parameters:\n\t\t`from`     - account who sends the asset;\n\t\t`to`       - account of receiver;\n\t\t`assetids` - array of assetid's to transfer;\n\t\t`memo`     - transfers comment;\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "transferf",
+            "type": "transferf",
+            "ricardian_contract": "## ACTION NAME: transferf\n\t\tThis actions transfers an fungible token.\n\t\t\n        ### INTENT\n\t\tThis actions transfers a specified quantity of fungible tokens.\n\n        ### Input parameters:\n\t\t`from`     - account who sends the token;\n\t\t`to`       - account of receiver;\n\t\t`author`   - account of fungible token author;\n\t\t`quantity` - amount to transfer, example \"1.00 WOOD\";\n\t\t`memo`     - transfers comment;\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "undelegate",
@@ -394,6 +592,13 @@
         }
     ],
     "tables": [
+        {
+            "name": "accounts",
+            "type": "account",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
         {
             "name": "authors",
             "type": "sauthor",
@@ -425,6 +630,13 @@
         {
             "name": "sassets",
             "type": "sasset",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "stat",
+            "type": "currency_stats",
             "index_type": "i64",
             "key_names": [],
             "key_types": []

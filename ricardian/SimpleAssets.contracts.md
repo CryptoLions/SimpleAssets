@@ -219,4 +219,115 @@
 
         by CryptoLions [ https://cryptolions.io ]
 
+
+<h1 class="contract"> createf </h1>
+        ## ACTION NAME: createf
+
+        ### INTENT
+		Creates fungible token with specified maximum supply; You can not change anything after creation.
+
+        ### Input parameters:
+		`author`          - fungible token author;
+		`maximum_supply`  - maximum token supply, example "10000000.0000 GOLD", "10000000 SEED", "100000000.00 WOOD". Precision is also important here;
+		`authorctrl`      - if true(1) allow token author (and not just owner) to burnf and transferf. Cannot be changed after creation!
+		
+        ### TERM
+        This Contract expires at the conclusion of code execution.
+
+        by CryptoLions [ https://cryptolions.io ]
+		
+		
+<h1 class="contract"> issuef </h1>
+        ## ACTION NAME: issuef
+
+        ### INTENT
+		This action issues a fungible token.		
+
+        ### Input parameters:
+		`to`       - account receiver;
+		`author`   - fungible token author;
+		`quantity` - amount to issue, example "1000.00 WOOD";
+		`memo`     - transfers memo;
+
+        ### TERM
+        This Contract expires at the conclusion of code execution.
+
+        by CryptoLions [ https://cryptolions.io ]
+		
+		
+<h1 class="contract"> transferf </h1>
+        ## ACTION NAME: transferf
+		This actions transfers an fungible token.
+		
+        ### INTENT
+		This actions transfers a specified quantity of fungible tokens.
+
+        ### Input parameters:
+		`from`     - account who sends the token;
+		`to`       - account of receiver;
+		`author`   - account of fungible token author;
+		`quantity` - amount to transfer, example "1.00 WOOD";
+		`memo`     - transfers comment;
+
+        ### TERM
+        This Contract expires at the conclusion of code execution.
+
+        by CryptoLions [ https://cryptolions.io ]
+
+		
+<h1 class="contract"> burnf </h1>
+        ## ACTION NAME: burnf
+
+        ### INTENT
+		Burns a fungible token. This action is available for the token owner and author. After executing, 
+		accounts balance and supply in stats table for this token will reduce by the specified quantity.
+
+        ### Input parameters:
+		`from`     - account who burns the token;
+		`author`   - account of fungible token author;
+		`quantity` - amount to burn, example "1.00 WOOD";
+		`memo`     - memo for burnf action;
+
+        ### TERM
+        This Contract expires at the conclusion of code execution.
+
+        by CryptoLions [ https://cryptolions.io ]
+
+		
+<h1 class="contract"> openf </h1>
+        ## ACTION NAME: openf
+
+        ### INTENT
+		Opens accounts table for specified fungible token.
+
+        ### Input parameters:
+		`owner`     - account who woud like to close table with fungible token;
+		`author`    - account of fungible token author;
+		`symbol`    - token symbol, example "WOOD", "ROCK", "GOLD";
+		`ram_payer` - account who will pay for ram used for table creation;
+
+        ### TERM
+        This Contract expires at the conclusion of code execution.
+
+        by CryptoLions [ https://cryptolions.io ]
+		
+<h1 class="contract"> closef </h1>
+        ## ACTION NAME: closef
+
+        ### INTENT
+		Closes accounts table for provided fungible token and releases RAM.
+		Action works only if balance is 0;
+
+        ### Input parameters:
+		`owner`  - account who woud like to close table with fungible token;
+		`author` - account of fungible token author;
+		`symbol` - token symbol, example "WOOD", "ROCK", "GOLD";
+
+        ### TERM
+        This Contract expires at the conclusion of code execution.
+
+        by CryptoLions [ https://cryptolions.io ]
+		
+		
+
 		
