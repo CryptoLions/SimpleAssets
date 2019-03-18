@@ -105,7 +105,7 @@ assets {
 ## Offers  
 ```
 offers {  
-	uint64_t assetID; 	// asset id offered for claim ; 
+	uint64_t assetid; 	// asset id offered for claim ; 
 	name owner;  		// asset owner;  
 	name offeredTo;		// who can claim this asset ; 
 	uint64_t cdate;		// offer create date;  
