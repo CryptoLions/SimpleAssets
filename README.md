@@ -12,7 +12,7 @@ There are two ways to use Simple Assets:
   
 1) As an "ownership authority".  When deployed on an EOSIO chain, Simple Assets will be a separate contract which other Dapps can call to manage their digital assets.  This serves as an additional guarantee to users of the Dapp that the ownership of assets is managed by a reputable outside authority, and that once created, the Dapp can only manage the asset's mdata.  All the ownership-related functionality exists outside the game.  
   
-We are in the process of creating a DAC which will curate updates to Simple Assets after deployment to the EOSIO mainnet.  
+   We are in the process of creating a DAC which will curate updates to Simple Assets after deployment to the EOSIO mainnet.  
   
 2) Dapps can Deploy their own copy of Simple Assets and make modifications to have greater control of functionality.  We consider this an example of a dapp being its own "ownership authority."  Before deploying, Simple Assets should be modified to prevent anyone from making assets.  
 
@@ -23,11 +23,10 @@ We are in the process of creating a DAC which will curate updates to Simple Asse
 - New actions and logic: `createf`, `issuef`, `transferf`, `burnf`, `openf`, `closef`
 - added new tables `stat(supply, max_supply, issuer, id)` and `accounts (id, balance)`. 
 - scope for stats table (info about fungible tokens) changed to author
-- prinary index for `accounts` table is uniq id created on createf action and stored in stats table.
-- added  `createf` action for fungible token with parametr `authorctrl` to `stats` table and
-  If true(1) allow token author (and not just owner) to burnf and transferf. Cannot be changed after creation!
+- primary index for `accounts` table is uniq id created on createf action and stored in stats table.
+- added  `createf` action for fungible token with parametr `authorctrl` to `stats` table. If true(1) allows token author (and not just owner) to burnf and transferf. Cannot be changed after creation!
 - Ricardian contracts updated
-- more in-coontract useage examples in readme  
+- more usage examples below
 
 
 # Change Log v0.1.1
