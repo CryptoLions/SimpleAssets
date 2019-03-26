@@ -10,33 +10,9 @@
  * 
  */
 
-/**
-*  MIT License
-* 
-* Copyright (c) 2019 Cryptolions.io
-* 
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-* 
-* The above copyright notice and this permission notice shall be included in all
-* copies or substantial portions of the Software.
-* 
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-* SOFTWARE.
-*
-*/
 
 #include <SimpleAssets.hpp>
-#include <string>
+
 
 ACTION SimpleAssets::regauthor( name author, string data, string stemplate) {
 
@@ -88,7 +64,7 @@ ACTION SimpleAssets::create( name author, name category, name owner, string idat
 	require_auth( author );
 	check( is_account( owner ), "owner account does not exist");
 
-	uint64_t newID = getid();
+	uint64_t newID = getid(false);
 	
 	name assetOwner = owner;
 	
@@ -115,6 +91,9 @@ ACTION SimpleAssets::create( name author, name category, name owner, string idat
 		s.mdata = mdata; // mutable data
 		s.idata = idata; // immutable data
 	});
+	
+	//Events
+	sendEvent(author, author, "saecreate"_n, std::make_tuple(owner, newID));
 }
 
 
@@ -127,6 +106,8 @@ ACTION SimpleAssets::claim( name claimer, std::vector<uint64_t>& assetids) {
 	offers offert(_self, _self.value);
 	sassets assets_t(_self, claimer.value);
 	
+	std::map< name, std::vector<uint64_t> > uniqauthor;
+		
 	for( size_t i = 0; i < assetids.size(); ++i ) {
 		uint64_t assetid = assetids[i];
 	
@@ -141,24 +122,29 @@ ACTION SimpleAssets::claim( name claimer, std::vector<uint64_t>& assetids) {
 
 		check(itrc->owner.value == itr->owner.value, "Owner was changed for at least one of the items!?");   
 
-		uint64_t 			id = itr->id;
-		name				author = itr->author;
-		name				category = itr->category;
-		string				mdata = itr->mdata;
-		string				idata = itr->idata;
-
 		assets_t.emplace( claimer, [&]( auto& s ) {     
-			s.id = id;
+			s.id = itr->id;
 			s.owner = claimer;
-			s.author = author;
-			s.category = category;		
-			s.mdata = mdata; 		// mutable data
-			s.idata = idata; 		// immutable data
+			s.author = itr->author;
+			s.category = itr->category;		
+			s.mdata = itr->mdata; 		// mutable data
+			s.idata = itr->idata; 		// immutable data
 		});
 
 		assets_f.erase(itr);
+		
 		offert.erase(itrc);
-	
+
+		//Events
+		uniqauthor[itr->author].push_back(assetid);
+	}
+
+	//Send Event as deferred	
+	auto uniqauthorIt = uniqauthor.begin(); 
+	while(uniqauthorIt != uniqauthor.end() ) {
+		name keyauthor = (*uniqauthorIt).first; 
+		sendEvent(keyauthor, claimer, "saeclaim"_n, std::make_tuple(claimer, uniqauthor[keyauthor]));
+		uniqauthorIt++;
 	}
 }
 
@@ -178,8 +164,12 @@ ACTION SimpleAssets::transfer( name from, name to, std::vector<uint64_t>& asseti
 	delegates delegatet(_self, _self.value);
 	offers offert(_self, _self.value);
 
+	auto rampayer = has_auth( to ) ? to : from;
+		
 	bool isDelegeting = false;
 	uint64_t assetid;
+	
+	std::map< name, std::vector<uint64_t> > uniqauthor;
 	
 	for( size_t i = 0; i < assetids.size(); i++ ) {
 		assetid = assetids[i];
@@ -203,34 +193,39 @@ ACTION SimpleAssets::transfer( name from, name to, std::vector<uint64_t>& asseti
 		} else {
 			require_auth( from );
 		}
-		
+
+	
 		auto itr = assets_f.find( assetid );
 		check(itr != assets_f.end(), "At least one of the assets cannot be found (check ids?)");
 
 		check(from.value == itr->owner.value, "At least one of the assets is not yours to transfer.");   
 
-		uint64_t	id = itr->id;
-		name		author = itr->author;
-		name		category = itr->category;
-		string		mdata = itr->mdata;
-		string		idata = itr->idata;
-
 		auto itrc = offert.find( assetid );
 		check ( itrc == offert.end(), "At least one of the assets has been offered for a claim and cannot be transferred. Cancel offer?" );
-		
+
 		assets_f.erase(itr);
-		
-		auto rampayer = has_auth( to ) ? to : from;
-		
+	
 		assets_t.emplace( rampayer, [&]( auto& s ) {     
-			s.id = id;
+			s.id = itr->id;
 			s.owner = to;
-			s.author = author;
-			s.category = category;		
-			s.mdata = mdata; 		// mutable data
-			s.idata = idata; 		// immutable data
+			s.author = itr->author;
+			s.category = itr->category;		
+			s.idata = itr->idata; 		// immutable data
+			s.mdata = itr->mdata; 		// mutable data
 		});
+		
+		//Events
+		uniqauthor[itr->author].push_back(assetid);		
 	}
+	
+	//Send Event as deferred
+	auto uniqauthorIt = uniqauthor.begin(); 
+	while(uniqauthorIt != uniqauthor.end() ) {
+		name keyauthor = (*uniqauthorIt).first; 
+		sendEvent(keyauthor, rampayer, "saetransfer"_n, std::make_tuple(from, to, uniqauthor[keyauthor], memo) );
+		uniqauthorIt++;
+	}
+
 }
 
 
@@ -270,7 +265,6 @@ ACTION SimpleAssets::offer( name owner, name newowner, std::vector<uint64_t>& as
 		check(itr != assets_f.end(), "At least one of the assets was not found.");
 
 		auto itrc = offert.find( assetid );
-
 		check ( itrc == offert.end(), "At least one of the assets is already offered for claim." );
 
 		auto itrd = delegatet.find( assetid );
@@ -314,6 +308,8 @@ ACTION SimpleAssets::burn( name owner, std::vector<uint64_t>& assetids, string m
 	sassets assets_f( _self, owner.value );
 	offers offert(_self, _self.value);
 	delegates delegatet(_self, _self.value);
+		
+	std::map< name, std::vector<uint64_t> > uniqauthor;
 	
 	for( size_t i = 0; i < assetids.size(); ++i ) {
 		uint64_t assetid = assetids[i];
@@ -330,19 +326,27 @@ ACTION SimpleAssets::burn( name owner, std::vector<uint64_t>& assetids, string m
 		check ( itrd == delegatet.end(), "At least one of assets is delegated and cannot be burned." );
 		
 		assets_f.erase(itr);
+		
+		//Events
+		uniqauthor[itr->author].push_back(assetid);
+	}
+	
+	//Send Event as deferred
+	auto uniqauthorIt = uniqauthor.begin(); 
+	while(uniqauthorIt != uniqauthor.end() ) {
+		name keyauthor = (*uniqauthorIt).first; 
+		sendEvent(keyauthor, owner, "saeburn"_n, std::make_tuple(owner, uniqauthor[keyauthor], memo));
+		uniqauthorIt++;
 	}
 }
 
 
-ACTION SimpleAssets::delegate( name owner, name to, std::vector<uint64_t>& assetids, uint64_t untildate ){
+ACTION SimpleAssets::delegate( name owner, name to, std::vector<uint64_t>& assetids, uint64_t period ){
 
 	require_auth( owner );
 	require_recipient( owner );
 	
 	check( is_account( to ), "TO account does not exist");
-
-	if (untildate != 0)
-		check(untildate > now(), "untildate should be timestamp in the future or 0");
 
 	sassets assets_f( _self, owner.value );
 	delegates delegatet(_self, _self.value);
@@ -368,7 +372,7 @@ ACTION SimpleAssets::delegate( name owner, name to, std::vector<uint64_t>& asset
 			s.owner = owner;
 			s.delegatedto = to;
 			s.cdate = now();
-			s.untildate = untildate;
+			s.period = period;
 		});
 		
 		if (i != 0) assetidsmemo += ", ";
@@ -402,7 +406,7 @@ ACTION SimpleAssets::undelegate( name owner, name from, std::vector<uint64_t>& a
 		check(owner == itrc->owner, "You are not the owner of at least one of these assets.");
 		check(from == itrc->delegatedto, "FROM does not match DELEGATEDTO for at least one of the assets.");   
 		check(itr->owner == itrc->delegatedto, "FROM does not match DELEGATEDTO for at least one of the assets.");   		
-		check( itrc->untildate < now(), "Too early to undelegate at least one of these assets. UNTILDATE not yet reached.");   		
+		check( (itrc->cdate + itrc->period) < now(), "Cannot undelegate until the PERIOD expires.");   		
 			
 		if (i != 0) assetidsmemo += ", ";
 		assetidsmemo += std::to_string(assetid);
@@ -433,7 +437,7 @@ ACTION SimpleAssets::createf( name author, asset maximum_supply, bool authorctrl
        s.supply.symbol = maximum_supply.symbol;
        s.max_supply    = maximum_supply;
        s.issuer        = author;
-	   s.id			   = getid();
+	   s.id			   = getid(false);
 	   s.authorctrl    = authorctrl;
     });
 }
@@ -575,16 +579,27 @@ ACTION SimpleAssets::closef( name owner, name author, const symbol& symbol ){
 * getid private action
 * Increment, save and return id for a new asset or new fungible token.
 */
-uint64_t SimpleAssets::getid(){
+uint64_t SimpleAssets::getid(bool defer){
 
 	conf config(_self, _self.value);
 	_cstate = config.exists() ? config.get() : global{};
 
-	_cstate.lastid++;
+	uint64_t resid;
+	if (defer) {
+		_cstate.spare1++;
+		resid = _cstate.spare1;
+	} else {
+		_cstate.lastid++;
+		resid = _cstate.lastid;
+	}
+
 	config.set(_cstate, _self);
+	return resid;
 	
-	return _cstate.lastid;
+	
+	
 }
+
 
 uint64_t SimpleAssets::getFTIndex(name author, symbol symbol){
 
@@ -635,6 +650,16 @@ void SimpleAssets::add_balancef( name owner, name author, asset value, name ram_
 		});
 	}
 }
+
+template<typename... Args>
+void SimpleAssets::sendEvent(name author, name rampayer, name seaction, const std::tuple<Args...> &adata) {
+
+	transaction sevent{};
+	sevent.actions.emplace_back( permission_level{_self, "active"_n}, author, seaction, adata);
+	sevent.delay_sec = 0;
+	sevent.send(getid(true), rampayer);
+}
+
 
 
 //------------------------------------------------------------------------------------------------------------   

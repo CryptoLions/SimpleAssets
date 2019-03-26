@@ -18,6 +18,17 @@ There are two ways to use Simple Assets:
 
 ---------------------------  
 
+# Change Log v0.3.0
+- Added event notifications using deferred transaction. Assets author will receive notification on assets create, transfer, claim or burn. To receive it please add next action to your author contract:  
+	```
+        ACTION saecreate   ( name owner, uint64_t assetid );  
+        ACTION saetransfer ( name from, name to, std::vector<uint64_t>& assetids, std::string memo );  
+        ACTION saeclaim    ( name account, std::vector<uint64_t>& assetids );  
+        ACTION saeburn     ( name account, std::vector<uint64_t>& assetids, std::string memo );  
+	```
+ - `untildate` parametr changed to `period` (in seconds) for actions `delegate` and table `sdelegates`  
+
+
 # Change Log v0.2.0
 ## Added Fungible Token tables and logic using eosio.token contract but with some changes
 - New actions and logic: `createf`, `issuef`, `transferf`, `burnf`, `openf`, `closef`
@@ -71,7 +82,7 @@ https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp
  regauthor       (name author, data, stemplate)  
  authorupdate    (author, data, stemplate)  
  
- delegate        (owner, to, [assetid1,..,assetidn], untildate)  
+ delegate        (owner, to, [assetid1,..,assetidn], period)  
  undelegate      (owner, from, [assetid1,..,assetidn])  
  
  
@@ -118,7 +129,7 @@ authors {
 	name author;    		// assets author, who will be able to create and update assets;  
 	string data;			// author’s data (json) will be used by markets for better display;  
 	string stemplate;		// data (json) schema for markets. key: state values, where key is key from;  
-        				// recommendations for non-text fields: hide, url, img, webgl, mp3, video;  
+        				    // recommendations for non-text fields: hide, url, img, webgl, mp3, video;  
 }  
 ```
 
@@ -129,7 +140,8 @@ delegates{
 	name owner;  		// asset owner;  
 	name delegatedto;	// who can claim this asset;  
 	uint64_t cdate;		// offer create date;  
-	uint64_t untildate;	// The delegating account will not be able to undelegate before this date;
+	uint64_t period;	// Time in seconds that the asset will be lent. Lender cannot undelegate until 
+					    // the period expires, however the receiver can transfer back at any time.
 }  
 ```
 
@@ -196,7 +208,7 @@ createAsset.send();
 ```
 
 ## Search asset and get assets info
-1. Please add in your hpp file info about assets structure or include SimpleAssets.hpp
+1. Please add in your hpp file info about assets structure 
 ```
 TABLE sasset {
 	uint64_t	id;

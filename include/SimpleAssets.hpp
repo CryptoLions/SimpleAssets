@@ -10,35 +10,11 @@
  * 
  */
 
- 
-/**
-*  MIT License
-* 
-* Copyright (c) 2019 Cryptolions.io
-* 
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-* 
-* The above copyright notice and this permission notice shall be included in all
-* copies or substantial portions of the Software.
-* 
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-* SOFTWARE.
-*
-*/
 
 #include <eosiolib/eosio.hpp>
 #include <eosiolib/asset.hpp>
 #include <eosiolib/singleton.hpp>
+#include <eosiolib/transaction.hpp>
 
 using namespace eosio;
 using std::string;
@@ -53,8 +29,7 @@ CONTRACT SimpleAssets : public contract {
 		// ===============================================================================================
 		// ============= Non-Fungible Token Actions ======================================================
 		// ===============================================================================================
-		
-		
+		//
 		//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 		/*
 		* New Author registration. Action is not mandatory.  Markets *may* choose to use information here
@@ -105,7 +80,7 @@ CONTRACT SimpleAssets : public contract {
 		ACTION create( name author, name category, name owner, string idata, string mdata, bool requireclaim);
 		using create_action = action_wrapper<"create"_n, &SimpleAssets::create>;
 
-		
+	
 		//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 		/*
 		* Claim the specified asset (assuming it was offered to claimer by the asset owner).
@@ -194,11 +169,10 @@ CONTRACT SimpleAssets : public contract {
 		* owner     - current asset owner account;
 		* to        - borrower account name;
 		* assetids  - array of assetid's to delegate;
-		* untildate - untildate - The delegating account will not be able to undelegate before this date. 
-		*             However, the receiver of the lent asset can transfer back any time
-		*             Should be timestamp in future or 0;
+		* period    - time in seconds that the asset will be lent. Lender cannot undelegate until 
+		*             the period expires, however the receiver can transfer back at any time.
 		*/		
-		ACTION delegate( name owner, name to, std::vector<uint64_t>& assetids, uint64_t untildate );
+		ACTION delegate( name owner, name to, std::vector<uint64_t>& assetids, uint64_t period );
 		using delegate_action = action_wrapper<"delegate"_n, &SimpleAssets::delegate>;
 
 
@@ -337,13 +311,16 @@ CONTRACT SimpleAssets : public contract {
 	//=============================================================================================================================
 	private:
 
-		uint64_t getid();
+		uint64_t getid(bool defer);
 		uint64_t getFTIndex(name author, symbol symbol);
 
 		void sub_balancef( name owner, name author, asset value );
 		void add_balancef( name owner, name author, asset value, name ram_payer );
 
+		template<typename... Args>
+		void sendEvent(name author, name rampayer, name seaction, const std::tuple<Args...> &tup);
 		
+
 		//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 		/*
 		* Authors table. Can be used by asset markets, asset explorers, or wallets for correct asset 
@@ -435,7 +412,7 @@ CONTRACT SimpleAssets : public contract {
 			name			owner;
 			name			delegatedto;
 			uint64_t		cdate;
-			uint64_t		untildate;
+			uint64_t		period;
 			
 			auto primary_key() const {
 				return assetid;
@@ -447,7 +424,7 @@ CONTRACT SimpleAssets : public contract {
 				return delegatedto.value;
 			}
 
-			EOSLIB_SERIALIZE( sdelegate, (assetid)(owner)(delegatedto)(cdate)(untildate))
+			EOSLIB_SERIALIZE( sdelegate, (assetid)(owner)(delegatedto)(cdate)(period))
 		};
 
 		typedef eosio::multi_index< "delegates"_n, sdelegate,
@@ -485,7 +462,7 @@ CONTRACT SimpleAssets : public contract {
 			asset		balance;
 
 			uint64_t primary_key()const { 
-				return id;//buildFungibleIndex(author, balance.symbol);// author.value+balance.symbol.code().raw(); 
+				return id;
 			}
 		};
 

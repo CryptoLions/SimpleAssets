@@ -191,9 +191,8 @@
 		`owner`     - current asset owner account;
 		`to`        - borrower account name;
 		`assetids`  - array of assetid's to delegate;
-		`untildate` - untildate - The delegating account will not be able to undelegate before this date. 
-		              However, the receiver of the lent asset can transfer back any time
-                      Should be timestamp in future or 0;
+		`period`    - time in seconds that the asset will be lent. Lender cannot undelegate until 
+		              the period expires, however the receiver can transfer back at any time.
 
         ### TERM
         This Contract expires at the conclusion of code execution.
