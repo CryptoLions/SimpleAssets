@@ -7,6 +7,8 @@
  *    WebSite:        https://simpleassets.io
  *    GitHub:         https://github.com/CryptoLions/SimpleAssets 
  *    Presentation:   https://medium.com/@cryptolions/introducing-simple-assets-b4e17caafaa4
+ *
+ *    Event Receiver: https://github.com/CryptoLions/SimpleAssets-EventReceiverExample
  * 
  */
 
@@ -24,6 +26,13 @@ CONTRACT SimpleAssets : public contract {
    //=============================================================================================================================
    public:
 		using contract::contract;
+
+		//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+		/*
+		* Update version of this SimpleAstes deployment for 3rd party wallets, marketplaces, etc
+		*/	
+		ACTION updatever( string version);
+		using updatever_action = action_wrapper<"updatever"_n, &SimpleAssets::updatever>;
 
 		
 		// ===============================================================================================
@@ -80,7 +89,14 @@ CONTRACT SimpleAssets : public contract {
 		ACTION create( name author, name category, name owner, string idata, string mdata, bool requireclaim);
 		using create_action = action_wrapper<"create"_n, &SimpleAssets::create>;
 
-	
+		//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+		/*
+		* Empty action. Used by create action to log assetid so that third party explorers can easily get new asset ids and other information.
+		* 
+		*/
+		ACTION createlog( name author, name category, name owner, string idata, string mdata, uint64_t assetid);
+		using createlog_action = action_wrapper<"createlog"_n, &SimpleAssets::createlog>;
+		
 		//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 		/*
 		* Claim the specified asset (assuming it was offered to claimer by the asset owner).
@@ -307,6 +323,7 @@ CONTRACT SimpleAssets : public contract {
 		}
 
 		
+		
 	//=============================================================================================================================
 	//=============================================================================================================================
 	private:
@@ -488,6 +505,24 @@ CONTRACT SimpleAssets : public contract {
 		};
 
 		typedef eosio::multi_index< "stat"_n, currency_stats > stats;	
+		
+
+		//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+		/* 
+		* Helps external contracts parse actions and tables correctly (Usefull for decentralized exchanges, 
+		* marketplaces and other contracts that use multiple tokens)
+		*
+		* Marketplaces, exchanges and other reliant contracts will be able to view this info using the following code.
+		*   Configs configs("simpl1assets"_n, "simpl1assets"_n.value);
+		*	configs.get("simpl1assets"_n);
+
+		*/				
+		TABLE tokenconfigs {
+			name			standard;
+			std::string		version;
+		};
+
+		typedef singleton<"tokenconfigs"_n, tokenconfigs> Configs;
   
 };
 

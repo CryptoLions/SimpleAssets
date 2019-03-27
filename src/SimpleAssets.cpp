@@ -7,12 +7,21 @@
  *    WebSite:        https://simpleassets.io
  *    GitHub:         https://github.com/CryptoLions/SimpleAssets 
  *    Presentation:   https://medium.com/@cryptolions/introducing-simple-assets-b4e17caafaa4
+ *
+ *    Event Receiver: https://github.com/CryptoLions/SimpleAssets-EventReceiverExample
  * 
  */
 
-
+ 
 #include <SimpleAssets.hpp>
 
+ACTION SimpleAssets::updatever( string version ) {
+	require_auth(get_self());
+	
+	Configs configs(_self, _self.value);
+	configs.set(tokenconfigs{"simpleassets"_n, version}, _self);
+	
+}
 
 ACTION SimpleAssets::regauthor( name author, string data, string stemplate) {
 
@@ -94,6 +103,12 @@ ACTION SimpleAssets::create( name author, name category, name owner, string idat
 	
 	//Events
 	sendEvent(author, author, "saecreate"_n, std::make_tuple(owner, newID));
+	SEND_INLINE_ACTION( *this, createlog, { {_self, "active"_n} },  { author, category, owner, idata, mdata, newID}   );
+}
+
+
+ACTION SimpleAssets::createlog( name author, name category, name owner, string idata, string mdata, uint64_t assetid) {
+	require_auth(get_self());
 }
 
 
@@ -664,12 +679,13 @@ void SimpleAssets::sendEvent(name author, name rampayer, name seaction, const st
 
 //------------------------------------------------------------------------------------------------------------   
 
-EOSIO_DISPATCH( SimpleAssets, 	(create)(transfer)(burn)(update)
+EOSIO_DISPATCH( SimpleAssets, 	(create)(createlog)(transfer)(burn)(update)
 								(offer)(canceloffer)(claim)
 								(regauthor)(authorupdate)
 								(delegate)(undelegate)
 								(createf)(issuef)(transferf)(burnf)
-								(openf)(closef) )
+								(openf)(closef) 
+								(updatever))
 
 //============================================================================================================
 //=======================================- SimpleAssets.io -==================================================

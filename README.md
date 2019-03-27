@@ -8,6 +8,10 @@ Git: https://github.com/CryptoLions/SimpleAssets
 
 Presentation:  https://medium.com/@cryptolions/introducing-simple-assets-b4e17caafaa4
 
+Events Receiver Example for authors: https://github.com/CryptoLions/SimpleAssets-EventReceiverExample  
+
+---------------------------  
+
 There are two ways to use Simple Assets:  
   
 1) As an "ownership authority".  When deployed on an EOSIO chain, Simple Assets will be a separate contract which other Dapps can call to manage their digital assets.  This serves as an additional guarantee to users of the Dapp that the ownership of assets is managed by a reputable outside authority, and that once created, the Dapp can only manage the asset's mdata.  All the ownership-related functionality exists outside the game.  
@@ -17,6 +21,16 @@ There are two ways to use Simple Assets:
 2) Dapps can Deploy their own copy of Simple Assets and make modifications to have greater control of functionality.  We consider this an example of a dapp being its own "ownership authority."  Before deploying, Simple Assets should be modified to prevent anyone from making assets.  
 
 ---------------------------  
+# Change Log v0.3.1
+- Internal action for NFT `createlog` added. Used by create action to log assetid so that third party explorers can easily get new asset ids and other information.
+- New singelton table `tokenconfigs` added. It helps external contracts parse actions and tables correctly (Usefull for decentralized exchanges, marketplaces and other contracts that use multiple tokens).
+  Marketplaces, exchanges and other reliant contracts will be able to view this info using the following code.
+	```
+	Configs configs("simpl1assets"_n, "simpl1assets"_n.value);
+	configs.get("simpl1assets"_n);
+	```
+- added action `updatever`. It updates version of this SimpleAstes deployment for 3rd party wallets, marketplaces, etc;
+- New examples for Event notifications: https://github.com/CryptoLions/SimpleAssets-EventReceiverExample  
 
 # Change Log v0.3.0
 - Added event notifications using deferred transaction. Assets author will receive notification on assets create, transfer, claim or burn. To receive it please add next action to your author contract:  
@@ -26,7 +40,7 @@ There are two ways to use Simple Assets:
         ACTION saeclaim    ( name account, std::vector<uint64_t>& assetids );  
         ACTION saeburn     ( name account, std::vector<uint64_t>& assetids, std::string memo );  
 	```
- - `untildate` parametr changed to `period` (in seconds) for actions `delegate` and table `sdelegates`  
+ - `untildate` parameter changed to `period` (in seconds) for actions `delegate` and table `sdelegates`  
 
 
 # Change Log v0.2.0

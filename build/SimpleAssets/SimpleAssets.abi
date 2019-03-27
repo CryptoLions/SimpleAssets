@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Tue Mar 26 14:51:41 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Wed Mar 27 13:50:53 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -165,6 +165,36 @@
                 {
                     "name": "authorctrl",
                     "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "createlog",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "category",
+                    "type": "name"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "idata",
+                    "type": "string"
+                },
+                {
+                    "name": "mdata",
+                    "type": "string"
+                },
+                {
+                    "name": "assetid",
+                    "type": "uint64"
                 }
             ]
         },
@@ -415,6 +445,20 @@
             ]
         },
         {
+            "name": "tokenconfigs",
+            "base": "",
+            "fields": [
+                {
+                    "name": "standard",
+                    "type": "name"
+                },
+                {
+                    "name": "version",
+                    "type": "string"
+                }
+            ]
+        },
+        {
             "name": "transfer",
             "base": "",
             "fields": [
@@ -501,6 +545,16 @@
                     "type": "string"
                 }
             ]
+        },
+        {
+            "name": "updatever",
+            "base": "",
+            "fields": [
+                {
+                    "name": "version",
+                    "type": "string"
+                }
+            ]
         }
     ],
     "types": [],
@@ -546,6 +600,11 @@
             "ricardian_contract": "## ACTION NAME: createf\n\n        ### INTENT\n\t\tCreates fungible token with specified maximum supply; You can not change anything after creation.\n\n        ### Input parameters:\n\t\t`author`          - fungible token author;\n\t\t`maximum_supply`  - maximum token supply, example \"10000000.0000 GOLD\", \"10000000 SEED\", \"100000000.00 WOOD\". Precision is also important here;\n\t\t`authorctrl`      - if true(1) allow token author (and not just owner) to burnf and transferf. Cannot be changed after creation!\n\t\t\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
         },
         {
+            "name": "createlog",
+            "type": "createlog",
+            "ricardian_contract": ""
+        },
+        {
             "name": "delegate",
             "type": "delegate",
             "ricardian_contract": "## ACTION NAME: delegate\n\n        ### INTENT\n\t\tDelegates asset to {{to}}. This action changes the asset owner by calling the transfer action.\n\t\tIt also adds a record in the delegates table to record the asset as borrowed.  This blocks\n\t\tthe asset from all owner actions (transfers, offers, burning by borrower).\n\n        ### Input parameters:\n\t\t`owner`     - current asset owner account;\n\t\t`to`        - borrower account name;\n\t\t`assetids`  - array of assetid's to delegate;\n\t\t`period`    - time in seconds that the asset will be lent. Lender cannot undelegate until \n\t\t              the period expires, however the receiver can transfer back at any time.\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
@@ -589,6 +648,11 @@
             "name": "update",
             "type": "update",
             "ricardian_contract": "## ACTION NAME: update\n\n        ### INTENT\n\t\tUpdate assets mutable data (mdata) field. Action is available only for authors.\n\n        ### Input parameters:\n\t\t`author`  - authors account;\n\t\t`owner`   - current assets owner;\n\t\t`assetid` - assetid to update;\n\t\t`mdata`   - stringified json with mutable assets data. All mdata will be replaced;\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "updatever",
+            "type": "updatever",
+            "ricardian_contract": ""
         }
     ],
     "tables": [
@@ -637,6 +701,13 @@
         {
             "name": "stat",
             "type": "currency_stats",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "tokenconfigs",
+            "type": "tokenconfigs",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
