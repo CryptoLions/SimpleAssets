@@ -147,8 +147,9 @@ CONTRACT SimpleAssets : public contract {
 		* owner    - current asset owner account;
 		* newowner - new asset owner, who will able to claim;
 		* assetids - array of assetid's to offer
+		* memo     - memo for offer action
 		*/		
-		ACTION offer( name owner, name newowner, std::vector<uint64_t>& assetids);
+		ACTION offer( name owner, name newowner, std::vector<uint64_t>& assetids, string memo);
 		using offer_action = action_wrapper<"offer"_n, &SimpleAssets::offer>;
 
 
@@ -187,8 +188,9 @@ CONTRACT SimpleAssets : public contract {
 		* assetids  - array of assetid's to delegate;
 		* period    - time in seconds that the asset will be lent. Lender cannot undelegate until 
 		*             the period expires, however the receiver can transfer back at any time.
+		* memo      - memo for delegate action
 		*/		
-		ACTION delegate( name owner, name to, std::vector<uint64_t>& assetids, uint64_t period );
+		ACTION delegate( name owner, name to, std::vector<uint64_t>& assetids, uint64_t period, string memo );
 		using delegate_action = action_wrapper<"delegate"_n, &SimpleAssets::delegate>;
 
 

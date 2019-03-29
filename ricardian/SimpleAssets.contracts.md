@@ -135,6 +135,7 @@
 		`owner`    - current asset owner account;
 		`newowner` - new asset owner, who will able to claim;
 		`assetids` - array of assetid's to offer;
+		`memo`     - memo for offer action
 
         ### TERM
         This Contract expires at the conclusion of code execution.
@@ -193,6 +194,7 @@
 		`assetids`  - array of assetid's to delegate;
 		`period`    - time in seconds that the asset will be lent. Lender cannot undelegate until 
 		              the period expires, however the receiver can transfer back at any time.
+		`memo`      - memo for delegate action
 
         ### TERM
         This Contract expires at the conclusion of code execution.
@@ -327,6 +329,9 @@
 
         by CryptoLions [ https://cryptolions.io ]
 		
-		
+<h1 class="contract"> updatever </h1>
+## ACTION NAME: updatever (internal)
 
+<h1 class="contract"> createlog </h1>		
+## ACTION NAME: createlog (internal)
 		

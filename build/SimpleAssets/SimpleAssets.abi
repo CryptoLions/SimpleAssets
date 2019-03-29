@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Wed Mar 27 13:50:53 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Fri Mar 29 17:59:05 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -243,6 +243,10 @@
                 {
                     "name": "period",
                     "type": "uint64"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
                 }
             ]
         },
@@ -305,6 +309,10 @@
                 {
                     "name": "assetids",
                     "type": "uint64[]"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
                 }
             ]
         },
@@ -602,12 +610,12 @@
         {
             "name": "createlog",
             "type": "createlog",
-            "ricardian_contract": ""
+            "ricardian_contract": "## ACTION NAME: createlog (internal)"
         },
         {
             "name": "delegate",
             "type": "delegate",
-            "ricardian_contract": "## ACTION NAME: delegate\n\n        ### INTENT\n\t\tDelegates asset to {{to}}. This action changes the asset owner by calling the transfer action.\n\t\tIt also adds a record in the delegates table to record the asset as borrowed.  This blocks\n\t\tthe asset from all owner actions (transfers, offers, burning by borrower).\n\n        ### Input parameters:\n\t\t`owner`     - current asset owner account;\n\t\t`to`        - borrower account name;\n\t\t`assetids`  - array of assetid's to delegate;\n\t\t`period`    - time in seconds that the asset will be lent. Lender cannot undelegate until \n\t\t              the period expires, however the receiver can transfer back at any time.\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "## ACTION NAME: delegate\n\n        ### INTENT\n\t\tDelegates asset to {{to}}. This action changes the asset owner by calling the transfer action.\n\t\tIt also adds a record in the delegates table to record the asset as borrowed.  This blocks\n\t\tthe asset from all owner actions (transfers, offers, burning by borrower).\n\n        ### Input parameters:\n\t\t`owner`     - current asset owner account;\n\t\t`to`        - borrower account name;\n\t\t`assetids`  - array of assetid's to delegate;\n\t\t`period`    - time in seconds that the asset will be lent. Lender cannot undelegate until \n\t\t              the period expires, however the receiver can transfer back at any time.\n\t\t`memo`      - memo for delegate action\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "issuef",
@@ -617,7 +625,7 @@
         {
             "name": "offer",
             "type": "offer",
-            "ricardian_contract": "## ACTION NAME: offer\n\n        ### INTENT\n\t\tOffer asset for claim. This is an alternative to the transfer action. Offer can be used by an \n\t\tasset owner to transfer the asset without using their RAM. After an offer is made, the account\n\t\tspecified in {{newowner}} is able to make a claim, and take control of the asset using their RAM.\n\t\tOffer action is not available if an asste is delegated (borrowed).\n\n        ### Input parameters:\n\t\t`owner`    - current asset owner account;\n\t\t`newowner` - new asset owner, who will able to claim;\n\t\t`assetids` - array of assetid's to offer;\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "## ACTION NAME: offer\n\n        ### INTENT\n\t\tOffer asset for claim. This is an alternative to the transfer action. Offer can be used by an \n\t\tasset owner to transfer the asset without using their RAM. After an offer is made, the account\n\t\tspecified in {{newowner}} is able to make a claim, and take control of the asset using their RAM.\n\t\tOffer action is not available if an asste is delegated (borrowed).\n\n        ### Input parameters:\n\t\t`owner`    - current asset owner account;\n\t\t`newowner` - new asset owner, who will able to claim;\n\t\t`assetids` - array of assetid's to offer;\n\t\t`memo`     - memo for offer action\n\n        ### TERM\n        This Contract expires at the conclusion of code execution.\n\n        by CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "openf",
@@ -652,7 +660,7 @@
         {
             "name": "updatever",
             "type": "updatever",
-            "ricardian_contract": ""
+            "ricardian_contract": "## ACTION NAME: updatever (internal)"
         }
     ],
     "tables": [

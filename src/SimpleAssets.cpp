@@ -262,7 +262,7 @@ ACTION SimpleAssets::update( name author, name owner, uint64_t assetid, string m
 }
 
 
-ACTION SimpleAssets::offer( name owner, name newowner, std::vector<uint64_t>& assetids){
+ACTION SimpleAssets::offer( name owner, name newowner, std::vector<uint64_t>& assetids, string memo){
 
 	require_auth( owner );
 	require_recipient( owner );
@@ -356,7 +356,7 @@ ACTION SimpleAssets::burn( name owner, std::vector<uint64_t>& assetids, string m
 }
 
 
-ACTION SimpleAssets::delegate( name owner, name to, std::vector<uint64_t>& assetids, uint64_t period ){
+ACTION SimpleAssets::delegate( name owner, name to, std::vector<uint64_t>& assetids, uint64_t period, string memo ){
 
 	require_auth( owner );
 	require_recipient( owner );
@@ -390,11 +390,9 @@ ACTION SimpleAssets::delegate( name owner, name to, std::vector<uint64_t>& asset
 			s.period = period;
 		});
 		
-		if (i != 0) assetidsmemo += ", ";
-		assetidsmemo += std::to_string(assetid);
 	}
 	
-	SEND_INLINE_ACTION( *this, transfer, { {owner, "active"_n} },  { owner, to, assetids, "delegate assetids: "+ assetidsmemo}   );
+	SEND_INLINE_ACTION( *this, transfer, { {owner, "active"_n} },  { owner, to, assetids, memo}   );
 }
 
 

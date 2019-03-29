@@ -21,6 +21,10 @@ There are two ways to use Simple Assets:
 2) Dapps can Deploy their own copy of Simple Assets and make modifications to have greater control of functionality.  We consider this an example of a dapp being its own "ownership authority."  Before deploying, Simple Assets should be modified to prevent anyone from making assets.  
 
 ---------------------------  
+# Change Log v0.3.2
+- Added `memo` parameter to action `offer`;  
+- Added `memo` parameter to action `delegate`;
+
 # Change Log v0.3.1
 - Internal action for NFT `createlog` added. Used by create action to log assetid so that third party explorers can easily get new asset ids and other information.
 - New singelton table `tokenconfigs` added. It helps external contracts parse actions and tables correctly (Usefull for decentralized exchanges, marketplaces and other contracts that use multiple tokens).
@@ -89,14 +93,14 @@ https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp
  transfer        (from, to , [assetid1,..,assetidn], memo)  
  burn            (owner, [assetid1,..,assetidn], memo)  
  
- offer           (owner, newowner, [assetid1,..,assetidn])  
+ offer           (owner, newowner, [assetid1,..,assetidn], memo)  
  canceloffer     (owner, [assetid1,..,assetidn])  
  claim           (claimer, [assetid1,..,assetidn])  
   
  regauthor       (name author, data, stemplate)  
  authorupdate    (author, data, stemplate)  
  
- delegate        (owner, to, [assetid1,..,assetidn], period)  
+ delegate        (owner, to, [assetid1,..,assetidn], period, memo)  
  undelegate      (owner, from, [assetid1,..,assetidn])  
  
  
