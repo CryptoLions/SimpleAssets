@@ -19,8 +19,7 @@ ACTION SimpleAssets::updatever( string version ) {
 	require_auth(get_self());
 	
 	Configs configs(_self, _self.value);
-	configs.set(tokenconfigs{"simpleassets"_n, version}, _self);
-	
+	configs.set(tokenconfigs{"simpleassets"_n, version}, _self);	
 }
 
 ACTION SimpleAssets::regauthor( name author, string data, string stemplate) {
@@ -85,7 +84,7 @@ ACTION SimpleAssets::create( name author, name category, name owner, string idat
 		offers offert(_self, _self.value);
 		offert.emplace( author, [&]( auto& s ) {     
 			s.assetid = newID;
-			s.offeredTo = owner;
+			s.offeredto = owner;
 			s.owner = author;
 			s.cdate = now();
 		});
@@ -116,23 +115,20 @@ ACTION SimpleAssets::claim( name claimer, std::vector<uint64_t>& assetids) {
 	require_auth( claimer );
 	require_recipient( claimer );
 	
-	check( is_account( claimer ), "claimer account does not exist");
-
 	offers offert(_self, _self.value);
 	sassets assets_t(_self, claimer.value);
 	
 	std::map< name, std::vector<uint64_t> > uniqauthor;
 		
 	for( size_t i = 0; i < assetids.size(); ++i ) {
-		uint64_t assetid = assetids[i];
-	
-		auto itrc = offert.find( assetid );
+
+		auto itrc = offert.find( assetids[i] );
 
 		check(itrc != offert.end(), "Cannot find at least one of the assets you're attempting to claim.");
-		check(claimer == itrc->offeredTo, "At least one of the assets has not been offerred to you.");
+		check(claimer == itrc->offeredto, "At least one of the assets has not been offerred to you.");
 
 		sassets assets_f( _self, itrc->owner.value );
-		auto itr = assets_f.find( assetid );
+		auto itr = assets_f.find( assetids[i] );
 		check(itr != assets_f.end(), "Cannot find at least one of the assets you're attempting to claim.");
 
 		check(itrc->owner.value == itr->owner.value, "Owner was changed for at least one of the items!?");   
@@ -144,14 +140,15 @@ ACTION SimpleAssets::claim( name claimer, std::vector<uint64_t>& assetids) {
 			s.category = itr->category;		
 			s.mdata = itr->mdata; 		// mutable data
 			s.idata = itr->idata; 		// immutable data
+			s.container = itr->container;
+			s.containerf = itr->containerf;
 		});
 
 		assets_f.erase(itr);
-		
 		offert.erase(itrc);
 
 		//Events
-		uniqauthor[itr->author].push_back(assetid);
+		uniqauthor[itr->author].push_back(assetids[i]);
 	}
 
 	//Send Event as deferred	
@@ -182,13 +179,11 @@ ACTION SimpleAssets::transfer( name from, name to, std::vector<uint64_t>& asseti
 	auto rampayer = has_auth( to ) ? to : from;
 		
 	bool isDelegeting = false;
-	uint64_t assetid;
 	
 	std::map< name, std::vector<uint64_t> > uniqauthor;
 	
-	for( size_t i = 0; i < assetids.size(); i++ ) {
-		assetid = assetids[i];
-		auto itrd = delegatet.find( assetid );
+	for( size_t i = 0; i < assetids.size(); ++i ) {
+		auto itrd = delegatet.find( assetids[i] );
 
 		isDelegeting = false;
 		if (itrd != delegatet.end()){
@@ -210,12 +205,12 @@ ACTION SimpleAssets::transfer( name from, name to, std::vector<uint64_t>& asseti
 		}
 
 	
-		auto itr = assets_f.find( assetid );
+		auto itr = assets_f.find( assetids[i] );
 		check(itr != assets_f.end(), "At least one of the assets cannot be found (check ids?)");
 
 		check(from.value == itr->owner.value, "At least one of the assets is not yours to transfer.");   
 
-		auto itrc = offert.find( assetid );
+		auto itrc = offert.find( assetids[i] );
 		check ( itrc == offert.end(), "At least one of the assets has been offered for a claim and cannot be transferred. Cancel offer?" );
 
 		assets_f.erase(itr);
@@ -227,10 +222,13 @@ ACTION SimpleAssets::transfer( name from, name to, std::vector<uint64_t>& asseti
 			s.category = itr->category;		
 			s.idata = itr->idata; 		// immutable data
 			s.mdata = itr->mdata; 		// mutable data
+			s.container = itr->container;
+			s.containerf = itr->containerf;
+
 		});
 		
 		//Events
-		uniqauthor[itr->author].push_back(assetid);		
+		uniqauthor[itr->author].push_back(assetids[i]);		
 	}
 	
 	//Send Event as deferred
@@ -240,7 +238,6 @@ ACTION SimpleAssets::transfer( name from, name to, std::vector<uint64_t>& asseti
 		sendEvent(keyauthor, rampayer, "saetransfer"_n, std::make_tuple(from, to, uniqauthor[keyauthor], memo) );
 		uniqauthorIt++;
 	}
-
 }
 
 
@@ -258,7 +255,6 @@ ACTION SimpleAssets::update( name author, name owner, uint64_t assetid, string m
 	assets_f.modify( itr, author, [&]( auto& a ) {
         a.mdata = mdata;
     });
-	
 }
 
 
@@ -266,6 +262,7 @@ ACTION SimpleAssets::offer( name owner, name newowner, std::vector<uint64_t>& as
 
 	require_auth( owner );
 	require_recipient( owner );
+	require_recipient( newowner );
 	
 	check( is_account( newowner ), "newowner account does not exist");
 	
@@ -274,25 +271,22 @@ ACTION SimpleAssets::offer( name owner, name newowner, std::vector<uint64_t>& as
 	delegates delegatet(_self, _self.value);	
 		
 	for( size_t i = 0; i < assetids.size(); ++i ) {
-		uint64_t assetid = assetids[i];
-
-		auto itr = assets_f.find( assetid );
+		auto itr = assets_f.find( assetids[i] );
 		check(itr != assets_f.end(), "At least one of the assets was not found.");
 
-		auto itrc = offert.find( assetid );
+		auto itrc = offert.find( assetids[i] );
 		check ( itrc == offert.end(), "At least one of the assets is already offered for claim." );
 
-		auto itrd = delegatet.find( assetid );
+		auto itrd = delegatet.find( assetids[i] );
 		check ( itrd == delegatet.end(), "At least one of the assets is delegated and cannot be offered." );
 		
 		offert.emplace( owner, [&]( auto& s ) {     
-			s.assetid = assetid;
-			s.offeredTo = newowner;
+			s.assetid = assetids[i];
+			s.offeredto = newowner;
 			s.owner = owner;
 			s.cdate = now();
 		});
 	}
-	
 }
 
 
@@ -304,9 +298,7 @@ ACTION SimpleAssets::canceloffer( name owner, std::vector<uint64_t>& assetids){
 	offers offert(_self, _self.value);
 
 	for( size_t i = 0; i < assetids.size(); ++i ) {
-
-		uint64_t assetid = assetids[i];
-		auto itr = offert.find( assetid );
+		auto itr = offert.find( assetids[i] );
 
 		check ( itr != offert.end(), "The offer for at least one of the assets was not found." );
 		check (owner.value == itr->owner.value, "You're not the owner of at least one of the assets whose offers you're attempting to cancel.");
@@ -327,23 +319,22 @@ ACTION SimpleAssets::burn( name owner, std::vector<uint64_t>& assetids, string m
 	std::map< name, std::vector<uint64_t> > uniqauthor;
 	
 	for( size_t i = 0; i < assetids.size(); ++i ) {
-		uint64_t assetid = assetids[i];
 		
-		auto itr = assets_f.find( assetid );
+		auto itr = assets_f.find( assetids[i] );
 		check(itr != assets_f.end(), "At least one of the assets was not found.");
 
 		check(owner.value == itr->owner.value, "At least one of the assets you're attempting to burn is not yours.");
 
-		auto itrc = offert.find( assetid );
+		auto itrc = offert.find( assetids[i] );
 		check ( itrc == offert.end(), "At least one of the assets has an open offer and cannot be burned." );
 
-		auto itrd = delegatet.find( assetid );
+		auto itrd = delegatet.find( assetids[i] );
 		check ( itrd == delegatet.end(), "At least one of assets is delegated and cannot be burned." );
 		
 		assets_f.erase(itr);
 		
 		//Events
-		uniqauthor[itr->author].push_back(assetid);
+		uniqauthor[itr->author].push_back(assetids[i]);
 	}
 	
 	//Send Event as deferred
@@ -370,20 +361,19 @@ ACTION SimpleAssets::delegate( name owner, name to, std::vector<uint64_t>& asset
 	string assetidsmemo = "";
 	
 	for( size_t i = 0; i < assetids.size(); ++i ) {
-		uint64_t assetid = assetids[i];
 		
-		auto itr = assets_f.find( assetid );
+		auto itr = assets_f.find( assetids[i] );
 		check(itr != assets_f.end(), "At least one of the assets cannot be found.");
 		
 
-		auto itrd = delegatet.find( assetid );
+		auto itrd = delegatet.find( assetids[i] );
 		check ( itrd == delegatet.end(), "At least one of the assets is already delegated." );
 
-		auto itro = offert.find( assetid );
+		auto itro = offert.find( assetids[i] );
 		check ( itro == offert.end(), "At least one of the assets has an open offer and cannot be delegated." );
 		
 		delegatet.emplace( owner, [&]( auto& s ) {     
-			s.assetid = assetid;
+			s.assetid = assetids[i];
 			s.owner = owner;
 			s.delegatedto = to;
 			s.cdate = now();
@@ -391,8 +381,8 @@ ACTION SimpleAssets::delegate( name owner, name to, std::vector<uint64_t>& asset
 		});
 		
 	}
-	
-	SEND_INLINE_ACTION( *this, transfer, { {owner, "active"_n} },  { owner, to, assetids, memo}   );
+	string newmemo = "Delegate memo: "+memo;
+	SEND_INLINE_ACTION( *this, transfer, { {owner, "active"_n} },  { owner, to, assetids, newmemo}   );
 }
 
 
@@ -408,12 +398,11 @@ ACTION SimpleAssets::undelegate( name owner, name from, std::vector<uint64_t>& a
 
 	string assetidsmemo = "";	
 	for( size_t i = 0; i < assetids.size(); ++i ) {
-		uint64_t assetid = assetids[i];
 		
-		auto itr = assets_f.find( assetid );
+		auto itr = assets_f.find( assetids[i] );
 		check(itr != assets_f.end(), "At least one of the assets cannot be found.");
 
-		auto itrc = delegatet.find( assetid );
+		auto itrc = delegatet.find( assetids[i] );
 		check ( itrc != delegatet.end(), "At least one of the assets is not delegated." );
 
 		check(owner == itrc->owner, "You are not the owner of at least one of these assets.");
@@ -422,36 +411,142 @@ ACTION SimpleAssets::undelegate( name owner, name from, std::vector<uint64_t>& a
 		check( (itrc->cdate + itrc->period) < now(), "Cannot undelegate until the PERIOD expires.");   		
 			
 		if (i != 0) assetidsmemo += ", ";
-		assetidsmemo += std::to_string(assetid);
+		assetidsmemo += std::to_string(assetids[i]);
 	}
 	
 	SEND_INLINE_ACTION( *this, transfer, { {owner, "active"_n} },  { from, owner, assetids, "undelegate assetid: "+assetidsmemo }   );
 }
 
-//------------------------
+
+ACTION SimpleAssets::attach( name owner, uint64_t assetidc, std::vector<uint64_t>& assetids ){
+
+	sassets assets_f( _self, owner.value );
+	delegates delegatet(_self, _self.value);
+	offers offert(_self, _self.value);
+
+	require_recipient( owner );
+
+	auto ac_ = assets_f.find( assetidc );
+	check(ac_ != assets_f.end(), "Asset cannot be found.");
+	const auto& ac = *ac_;
+
+	require_auth( ac_->author );
+	
+	for( size_t i = 0; i < assetids.size(); ++i ) {
+		
+		auto itr = assets_f.find( assetids[i] );
+		check(itr != assets_f.end(), "At least one of the assets cannot be found.");
+
+		check(assetidc != assetids[i], "Cannot attcach to self.");
+
+		const auto& itr_ = *itr;	
+
+		check(itr_.author == ac.author, "Different authors.");
+		auto itrd = delegatet.find( assetids[i] );
+		check ( itrd == delegatet.end(), "At least one of the assets is delegated." );
+
+		auto itro = offert.find( assetids[i] );
+		check ( itro == offert.end(), "At least one of the assets has an open offer and cannot be delegated." );
+
+		assets_f.modify( ac_, ac.author, [&]( auto& a ) {				
+			a.container.push_back(itr_);
+		});
+		assets_f.erase(itr);
+	}
+}
+
+
+ACTION SimpleAssets::detach( name owner, uint64_t assetidc, std::vector<uint64_t>& assetids ){
+	
+	require_auth( owner );
+	require_recipient( owner );
+
+	sassets assets_f( _self, owner.value );
+		
+	auto ac_ = assets_f.find( assetidc );
+	check(ac_ != assets_f.end(), "Asset cannot be found.");
+	const auto& ac = *ac_;
+		
+	for( size_t i = 0; i < assetids.size(); ++i ) {
+		std::vector<sasset> newcontainer;
+		
+		for( size_t j = 0; j < ac.container.size(); ++j ) {
+			auto acc = ac.container[j];
+			if ( assetids[i] == acc.id){
+				 
+				assets_f.emplace( owner, [&]( auto& s ) {     
+					s.id = acc.id;
+					s.owner = acc.owner;
+					s.author = acc.author;
+					s.category = acc.category;		
+					s.idata = acc.idata; 		// immutable data
+					s.mdata = acc.mdata; 		// mutable data
+					s.container = acc.container;
+					s.containerf = acc.containerf;
+				});
+				
+			} else {
+				newcontainer.push_back(acc);
+			}		
+		}
+		
+		assets_f.modify( ac_, owner, [&]( auto& a ) {
+			a.container = newcontainer;
+		});
+	}	
+}
+
+
+ACTION SimpleAssets::attachf( name owner, name author, asset quantity, uint64_t assetidc ){
+	attachdeatch( owner, author, quantity, assetidc, true );
+}
+
+
+ACTION SimpleAssets::detachf( name owner, name author, asset quantity, uint64_t assetidc ){
+	attachdeatch( owner, author, quantity, assetidc, false );
+}
+	
+
+//-----------------------------------------------------------------
 // Fungible Token Logic
 
-ACTION SimpleAssets::createf( name author, asset maximum_supply, bool authorctrl){
+ACTION SimpleAssets::createf( name author, asset maximum_supply, bool authorctrl, string data){
 
 	require_auth( author );
 
-    auto sym = maximum_supply.symbol;
+	auto sym = maximum_supply.symbol;
 
-    eosio_assert( sym.is_valid(), "invalid symbol name" );
-    eosio_assert( maximum_supply.is_valid(), "invalid supply");
-    eosio_assert( maximum_supply.amount > 0, "max-supply must be positive");
+	check( sym.is_valid(), "invalid symbol name" );
+	check( maximum_supply.is_valid(), "invalid supply");
+	check( maximum_supply.amount > 0, "max-supply must be positive");
+
+	stats statstable( _self, author.value ); 
+
+	auto existing = statstable.find( sym.code().raw() );
+	check( existing == statstable.end(), "token with symbol already exists" );
+
+	statstable.emplace( author, [&]( auto& s ) {
+		s.supply.symbol	= maximum_supply.symbol;
+		s.max_supply	= maximum_supply;
+		s.issuer		= author;
+		s.id			= getid(false);
+		s.authorctrl	= authorctrl;
+		s.data			= data;
+	});
+}
+
+
+ACTION SimpleAssets::updatef( name author, symbol sym, string data){
+	require_auth( author );
+
+    check( sym.is_valid(), "invalid symbol name" );
 
     stats statstable( _self, author.value ); 
-
     auto existing = statstable.find( sym.code().raw() );
-    eosio_assert( existing == statstable.end(), "token with symbol already exists" );
-
-    statstable.emplace( author, [&]( auto& s ) {
-       s.supply.symbol = maximum_supply.symbol;
-       s.max_supply    = maximum_supply;
-       s.issuer        = author;
-	   s.id			   = getid(false);
-	   s.authorctrl    = authorctrl;
+    check( existing != statstable.end(), "Symbol not exists" );
+	
+	statstable.modify( existing, author, [&]( auto& a ) {
+        a.data = data;
     });
 }
 
@@ -459,20 +554,20 @@ ACTION SimpleAssets::createf( name author, asset maximum_supply, bool authorctrl
 ACTION SimpleAssets::issuef( name to, name author, asset quantity, string memo ){
 	
 	auto sym = quantity.symbol;
-	eosio_assert( sym.is_valid(), "invalid symbol name" );
-	eosio_assert( memo.size() <= 256, "memo has more than 256 bytes" );
+	check( sym.is_valid(), "invalid symbol name" );
+	check( memo.size() <= 256, "memo has more than 256 bytes" );
 
 	stats statstable( _self, author.value );
 	auto existing = statstable.find( sym.code().raw() );
-	eosio_assert( existing != statstable.end(), "token with symbol does not exist, create token before issue" );
+	check( existing != statstable.end(), "token with symbol does not exist, create token before issue" );
 	const auto& st = *existing;
 
 	require_auth( st.issuer );
-	eosio_assert( quantity.is_valid(), "invalid quantity" );
-	eosio_assert( quantity.amount > 0, "must issue positive quantity" );
+	check( quantity.is_valid(), "invalid quantity" );
+	check( quantity.amount > 0, "must issue positive quantity" );
 
-	eosio_assert( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
-	eosio_assert( quantity.amount <= st.max_supply.amount - st.supply.amount, "quantity exceeds available supply");
+	check( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
+	check( quantity.amount <= st.max_supply.amount - st.supply.amount, "quantity exceeds available supply");
 
 	statstable.modify( st, same_payer, [&]( auto& s ) {
 		s.supply += quantity;
@@ -490,53 +585,137 @@ ACTION SimpleAssets::issuef( name to, name author, asset quantity, string memo )
 
 ACTION SimpleAssets::transferf( name from, name to, name author, asset quantity, string memo ){
 	
-	eosio_assert( from != to, "cannot transfer to self" );
+	check( from != to, "cannot transfer to self" );
 
-    eosio_assert( is_account( to ), "to account does not exist");
-    auto sym = quantity.symbol.code();
-    stats statstable( _self, author.value );
-    const auto& st = statstable.get( sym.raw() );
+	check( is_account( to ), "to account does not exist");
+	auto sym = quantity.symbol.code();
+	stats statstable( _self, author.value );
+	const auto& st = statstable.get( sym.raw() );
 
-    require_recipient( from );
-    require_recipient( to );
+	require_recipient( from );
+	require_recipient( to );
 
-    eosio_assert( quantity.is_valid(), "invalid quantity" );
-    eosio_assert( quantity.amount > 0, "must transfer positive quantity" );
-    eosio_assert( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
-    eosio_assert( memo.size() <= 256, "memo has more than 256 bytes" );
+	check( quantity.is_valid(), "invalid quantity" );
+	check( quantity.amount > 0, "must transfer positive quantity" );
+	check( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
+	check( memo.size() <= 256, "memo has more than 256 bytes" );
 
 	auto payer = has_auth( to ) ? to : from;
 	auto checkAuth = from;
-	
+
 	if (st.authorctrl &&  has_auth( st.issuer )){
-			checkAuth = st.issuer;
-			payer = st.issuer;
+		checkAuth = st.issuer;
+		payer = st.issuer;
 	}
-	
+
 	require_auth( checkAuth );	
 
-    sub_balancef( from, author, quantity );
-    add_balancef( to, author, quantity, payer );
+	sub_balancef( from, author, quantity );
+	add_balancef( to, author, quantity, payer );
+}
+
+
+ACTION SimpleAssets::offerf( name owner, name newowner, name author, asset quantity, string memo){
+
+	require_auth( owner );
+	require_recipient( owner );
+	require_recipient( newowner );
+
+	check( is_account( newowner ), "newowner account does not exist");
+
+	auto sym = quantity.symbol;
+	check( sym.is_valid(), "invalid symbol name" );
+	check( memo.size() <= 256, "memo has more than 256 bytes" );
+
+	stats statstable( _self, author.value );
+	auto existing = statstable.find( sym.code().raw() );
+	check( existing != statstable.end(), "token with symbol does not exist" );
+	const auto& st = *existing;
+		
+	check( quantity.is_valid(), "invalid quantity" );
+	check( quantity.amount > 0, "must retire positive quantity" );
+
+	check( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
+
+	offerfs offert(_self, _self.value);
+	auto owner_index = offert.template get_index<"owner"_n>();
+	auto itro = owner_index.find( owner.value );
+
+	for (; itro != owner_index.end(); itro++) {
+		check(  !(itro->author == author && itro->offeredto == newowner && itro->quantity.symbol == quantity.symbol ), "Such an offer already exists");		
+	}
+	
+	offert.emplace( owner, [&]( auto& s ) {     
+		s.id = getid(true);
+		s.author = author;
+		s.quantity = quantity; 
+		s.offeredto = newowner;
+		s.owner = owner;
+		s.cdate = now();
+	});
+	sub_balancef( owner, author, quantity );
+}
+
+
+ACTION SimpleAssets::cancelofferf( name owner, std::vector<uint64_t>& ftofferids){
+	require_auth( owner );
+	require_recipient( owner );
+	
+	offerfs offert(_self, _self.value);
+
+	for( size_t i = 0; i < ftofferids.size(); ++i ) {
+
+		uint64_t offtid = ftofferids[i];
+		auto itr = offert.find( offtid );
+
+		check ( itr != offert.end(), "The offer for at least one of the FT was not found." );
+		check (owner.value == itr->owner.value, "You're not the owner of at least one of those FTs.");
+
+		add_balancef( owner, itr->author, itr->quantity, owner );
+		offert.erase(itr);
+	}	
+}
+
+ACTION SimpleAssets::claimf( name claimer, std::vector<uint64_t>& ftofferids) {
+
+	require_auth( claimer );
+	require_recipient( claimer );
+	
+	offerfs offert(_self, _self.value);
+	
+	std::map< name, std::vector<uint64_t> > uniqauthor;
+		
+	for( size_t i = 0; i < ftofferids.size(); ++i ) {
+		uint64_t offtid = ftofferids[i];
+	
+		auto itrc = offert.find( offtid );
+
+		check(itrc != offert.end(), "Cannot find at least one of the FT you're attempting to claim.");
+		check(claimer == itrc->offeredto, "At least one of the FTs has not been offerred to you.");
+
+		add_balancef( claimer, itrc->author, itrc->quantity, claimer );
+		offert.erase(itrc);
+	}
 }
 
 
 ACTION SimpleAssets::burnf( name from, name author, asset quantity, string memo ){
 
 	auto sym = quantity.symbol;
-	eosio_assert( sym.is_valid(), "invalid symbol name" );
-	eosio_assert( memo.size() <= 256, "memo has more than 256 bytes" );
+	check( sym.is_valid(), "invalid symbol name" );
+	check( memo.size() <= 256, "memo has more than 256 bytes" );
 
 	stats statstable( _self, author.value );
 	auto existing = statstable.find( sym.code().raw() );
-	eosio_assert( existing != statstable.end(), "token with symbol does not exist" );
+	check( existing != statstable.end(), "token with symbol does not exist" );
 	const auto& st = *existing;
 
 	require_auth( st.authorctrl && has_auth( st.issuer ) ? st.issuer  : from);
 		
-	eosio_assert( quantity.is_valid(), "invalid quantity" );
-	eosio_assert( quantity.amount > 0, "must retire positive quantity" );
+	check( quantity.is_valid(), "invalid quantity" );
+	check( quantity.amount > 0, "must retire positive quantity" );
 
-	eosio_assert( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
+	check( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
 
 	statstable.modify( st, same_payer, [&]( auto& s ) {
 		s.supply -= quantity;
@@ -554,7 +733,7 @@ ACTION SimpleAssets::openf( name owner, name author, const symbol& symbol, name 
 
 	stats statstable( _self, author.value );
 	const auto& st = statstable.get( sym_code_raw, "symbol does not exist" );
-	eosio_assert( st.supply.symbol == symbol, "symbol precision mismatch" );
+	check( st.supply.symbol == symbol, "symbol precision mismatch" );
 
 	accounts acnts( _self, owner.value );
 
@@ -564,6 +743,7 @@ ACTION SimpleAssets::openf( name owner, name author, const symbol& symbol, name 
 	if( it == acnts.end() ) {
 		acnts.emplace( ram_payer, [&]( auto& a ){
 			a.id = st.id;
+			a.author = author;
 			a.balance = asset{0, symbol};
 		});
 	}
@@ -577,8 +757,16 @@ ACTION SimpleAssets::closef( name owner, name author, const symbol& symbol ){
 	uint64_t ftid = getFTIndex(author, symbol); 
 	
 	auto it = acnts.find( ftid );
-	eosio_assert( it != acnts.end(), "Balance row already deleted or never existed. Action won't have any effect." );
-	eosio_assert( it->balance.amount == 0, "Cannot close because the balance is not zero." );
+	check( it != acnts.end(), "Balance row already deleted or never existed. Action won't have any effect." );
+	check( it->balance.amount == 0, "Cannot close because the balance is not zero." );
+	
+	offerfs offert(_self, _self.value);
+	auto owner_index = offert.template get_index<"owner"_n>();
+	auto itro = owner_index.find( owner.value );
+	for (; itro != owner_index.end(); itro++) {
+		check(  !(itro->author == author && itro->quantity.symbol == symbol ), "You have open offers for this FT..");		
+	}
+	
 	acnts.erase( it );
 }
 
@@ -599,18 +787,15 @@ uint64_t SimpleAssets::getid(bool defer){
 
 	uint64_t resid;
 	if (defer) {
-		_cstate.spare1++;
-		resid = _cstate.spare1;
+		_cstate.defid++;
+		resid = _cstate.defid;
 	} else {
-		_cstate.lastid++;
-		resid = _cstate.lastid;
+		_cstate.lnftid++;
+		resid = _cstate.lnftid;
 	}
 
 	config.set(_cstate, _self);
 	return resid;
-	
-	
-	
 }
 
 
@@ -619,7 +804,7 @@ uint64_t SimpleAssets::getFTIndex(name author, symbol symbol){
 	stats statstable( _self, author.value );
 
 	auto existing = statstable.find( symbol.code().raw() );
-	eosio_assert( existing != statstable.end(), "token with symbol does not exist." );
+	check( existing != statstable.end(), "token with symbol does not exist." );
 	const auto& st = *existing;
 
 	uint64_t res =  st.id;
@@ -627,6 +812,84 @@ uint64_t SimpleAssets::getFTIndex(name author, symbol symbol){
 	return res;
 }
 
+void SimpleAssets::attachdeatch( name owner, name author, asset quantity, uint64_t assetidc, bool attach ){	
+
+	sassets assets_f( _self, owner.value );
+	delegates delegatet(_self, _self.value);
+	offers offert(_self, _self.value);
+	stats statstable( _self, author.value );
+
+	auto sym = quantity.symbol.code();
+	const auto& st = statstable.get( sym.raw() );
+
+	require_recipient( owner );
+
+	check( quantity.is_valid(), "invalid quantity" );
+	check( quantity.amount > 0, "must transfer positive quantity" );
+	check( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
+
+	check( st.issuer == author, "Different authors");
+
+	if (attach) {
+		require_auth( author );	 //attach
+	} else {
+		require_auth( owner );  //deatach
+	}
+
+	auto itr = assets_f.find( assetidc );
+	check(itr != assets_f.end(), "assetid cannot be found.");
+	
+	const auto& ac = *itr;	
+	
+	check(ac.author == author, "Different authors.");
+	auto itrd = delegatet.find( assetidc );
+	check ( itrd == delegatet.end(), "Asset is delegated." );
+
+	auto itro = offert.find( assetidc );
+	check ( itro == offert.end(), "Assets has an open offer and cannot be delegated." );
+
+	std::vector<account> newcontainerf;
+
+	bool found = false;
+	
+	for( size_t j = 0; j < ac.containerf.size(); j++ ) {
+		auto accf = ac.containerf[j];
+		if ( st.id == accf.id){
+			if (attach) {
+				accf.balance.amount += quantity.amount;
+			} else {
+				check( accf.balance.amount >= quantity.amount, "overdrawn balance" );   
+				accf.balance.amount -= quantity.amount;  
+			}
+		
+			found = true;
+		} 
+		if (accf.balance.amount > 0) 
+			newcontainerf.push_back(accf);
+	}
+	
+	if (!found && attach){
+		account addft;
+		addft.id = st.id;
+		addft.author = author;
+		addft.balance = quantity;
+
+		newcontainerf.push_back(addft);
+	}
+	
+	if (!attach)
+		check (found, "not attached");   
+	
+	assets_f.modify( itr, author, [&]( auto& a ) {
+		a.containerf = newcontainerf;
+	});
+		
+	if (attach) {	
+		sub_balancef( owner, author, quantity );
+	} else {
+		add_balancef( owner, author, quantity, owner ); 
+	}
+}
 
 void SimpleAssets::sub_balancef( name owner, name author, asset value ) {
 
@@ -634,7 +897,7 @@ void SimpleAssets::sub_balancef( name owner, name author, asset value ) {
 	uint64_t ftid = getFTIndex(author, value.symbol);
 	
 	const auto& from = from_acnts.get( ftid, "no balance object found" );
-	eosio_assert( from.balance.amount >= value.amount, "overdrawn balance" );
+	check( from.balance.amount >= value.amount, "overdrawn balance" );
 
 	check( value.symbol.code().raw() == from.balance.symbol.code().raw(), "Wrong symbol");
 	auto payer = has_auth( author ) ? author : owner;
@@ -656,6 +919,7 @@ void SimpleAssets::add_balancef( name owner, name author, asset value, name ram_
 		to_acnts.emplace( ram_payer, [&]( auto& a ){
 			a.id = ftid;
 			a.balance = value;
+			a.author = author;
 		});
 	} else {
 		to_acnts.modify( to, same_payer, [&]( auto& a ) {
@@ -680,9 +944,10 @@ void SimpleAssets::sendEvent(name author, name rampayer, name seaction, const st
 EOSIO_DISPATCH( SimpleAssets, 	(create)(createlog)(transfer)(burn)(update)
 								(offer)(canceloffer)(claim)
 								(regauthor)(authorupdate)
-								(delegate)(undelegate)
-								(createf)(issuef)(transferf)(burnf)
-								(openf)(closef) 
+								(delegate)(undelegate)(attach)(detach)
+								(createf)(updatef)(issuef)(transferf)(burnf)
+								(offerf)(cancelofferf)(claimf)
+								(attachf)(detachf)(openf)(closef)
 								(updatever))
 
 //============================================================================================================
