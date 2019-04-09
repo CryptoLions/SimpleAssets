@@ -72,6 +72,8 @@ ACTION SimpleAssets::create( name author, name category, name owner, string idat
 	require_auth( author );
 	check( is_account( owner ), "owner account does not exist");
 
+	require_recipient( owner );
+	
 	uint64_t newID = getid(false);
 	
 	name assetOwner = owner;
