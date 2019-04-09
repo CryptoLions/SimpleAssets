@@ -1,6 +1,6 @@
 # SimpleAssets  
 
-A simple standard for digital assets (both fungilbe and NFTs - non-fungible tokens) for EOSIO blockchains   
+A simple standard for digital assets (both fungible and NFTs - non-fungible tokens) for EOSIO blockchains   
 by [CryptoLions](https://CryptoLions.io)  
   
 web: http://simpleassets.io  
