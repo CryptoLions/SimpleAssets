@@ -120,8 +120,7 @@ ACTION SimpleAssets::claim( name claimer, std::vector<uint64_t>& assetids) {
 	offers offert(_self, _self.value);
 	sassets assets_t(_self, claimer.value);
 	
-	std::map< name, std::vector<uint64_t> > uniqauthor;
-		
+	std::map< name, std::map< uint64_t, name > > uniqauthor;
 	for( size_t i = 0; i < assetids.size(); ++i ) {
 
 		auto itrc = offert.find( assetids[i] );
@@ -150,7 +149,7 @@ ACTION SimpleAssets::claim( name claimer, std::vector<uint64_t>& assetids) {
 		offert.erase(itrc);
 
 		//Events
-		uniqauthor[itr->author].push_back(assetids[i]);
+		uniqauthor[itr->author][assetids[i]] = itrc->owner;
 	}
 
 	//Send Event as deferred	

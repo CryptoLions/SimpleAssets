@@ -25,12 +25,15 @@ There are two ways to use Simple Assets:
 2) Dapps can Deploy their own copy of Simple Assets and make modifications to have greater control of functionality.  We consider this an example of a dapp being its own "ownership authority."  Before deploying, Simple Assets should be modified to prevent anyone from making assets.  
 ---------------------------
 ## Scope:
-1. [ChangeLog](#change-log-v041)
+1. [ChangeLog](#change-log-v042)
 2. [Contract actions](#contract-actions)
 3. [Data Structures](#data-structures)
 4. [EXAMPLES: how to use Simple Assets in smart contracts](#examples-how-to-use-simple-assets-in-smart-contracts)
 
 ---------------------------  
+## Change Log v0.4.2
+- format for `saeclaim` event changed: array of assetids replaced by map <assetid, from>
+
 ## Change Log v0.4.1
 - added require_recipient(owner) to `create` action
 
