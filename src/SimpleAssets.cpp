@@ -261,6 +261,8 @@ ACTION SimpleAssets::update( name author, name owner, uint64_t assetid, string m
 
 ACTION SimpleAssets::offer( name owner, name newowner, std::vector<uint64_t>& assetids, string memo){
 
+	check( owner != newowner, "cannot offer to yourself" );
+	
 	require_auth( owner );
 	require_recipient( owner );
 	require_recipient( newowner );
@@ -349,6 +351,8 @@ ACTION SimpleAssets::burn( name owner, std::vector<uint64_t>& assetids, string m
 
 
 ACTION SimpleAssets::delegate( name owner, name to, std::vector<uint64_t>& assetids, uint64_t period, string memo ){
+
+	check( owner != to, "cannot delegate to yourself" );
 
 	require_auth( owner );
 	require_recipient( owner );
@@ -623,6 +627,7 @@ ACTION SimpleAssets::offerf( name owner, name newowner, name author, asset quant
 	require_recipient( newowner );
 
 	check( is_account( newowner ), "newowner account does not exist");
+	check( owner != newowner, "cannot offer to yourself" );
 
 	auto sym = quantity.symbol;
 	check( sym.is_valid(), "invalid symbol name" );
