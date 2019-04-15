@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Mon Apr  8 20:29:15 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Mon Apr 15 20:43:11 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -271,6 +271,10 @@
                 {
                     "name": "assetid",
                     "type": "uint64"
+                },
+                {
+                    "name": "requireclaim",
+                    "type": "bool"
                 }
             ]
         },

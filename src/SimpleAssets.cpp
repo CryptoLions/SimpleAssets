@@ -104,11 +104,11 @@ ACTION SimpleAssets::create( name author, name category, name owner, string idat
 	
 	//Events
 	sendEvent(author, author, "saecreate"_n, std::make_tuple(owner, newID));
-	SEND_INLINE_ACTION( *this, createlog, { {_self, "active"_n} },  { author, category, owner, idata, mdata, newID}   );
+	SEND_INLINE_ACTION( *this, createlog, { {_self, "active"_n} },  { author, category, owner, idata, mdata, newID, requireclaim}   );
 }
 
 
-ACTION SimpleAssets::createlog( name author, name category, name owner, string idata, string mdata, uint64_t assetid) {
+ACTION SimpleAssets::createlog( name author, name category, name owner, string idata, string mdata, uint64_t assetid, bool requireclaim) {
 	require_auth(get_self());
 }
 

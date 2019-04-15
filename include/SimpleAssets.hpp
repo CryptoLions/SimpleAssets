@@ -95,7 +95,7 @@ CONTRACT SimpleAssets : public contract {
 		* Empty action. Used by create action to log assetid so that third party explorers can
 		* easily get new asset ids and other information.
 		*/
-		ACTION createlog( name author, name category, name owner, string idata, string mdata, uint64_t assetid);
+		ACTION createlog( name author, name category, name owner, string idata, string mdata, uint64_t assetid, bool requireclaim);
 		using createlog_action = action_wrapper<"createlog"_n, &SimpleAssets::createlog>;
 
 

@@ -34,7 +34,7 @@ There are two ways to use Simple Assets:
 1. [Contract actions](#contract-actions)
 2. [Data Structures](#data-structures)
 3. [EXAMPLES: how to use Simple Assets in smart contracts](#examples-how-to-use-simple-assets-in-smart-contracts)
-4. [ChangeLog](#change-log-v100)
+4. [ChangeLog](#change-log-v101)
 ---------------------------  
 
 # Contract actions  
@@ -397,6 +397,9 @@ saRes1.send();
 
 
 -----------------
+## Change Log v1.0.1
+- new parameter `requireclaim` in `createlog` action which is used internaly to `create` actions history logs.
+
 
 ## Change Log v1.0.0
 - Block owner from offering assets to themselves
