@@ -1,132 +1,41 @@
 # SimpleAssets  
 
-A simple standard for digital assets (both fungible and NFTs - non-fungible tokens) for EOSIO blockchains   
+A simple standard for digital assets (both fungible and non-fungible tokens - NFTs) for EOSIO blockchains   
 by [CryptoLions](https://CryptoLions.io)  
   
 web: http://simpleassets.io  
 Git: https://github.com/CryptoLions/SimpleAssets  
+Telegram: https://t.me/simpleassets
 
-Presentation:  https://medium.com/@cryptolions/introducing-simple-assets-b4e17caafaa4
+EOS Mainnet Account: **simpleassets**
+
+Intro & Demos:  https://medium.com/@cryptolions/introducing-simple-assets-b4e17caafaa4
 
 Events Receiver Example for authors: https://github.com/CryptoLions/SimpleAssets-EventReceiverExample  
 
 **WARNING!!! CDT currently has a bug that doesn't allow compilation on v1.6.1.
   1.5.0 also has a bug "Segmentation fault (core dumped)", but only with abi generation.
   Recommendation: Use 1.5.0 for contract compilation and use our abi**
-  
+    
 ---------------------------  
 
 There are two ways to use Simple Assets:  
   
-1) As an "ownership authority".  When deployed on an EOSIO chain, Simple Assets will be a separate contract which other Dapps can call to manage their digital assets.  This serves as an additional guarantee to users of the Dapp that the ownership of assets is managed by a reputable outside authority, and that once created, the Dapp can only manage the asset's mdata.  All the ownership-related functionality exists outside the game.  
+1) As an external [ownership authority](https://medium.com/@cryptolions/digital-assets-we-need-to-think-about-ownership-authority-a2b0465c17f6).  When deployed on an EOSIO chain, Simple Assets will be a separate contract which other Dapps can call to manage their digital assets.  This serves as an additional guarantee to users of the Dapp that the ownership of assets is managed by a reputable outside authority, and that once created, the Dapp can only manage the asset's mdata.  All the ownership-related functionality exists outside the game.  
   
-   We are in the process of creating a DAC which will curate updates to Simple Assets after deployment to the EOSIO mainnet.  
+   EOS Mainnet Account: **simpleassets** 
+
+   We are in the process of creating a DAC which will curate updates to Simple Assets after deployment to the EOSIO mainnet. 
   
-2) Dapps can Deploy their own copy of Simple Assets and make modifications to have greater control of functionality.  We consider this an example of a dapp being its own "ownership authority."  Before deploying, Simple Assets should be modified to prevent anyone from making assets.  
+2) Dapps can Deploy their own copy of Simple Assets and make modifications to have greater control of functionality.  We consider this an example of a dapp being its own "ownership authority."  Before deploying, Simple Assets should be modified to prevent anyone from making assets.
+
 ---------------------------
 ## Scope:
-1. [ChangeLog](#change-log-v042)
-2. [Contract actions](#contract-actions)
-3. [Data Structures](#data-structures)
-4. [EXAMPLES: how to use Simple Assets in smart contracts](#examples-how-to-use-simple-assets-in-smart-contracts)
-
+1. [Contract actions](#contract-actions)
+2. [Data Structures](#data-structures)
+3. [EXAMPLES: how to use Simple Assets in smart contracts](#examples-how-to-use-simple-assets-in-smart-contracts)
+4. [ChangeLog](#change-log-v100)
 ---------------------------  
-## Change Log v0.4.2
-- format for `saeclaim` event changed: array of assetids replaced by map <assetid, from>
-
-## Change Log v0.4.1
-- added require_recipient(owner) to `create` action
-
-
-## Change Log v0.4.0
-
-**Easily find fungible token information (fungible tokens have scope author):**
-- new field `author` in `account` table for FT. (makes it easier to find fungible token information)
-
-**More fungible token information:**
-- new field `data` in `currency_stats` table - stringify json which might include keys `img`, `name` (recommended for better displaying by markets)
-- new parameter `data` in `createf` action
-- new action `updatef` to change FT `data`
-
-**Offer/claim fungible tokens**
-- new table `sofferf` to use for `offer`/`calim` FT
-- new actions `offerf`, `cancelofferf` and `claimf`
-- on `closef` check if no open offers (internal)
-
-**Containerizing assets**  
-**WARNING!!! CDT currently has a bug that doesn't allow compilation (v1.6.1).  
-  1.5.0 also has a bug "Segmentation fault (core dumped)", but only with abi generation.
-  Recommendation: Use 1.5.0 for contract compilation and use our abi**
-- new fields `container` and `containerf` in nft asset structure for attaching and detaching other NFT or FT
-- new actions `attach`, `detach`
-- new actions `attachf`, `detachf`
-
-**misc**
-- fields renamed `lastid` -> `lnftid`, `spare`->`defid` (internal usage) in table `global` 
-- field `offeredTo` renamed to `offeredto` in table `soffer`
-
-
-## Change Log v0.3.2
-- Added `memo` parameter to action `offer`;  
-- Added `memo` parameter to action `delegate`;
-
-
-## Change Log v0.3.1
-- Internal action for NFT `createlog` added. Used by create action to log assetid so that third party explorers can easily get new asset ids and other information.
-- New singelton table `tokenconfigs` added. It helps external contracts parse actions and tables correctly (Usefull for decentralized exchanges, marketplaces and other contracts that use multiple tokens).
-  Marketplaces, exchanges and other reliant contracts will be able to view this info using the following code.
-	```
-	Configs configs("simpl5assets"_n, "simpl5assets"_n.value);
-	configs.get("simpl5assets"_n);
-	```
-- added action `updatever`. It updates version of this SimpleAstes deployment for 3rd party wallets, marketplaces, etc;
-- New examples for Event notifications: https://github.com/CryptoLions/SimpleAssets-EventReceiverExample  
-
-
-## Change Log v0.3.0
-- Added event notifications using deferred transaction. Assets author will receive notification on assets create, transfer, claim or burn. To receive it please add next action to your author contract:  
-	```
-        ACTION saecreate   ( name owner, uint64_t assetid );  
-        ACTION saetransfer ( name from, name to, std::vector<uint64_t>& assetids, std::string memo );  
-        ACTION saeclaim    ( name account, std::vector<uint64_t>& assetids );  
-        ACTION saeburn     ( name account, std::vector<uint64_t>& assetids, std::string memo );  
-	```
-- `untildate` parameter changed to `period` (in seconds) for actions `delegate` and table `sdelegates`  
-
-
-## Change Log v0.2.0
-### Added Fungible Token tables and logic using eosio.token contract but with some changes
-- New actions and logic: `createf`, `issuef`, `transferf`, `burnf`, `openf`, `closef`
-- added new tables `stat(supply, max_supply, issuer, id)` and `accounts (id, balance)`. 
-- scope for stats table (info about fungible tokens) changed to author
-- primary index for `accounts` table is uniq id created on createf action and stored in stats table.
-- added  `createf` action for fungible token with parametr `authorctrl` to `stats` table. If true(1) allows token author (and not just owner) to burnf and transferf. Cannot be changed after creation!
-- Ricardian contracts updated
-- more usage examples below
-
-
-## Change Log v0.1.1
-Misc
-- sdelagate table structure renamed to sdelegate (typo)
-- create action parameters renamed: requireClaim -> requireclaim
-- assetID action parameter renamed in all actions to assetid
-
-Borrowing Assets
-- sdelegate table - added new field: untildate
-- delegate action added parameters untildate.  Action does a simple check if parameter was entered correctly (either zero or in the future).
-- undelegate will not work until untildate (this guarantees a minimum term of the asset loan).
-- allow transfer asset back (return) if its delegated, sooner than untiltime  (borrower has option ton return early)
-
-Batch Processing
-- claim action: assetid parameter changed to array of assetsids. Multiple claim logic added.
-- offer action: assetid parameter changed to array of assetsids. Multiple offer logic added.
-- canceloffer action: assetid parameter changed to array of assetsids. Multiple cancelation logic added.
-- transfer action: assetid parameter changed to array of assetsids. Multiple assets transfer logic added.
-- burn action: assetid parameter changed to array of assetsids. Multiple burning logic added.
-- delegate/undelegate action: assetid parameter changed to array of assetsids. Multiple delegation/undelegation logic added.
-
-
-------------------------  
 
 # Contract actions  
 A description of each parameter can be found here:  
@@ -238,6 +147,7 @@ stat {
 ```
 accounts {  
 	uint64_t	id;		// token id, from stat table
+	name		author;		// token author
 	asset		balance;	// token balance
 }  
 ```
@@ -257,7 +167,7 @@ sofferf {
 
 ## Creating Asset and transfer to owner account ownerowner22:
 ```
-name SIMPLEASSETSCONTRACT = "simpl5assets"_n;
+name SIMPLEASSETSCONTRACT = "simpleassets"_n;
 
 name author = get_self();
 name category = "weapon"_n;
@@ -276,7 +186,7 @@ createAsset.send();
 
 ## Creating Asset with requireclaim option for ownerowner22:
 ```
-name SIMPLEASSETSCONTRACT = "simpl5assets"_n;
+name SIMPLEASSETSCONTRACT = "simpleassets"_n;
 
 name author = get_self();
 name category = "balls"_n;
@@ -337,7 +247,7 @@ typedef eosio::multi_index< "sassets"_n, sasset,
 
 2. Searching and using info
 ```
-name SIMPLEASSETSCONTRACT = "simpl5assets"_n;
+name SIMPLEASSETSCONTRACT = "simpleassets"_n;
 name author = get_self();
 name owner = "lioninjungle"_n;
 
@@ -358,7 +268,7 @@ check(mdata["cd"] < now(), "Not ready yet for usage");
 
 ## Update Asset
 ```
-name SIMPLEASSETSCONTRACT = "simpl5assets"_n;
+name SIMPLEASSETSCONTRACT = "simpleassets"_n;
 
 auto mdata = json::parse(idxp->mdata);
 mdata["cd"] = now() + 84600;
@@ -378,7 +288,7 @@ saUpdate.send();
 
 ## Transfer one Asset
 ```
-name SIMPLEASSETSCONTRACT = "simpl5assets"_n;
+name SIMPLEASSETSCONTRACT = "simpleassets"_n;
 
 name author = get_self();
 name from = "lioninjungle"_n;
@@ -400,7 +310,7 @@ saUpdate.send();
 
 ## Transfer two Asset to same receiver with same memo  
 ```
-name SIMPLEASSETSCONTRACT = "simpl5assets"_n;
+name SIMPLEASSETSCONTRACT = "simpleassets"_n;
 
 name author = get_self();
 name from = "lioninjungle"_n;
@@ -423,7 +333,7 @@ saUpdate.send();
 
 ## issuef (fungible) issue created token
 ```
-name SIMPLEASSETSCONTRACT = "simpl5assets"_n;
+name SIMPLEASSETSCONTRACT = "simpleassets"_n;
 
 asset wood;
 wood.amount = 100;
@@ -444,7 +354,7 @@ saRes1.send();
 
 ## transferf (fungible) by author if authorctrl is enabled
 ```
-name SIMPLEASSETSCONTRACT = "simpl5assets"_n;
+name SIMPLEASSETSCONTRACT = "simpleassets"_n;
 
 asset wood;
 wood.amount = 20;
@@ -466,7 +376,7 @@ saRes1.send();
 
 ## burnf (fungible) by author if authorctrl is enabled
 ```
-name SIMPLEASSETSCONTRACT = "simpl5assets"_n;
+name SIMPLEASSETSCONTRACT = "simpleassets"_n;
 
 asset wood;
 wood.amount = 20;
@@ -484,4 +394,105 @@ action saRes1 = action(
 );
 saRes1.send();
 ```
+
+
+-----------------
+
+## Change Log v1.0.0
+- Block owner from offering assets to themselves
+
+## Change Log v0.4.2
+- format for `saeclaim` event changed: array of assetids replaced by map <assetid, from>
+
+## Change Log v0.4.1
+- added require_recipient(owner) to `create` action
+
+
+## Change Log v0.4.0
+
+**Easily find fungible token information (fungible tokens have scope author):**
+- new field `author` in `account` table for FT. (makes it easier to find fungible token information)
+
+**More fungible token information:**
+- new field `data` in `currency_stats` table - stringify json which might include keys `img`, `name` (recommended for better displaying by markets)
+- new parameter `data` in `createf` action
+- new action `updatef` to change FT `data`
+
+**Offer/claim fungible tokens**
+- new table `sofferf` to use for `offer`/`calim` FT
+- new actions `offerf`, `cancelofferf` and `claimf`
+- on `closef` check if no open offers (internal)
+
+**Containerizing assets**  
+**WARNING!!! CDT currently has a bug that doesn't allow compilation (v1.6.1).  
+  1.5.0 also has a bug "Segmentation fault (core dumped)", but only with abi generation.
+  Recommendation: Use 1.5.0 for contract compilation and use our abi**
+- new fields `container` and `containerf` in nft asset structure for attaching and detaching other NFT or FT
+- new actions `attach`, `detach`
+- new actions `attachf`, `detachf`
+
+**misc**
+- fields renamed `lastid` -> `lnftid`, `spare`->`defid` (internal usage) in table `global` 
+- field `offeredTo` renamed to `offeredto` in table `soffer`
+
+
+## Change Log v0.3.2
+- Added `memo` parameter to action `offer`;  
+- Added `memo` parameter to action `delegate`;
+
+
+## Change Log v0.3.1
+- Internal action for NFT `createlog` added. Used by create action to log assetid so that third party explorers can easily get new asset ids and other information.
+- New singelton table `tokenconfigs` added. It helps external contracts parse actions and tables correctly (Usefull for decentralized exchanges, marketplaces and other contracts that use multiple tokens).
+  Marketplaces, exchanges and other reliant contracts will be able to view this info using the following code.
+	```
+	Configs configs("simpleassets"_n, "simpleassets"_n.value);
+	configs.get("simpleassets"_n);
+	```
+- added action `updatever`. It updates version of this SimpleAstes deployment for 3rd party wallets, marketplaces, etc;
+- New examples for Event notifications: https://github.com/CryptoLions/SimpleAssets-EventReceiverExample  
+
+
+## Change Log v0.3.0
+- Added event notifications using deferred transaction. Assets author will receive notification on assets create, transfer, claim or burn. To receive it please add next action to your author contract:  
+	```
+        ACTION saecreate   ( name owner, uint64_t assetid );  
+        ACTION saetransfer ( name from, name to, std::vector<uint64_t>& assetids, std::string memo );  
+        ACTION saeclaim    ( name account, std::vector<uint64_t>& assetids );  
+        ACTION saeburn     ( name account, std::vector<uint64_t>& assetids, std::string memo );  
+	```
+- `untildate` parameter changed to `period` (in seconds) for actions `delegate` and table `sdelegates`  
+
+
+## Change Log v0.2.0
+### Added Fungible Token tables and logic using eosio.token contract but with some changes
+- New actions and logic: `createf`, `issuef`, `transferf`, `burnf`, `openf`, `closef`
+- added new tables `stat(supply, max_supply, issuer, id)` and `accounts (id, balance)`. 
+- scope for stats table (info about fungible tokens) changed to author
+- primary index for `accounts` table is uniq id created on createf action and stored in stats table.
+- added  `createf` action for fungible token with parametr `authorctrl` to `stats` table. If true(1) allows token author (and not just owner) to burnf and transferf. Cannot be changed after creation!
+- Ricardian contracts updated
+- more usage examples below
+
+
+## Change Log v0.1.1
+Misc
+- sdelagate table structure renamed to sdelegate (typo)
+- create action parameters renamed: requireClaim -> requireclaim
+- assetID action parameter renamed in all actions to assetid
+
+Borrowing Assets
+- sdelegate table - added new field: untildate
+- delegate action added parameters untildate.  Action does a simple check if parameter was entered correctly (either zero or in the future).
+- undelegate will not work until untildate (this guarantees a minimum term of the asset loan).
+- allow transfer asset back (return) if its delegated, sooner than untiltime  (borrower has option ton return early)
+
+Batch Processing
+- claim action: assetid parameter changed to array of assetsids. Multiple claim logic added.
+- offer action: assetid parameter changed to array of assetsids. Multiple offer logic added.
+- canceloffer action: assetid parameter changed to array of assetsids. Multiple cancelation logic added.
+- transfer action: assetid parameter changed to array of assetsids. Multiple assets transfer logic added.
+- burn action: assetid parameter changed to array of assetsids. Multiple burning logic added.
+- delegate/undelegate action: assetid parameter changed to array of assetsids. Multiple delegation/undelegation logic added.
+
 
