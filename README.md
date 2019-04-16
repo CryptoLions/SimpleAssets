@@ -113,7 +113,8 @@ offers {
 ```
 authors {  
 	name	author;			// assets author, who will be able to create and update assets;  
-	string	data;			// author’s data (json) will be used by markets for better display;  
+	string	data;			// author’s data (json) will be used by markets for better display;
+					// recommendations: logo, info, url;  
 	string	stemplate;		// data (json) schema for markets. key: state values, where key is key from;  
 					// recommendations for non-text fields: hide, url, img, webgl, mp3, video;  
 }  
