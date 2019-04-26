@@ -30,6 +30,13 @@ There are two ways to use Simple Assets:
 2) Dapps can Deploy their own copy of Simple Assets and make modifications to have greater control of functionality.  We consider this an example of a dapp being its own "ownership authority."  Before deploying, Simple Assets should be modified to prevent anyone from making assets.
 
 ---------------------------
+## RAM usage
+
+The RAM usage for NFTs depends on how much data is stored in the idata and mdata fields.  If they both empty, each NFT takes up `276 bytes`.
+
+Each symbol in imdata and mdata is +1 byte.
+
+---------------------------
 ## Scope:
 1. [Contract actions](#contract-actions)
 2. [Data Structures](#data-structures)
