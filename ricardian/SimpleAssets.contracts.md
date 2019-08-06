@@ -171,6 +171,24 @@
 	by CryptoLions [ https://cryptolions.io ]
 
 
+<h1 class="contract"> delegatemore </h1>
+	## ACTION NAME: delegatemore
+
+	### INTENT
+	Extend period of delegating of asset to {{owner}}. 
+
+	### Input parameters:
+	`owner`     - current asset owner account;
+	`assetidc`  - assetid to delegate;
+	`period`    - time in seconds that the asset will be lent. Lender cannot undelegate until 
+				  the period expires, however the receiver can transfer back at any time.
+
+	### TERM
+	This Contract expires at the conclusion of code execution.
+
+	by CryptoLions [ https://cryptolions.io ]
+
+
 <h1 class="contract"> delegate </h1>
 	## ACTION NAME: delegate
 

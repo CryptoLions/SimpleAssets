@@ -769,6 +769,24 @@
                     "type": "string"
                 }
             ]
+        },
+        {
+            "name": "delegatemore",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "assetidc",
+                    "type": "uint64"
+                },
+                {
+                    "name": "period",
+                    "type": "uint64"
+                }
+            ]
         }
     ],
     "types": [],
@@ -907,6 +925,11 @@
             "name": "updatever",
             "type": "updatever",
             "ricardian_contract": "## ACTION NAME: updatever (internal)"
+        },
+        {
+            "name": "delegatemore",
+            "type": "delegatemore",
+            "ricardian_contract": "## ACTION NAME: delegatemore\n\n\t### INTENT\n\tExtend period of delegated asset. \n\n\t### Input parameters:\n\t`owner`    - real asset owner account;\n\t`assetids` - assetid's to extend period;\n\t`period`    - time in seconds that the asset will be lent. Lender cannot undelegate until \n\t\t\t\t  the period expires, however the receiver can transfer back at any time.\n\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
         }
     ],
     "tables": [

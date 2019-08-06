@@ -8,18 +8,21 @@ A simple standard for digital assets (both fungible and non-fungible tokens - NF
 by [CryptoLions](https://CryptoLions.io)  
   
 web: http://simpleassets.io  
-Git: https://github.com/CryptoLions/SimpleAssets  
-Telegram: https://t.me/simpleassets
+Git: https://github.com/CryptoLions/SimpleAssets    
+Telegram: https://t.me/simpleassets  
+  
+EOS Mainnet Account: **simpleassets**  
+MEETONE Account: **smplassets.m**  
+TELOS Mainnet Account: **simpleassets**  
 
-EOS Mainnet Account: **simpleassets**
+Intro & Demos:  https://medium.com/@cryptolions/introducing-simple-assets-b4e17caafaa4  
 
-Intro & Demos:  https://medium.com/@cryptolions/introducing-simple-assets-b4e17caafaa4
+Events Receiver Example for authors: https://github.com/CryptoLions/SimpleAssets-EventReceiverExample   
 
-Events Receiver Example for authors: https://github.com/CryptoLions/SimpleAssets-EventReceiverExample  
-
-**WARNING!!! CDT currently has a bug that doesn't allow compilation on v1.6.1.
+**WARNING!!! CDT currently has a bug that doesn't allow compilation on v1.6.x.
   1.5.0 also has a bug "Segmentation fault (core dumped)", but only with abi generation.
-  Recommendation: Use 1.5.0 for contract compilation and use our abi**
+  Recommendation: Use 1.5.0 for contract compilation and use our abi**  
+  issue: https://github.com/EOSIO/eosio.cdt/issues/527  
     
 ---------------------------  
 
@@ -45,7 +48,7 @@ Each symbol in imdata and mdata is +1 byte.
 1. [Contract actions](#contract-actions)
 2. [Data Structures](#data-structures)
 3. [EXAMPLES: how to use Simple Assets in smart contracts](#examples-how-to-use-simple-assets-in-smart-contracts)
-4. [ChangeLog](#change-log-v101)
+4. [ChangeLog](#change-log-v110)
 ---------------------------  
 
 # Contract actions  
@@ -69,6 +72,7 @@ https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp
  
  delegate		(owner, to, [assetid1,..,assetidn], period, memo)  
  undelegate		(owner, from, [assetid1,..,assetidn])  
+ delegatemore		(owner, assetid, period)  
  
  attach			(owner, assetidc, [assetid1,..,assetidn])
  detach			(owner, assetidc, [assetid1,..,assetidn])
@@ -409,6 +413,12 @@ saRes1.send();
 
 
 -----------------
+## Change Log v1.1.0
+- Code refactoring  
+- Fixed detaching containerized NFTs for delegated and transferred NFTs.  
+- new action delegatemore which allows extending delegate period for borrowed NFT.  
+- Added external(bash) unit tests  
+  
 ## Change Log v1.0.1
 - new parameter `requireclaim` in `createlog` action which is used internaly to `create` actions history logs.
 
@@ -524,6 +534,8 @@ Git: <https://github.com/CryptoLions/SimpleAssets>
 Telegram: <https://t.me/simpleassets>
 
 EOS 主网帐户：**simpleassets**
+MEETONE  主网帐户： **smplassets.m**
+TELOS  主网帐户：**simpleassets**
 
 简介和演示：https://medium.com/\@cryptolions/introducing-simple-assets-b4e17caafaa4
 
@@ -600,6 +612,8 @@ authorupdate (author, data, stemplate)
 delegate (owner, to, [assetid1,..,assetidn], period, memo)
 
 undelegate (owner, from, [assetid1,..,assetidn])
+
+delegatemore		(owner, assetid, period)  
 
 attach (owner, assetidc, [assetid1,..,assetidn])
 
@@ -1164,6 +1178,8 @@ Git: [https://github.com/CryptoLions/SimpleAssets](https://github.com/CryptoLion
 Telegram: [https://t.me/simpleassets](https://t.me/simpleassets)
 
 EOS 메인넷 계정: **simpleassets**
+MEETONE 메인넷 계정: **smplassets.m**
+TELOS 메인넷 계정: **simpleassets**
 
 소개 & 데모: [https://medium.com/@cryptolions/introducing-simple-assets-b4e17caafaa4](https://medium.com/@cryptolions/introducing-simple-assets-b4e17caafaa4)
 
@@ -1220,7 +1236,8 @@ regauthor		(name author, data, stemplate)
 authorupdate	(author, data, stemplate)
 
 delegate  		(owner, to, [assetid1,..,assetidn], period, memo)
-undelegate  	(owner, from, [assetid1,..,assetidn])
+undelegate  	        (owner, from, [assetid1,..,assetidn])
+delegatemore		(owner, assetid, period)  
 
 attach  		(owner, assetidc, [assetid1,..,assetidn])
 detach  		(owner, assetidc, [assetid1,..,assetidn])
