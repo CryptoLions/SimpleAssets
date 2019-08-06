@@ -11,10 +11,6 @@ web: http://simpleassets.io
 Git: https://github.com/CryptoLions/SimpleAssets    
 Telegram: https://t.me/simpleassets  
   
-EOS Mainnet Account: **simpleassets**  
-MEETONE Account: **smplassets.m**  
-TELOS Mainnet Account: **simpleassets**  
-
 Intro & Demos:  https://medium.com/@cryptolions/introducing-simple-assets-b4e17caafaa4  
 
 Events Receiver Example for authors: https://github.com/CryptoLions/SimpleAssets-EventReceiverExample   
@@ -26,15 +22,23 @@ Events Receiver Example for authors: https://github.com/CryptoLions/SimpleAssets
     
 ---------------------------  
 
-There are two ways to use Simple Assets:  
-  
-1) As an external [ownership authority](https://medium.com/@cryptolions/digital-assets-we-need-to-think-about-ownership-authority-a2b0465c17f6).  When deployed on an EOSIO chain, Simple Assets will be a separate contract which other Dapps can call to manage their digital assets.  This serves as an additional guarantee to users of the Dapp that the ownership of assets is managed by a reputable outside authority, and that once created, the Dapp can only manage the asset's mdata.  All the ownership-related functionality exists outside the game.  
-  
-   EOS Mainnet Account: **simpleassets** 
+Use Simple Assets by making calls to the Simple Assets contract.  It's like a Dapp for Dapps.  
 
-   We are in the process of creating a DAC which will curate updates to Simple Assets after deployment to the EOSIO mainnet. 
+Jungle Testnet: **simpleassets**  
+
+EOS Mainnet: **simpleassets**  
+MEETONE Mainnet: **smplassets.m**  
+TELOS Mainnet: **simpleassets**  
   
-2) Dapps can Deploy their own copy of Simple Assets and make modifications to have greater control of functionality.  We consider this an example of a dapp being its own "ownership authority."  Before deploying, Simple Assets should be modified to prevent anyone from making assets.
+Simple Assets is a separate contract which other Dapps can call to manage their digital assets.  This serves as an additional guarantee to users of the Dapp that the ownership of assets is managed by a reputable outside authority, and that once created, the Dapp can only manage the asset's mdata.  All the ownership-related functionality exists outside the game.    
+  
+We are in the process of creating a DAC which will curate updates to Simple Assets after deployment to the EOSIO mainnet.   
+  
+Related: understanding [ownership authority](https://medium.com/@cryptolions/digital-assets-we-need-to-think-about-ownership-authority-a2b0465c17f6).  
+  
+To post information about your NFTs to third-party marketplaces, use the ```regauthor``` action.  
+  
+Alternatively, dapps can Deploy their own copy of Simple Assets and make modifications to have greater control of functionality.  Before deploying, Simple Assets should be modified to prevent anyone from making assets.  
 
 ---------------------------
 ## RAM usage
@@ -131,7 +135,7 @@ authors {
 	string	data;			// author’s data (json) will be used by markets for better display;
 					// recommendations: logo, info, url;  
 	string	stemplate;		// data (json) schema for markets. key: state values, where key is key from;  
-					// recommendations for non-text fields: hide, url, img, webgl, mp3, video;  
+					// recommendations for non-text fields: txt, img, url, hide, webgl, mp3, video, timestamp;  
 }  
 ```
 
@@ -1298,9 +1302,9 @@ offers {
 authors {
 	name  		author; 	// assets author, who will be able to create and update assets;
 	string  	data; 		// author’s data (json) will be used by markets for better display;
-							// recommendations: logo, info, url;
-	string  	stemplate;  // data (json) schema for markets. key: state values, where key is key from;
-							// recommendations for non-text fields: hide, url, img, webgl, mp3, video;
+				 	// recommendations: logo, info, url;
+	string  	stemplate;  	// data (json) schema for markets. key: state values, where key is key from;
+					// recommendations for non-text fields: txt, img, url, hide, webgl, mp3, video, timestamp;
 }
 ```
 
@@ -1313,7 +1317,7 @@ delegates{
 	name  		delegatedto;// who can claim this asset;
 	uint64_t 	cdate;  	// offer create date;
 	uint64_t 	period;  	// Time in seconds that the asset will be lent. Lender cannot undelegate until
-							// the period expires, however the receiver can transfer back at any time.
+					// the period expires, however the receiver can transfer back at any time.
 }
 ```
 
