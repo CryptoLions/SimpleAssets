@@ -585,7 +585,11 @@
                 {
                     "name": "period",
                     "type": "uint64"
-                }
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }				
             ]
         },
         {
@@ -844,7 +848,7 @@
         {
             "name": "create",
             "type": "create",
-            "ricardian_contract": "## ACTION NAME: create\n\n\t### INTENT\n\t–°reate a new asset.\n\n\t### Input parameters:\n\t`author`         - asset's author, who will able to updated asset's mdata;\n\t`category`       - assets category;\n\t`owner`          - assets owner;\n\t`idata`          - stringified json with immutable assets data\n\t`mdata`          - stringified json with mutable assets data, can be changed only by author\n\t`requireclaim`   - true or false. If disabled, upon creation, the asset will be transfered to owner (but \n\t\t\t\t\t   but AUTHOR'S memory will be used until the asset is transferred again).  If enabled,\n\t\t\t\t\t   author will remain the owner, but an offer will be created for the account specified in \n\t\t\t\t\t   the owner field to claim the asset using the account's RAM.\n\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "## ACTION NAME: create\n\n\t### INTENT\n\t—reate a new asset.\n\n\t### Input parameters:\n\t`author`         - asset's author, who will able to updated asset's mdata;\n\t`category`       - assets category;\n\t`owner`          - assets owner;\n\t`idata`          - stringified json with immutable assets data\n\t`mdata`          - stringified json with mutable assets data, can be changed only by author\n\t`requireclaim`   - true or false. If disabled, upon creation, the asset will be transfered to owner (but \n\t\t\t\t\t   but AUTHOR'S memory will be used until the asset is transferred again).  If enabled,\n\t\t\t\t\t   author will remain the owner, but an offer will be created for the account specified in \n\t\t\t\t\t   the owner field to claim the asset using the account's RAM.\n\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "createf",

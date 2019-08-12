@@ -52,7 +52,7 @@ Each symbol in imdata and mdata is +1 byte.
 1. [Contract actions](#contract-actions)
 2. [Data Structures](#data-structures)
 3. [EXAMPLES: how to use Simple Assets in smart contracts](#examples-how-to-use-simple-assets-in-smart-contracts)
-4. [ChangeLog](#change-log-v110)
+4. [ChangeLog](#change-log-v111)
 ---------------------------  
 
 # Contract actions  
@@ -134,8 +134,9 @@ authors {
 	name	author;			// assets author, who will be able to create and update assets;  
 	string	data;			// author’s data (json) will be used by markets for better display;
 					// recommendations: logo, info, url;  
-	string	stemplate;		// data (json) schema for markets. key: state values, where key is key from;  
-					// recommendations for non-text fields: txt, img, url, hide, webgl, mp3, video, timestamp;  
+	string	stemplate;		// data (json) schema for third-party markets. 
+					// key: state values, where key is the key from mdata or idata;  
+					// recommended values: txt, img, url, hide, webgl, mp3, video, timestamp;  
 }  
 ```
 
@@ -148,6 +149,8 @@ delegates{
 	uint64_t	cdate;		// offer create date;  
 	uint64_t	period;		// Time in seconds that the asset will be lent. Lender cannot undelegate until 
 					// the period expires, however the receiver can transfer back at any time.
+	string		memo;		// memo from action parameters. Max 64 length.
+
 }  
 ```
 
@@ -159,7 +162,7 @@ stat {
 	name		issuer;		// Fungible token author
 	uint64_t	id;		// Unique ID for this token
 	bool		authorctrl;	// if true(1) allow token author (and not just owner) to burn and transfer.
-	string		data;		// strigified json. recommended keys to include: `img`, `name`
+	string		data;		// stringified json. recommended keys to include: `img`, `name`
 }
 ```
 
@@ -417,6 +420,12 @@ saRes1.send();
 
 
 -----------------
+## Change Log v1.1.1
+- optimized claim/transfer/burn functionality
+- Memo field added to delegates table.  (This allows lenders/games to create different classes of borrowed assets - eg. high risk / low risk.)  On delegete action, the memo from action parmeter is stored to this new field. max 64 chars length.
+- Added three new unit tests for delegate memo.
+
+
 ## Change Log v1.1.0
 - Code refactoring  
 - Fixed detaching containerized NFTs for delegated and transferred NFTs.  
@@ -545,26 +554,26 @@ TELOS  主网帐户：**simpleassets**
 
 作者的事件接收器示例：https://github.com/CryptoLions/SimpleAssets-EventReceiverExample
 
-**警告!!! CDT目前有一个不被允许在v1.6.1上编译的漏洞。
-1.5.0也有一个漏洞“Segmentation fault（core dumped）”，但只有abi生效。**
-**建议：使用1.5.0进行合约编译，并使用我们的abi。**
-
 ------
+警告！！！CDT目前有一个不被允许在v1.6.x版本上编译漏洞。 1.5.0版本上也有一个漏洞"Segmentation fault (core dumped)"，但仅基于abi可生成。 建议：使用1.5.0版本合约和我们的abi编译. 问题: https://github.com/EOSIO/eosio.cdt/issues/527
 
-使用简单资产（Simple Assets）有两种方法：
+通过调用简单资产（Simple Assets）合约来使用Simple Assets。这就像是Dapps的Dapp。
 
-1.  作为外部*所有权机构*。当部署在EOSIO链上时，简单资产（Simple
-    Assets）将成为其他Dapps可以调用以管理其数字资产的独立合约。这为Dapp用户提供额外保证，即资产所有权由信誉良好的外部机构管理，并且一旦创建，Dapp只能管理资产的mdata。余下与所有权相关的功能都存在于游戏之外。  
+丛林测试网: simpleassets
 
-EOS Mainnet帐户：**simpleassets**  
+EOS 主网: simpleassets
+MEETONE 主网: smplassets.m
+TELOS 主网: simpleassets
 
+ 简单资产（Simple Assets）是一个独立的合约，其他Dapps可以直接调用它来管理自己的数字资产。这为Dapp用户提供了额外的保证，即资产的所有权由信誉良好的外部机构管理，并且一旦创建，Dapp只能管理资产的mdata部分。 所有与所有权相关的功能都存在于游戏之外。
 
-我们正在创建一个DAC，它将被部署到EOSIO主网，兼顾对Simple Assets的更新。  
+我们正在创建一个DAC，它将在部署至EOSIO主网后对简单资产（Simple Assets）策划更新。
 
+相关信息：理解所有权。
 
-1.  Dapps可以部署自己的简单资产（Simple
-    Assets）副本并进行修改，用以更好地控制功能。我们认为这是一个例子——dapp作为自己的“所有权”。在部署之前，简单资产（Simple
-    Assets）应当被修改以防止任何人制作资产。
+运用regauthor操作发送自己的NFTs信息至第三方商城。
+
+或者，dapps可以自行部署简单资产（Simple Assets）副本并进行修改以更好地控制其功能。 部署前，应修改简单资产（Simple Assets）以防止任何人创建资产。
 ------
 ## RAM使用情况
 
@@ -596,57 +605,39 @@ imdata和mdata中的每个符号都是+1字节。
 \# -- For Non-Fungible Tokens ---
 
 create (author, category, owner, idata, mdata, requireсlaim)
-
 update (author, owner, assetid, mdata)
-
 transfer (from, to , [assetid1,..,assetidn], memo)
-
 burn (owner, [assetid1,..,assetidn], memo)
 
 offer (owner, newowner, [assetid1,..,assetidn], memo)
-
 canceloffer (owner, [assetid1,..,assetidn])
-
 claim (claimer, [assetid1,..,assetidn])
 
 regauthor (name author, data, stemplate)
-
 authorupdate (author, data, stemplate)
 
 delegate (owner, to, [assetid1,..,assetidn], period, memo)
-
 undelegate (owner, from, [assetid1,..,assetidn])
-
 delegatemore		(owner, assetid, period)  
 
 attach (owner, assetidc, [assetid1,..,assetidn])
-
 detach (owner, assetidc, [assetid1,..,assetidn])
-
 attachf (owner, author, quantity, assetidc)
-
 detachf (owner, author, quantity, assetidc)
 
 \# -- For Fungible Tokens ---
 
 createf (author, maximum_supply, authorctrl, data)
-
 updatef (author, sym, data)
-
 issuef (to, author, quantity, memo)
-
 transferf (from, to, author, quantity, memo)
-
 burnf (from, author, quantity, memo)
 
 offerf (owner, newowner, author, quantity, memo)
-
 cancelofferf (owner, [ftofferid1,...,ftofferidn])
-
 claimf (claimer, [ftofferid1,...,ftofferidn])
 
 openf (owner, author, symbol, ram_payer)
-
 closef (owner, author, symbol)
 ```
 ---
@@ -658,29 +649,18 @@ closef (owner, author, symbol)
 ```
 sasset {
 
-uint64_t id; // asset id used for transfer and search;
-
-name owner; // asset owner (mutable - by owner!!!);
-
-name author; // asset author (game contract, immutable);
-
-name category; // asset category, chosen by author, immutable;
-
-string idata; // immutable assets data. Can be stringified JSON or just sha256
-string;
-
-string mdata; // mutable assets data, added on creation or asset update by
-author. Can be
-
-// stringified JSON or just sha256 string;
-
-sasset[] container; // other NFTs attached to this asset
-
-account[] containerf; // FTs attached to this asset
+uint64_t id; // 用于转移和搜索的资产ID  
+name owner; // 资产所有者（可变更 — 由所有者决定!!!） 
+name author; //  资产创建者（游戏合约，不可变更）  
+name category; // 资产类别，由创建者选择，不可变更  
+string idata; // 不可变更资产数据。 它可以是字符串化“JSON”或只是字符串“sha256”  
+string mdata; // 可变资产数据，由创建者在创建或资产更新时添加。 它可以是字符串化“JSON”或只是字符串“sha256”  
+sasset[] container; // 其它NFTs(可替代和不可替代代币)附加到此资产  
+account[] containerf; // FTs(可替代代币)附加到此资产  
 
 }
 
-//请包含有关资产名称img desc的idata或mdata信息，这些信息将由Markets使用。
+//请包含有关资产名称img desc的idata或mdata信息，这些信息将由Markets使用。 
 ```
 ----
 ## 报价
@@ -688,13 +668,10 @@ account[] containerf; // FTs attached to this asset
 ```
 offers {
 
-uint64_t assetid; // asset id offered for claim ;
-
-name owner; // asset owner;
-
-name offeredto; // who can claim this asset ;
-
-uint64_t cdate; // offer create date;
+uint64_t assetid; // 提供 claim 的资产ID  
+name owner; // 资产所有者  
+name offeredto; // 可以 claim 此资产的人  
+uint64_t cdate; // 创建日期  
 
 }
 ```
@@ -703,16 +680,13 @@ uint64_t cdate; // offer create date;
 ```
 authors {
 
-name author; // assets author, who will be able to create and update assets;
+name author; 	// 资产创建者，将能够创建和更新资产
 
-string data; // author’s data (json) will be used by markets for better display;
+string data; 	// 创建者的数据（json）将被商城用于更好的展示
+ 		// 建议：形象徽标（logo），信息，网址;
 
-// recommendations: logo, info, url;
-
-string stemplate; // data (json) schema for markets. key: state values, where
-key is key from;
-
-// recommendations for non-text fields: hide, url, img, webgl, mp3, video;
+string	stemplate;		// 商城的数据（json）模式。 key：状态值，其中 key 是 idata 或 mdata 的字段名
+				// 对非文本字段的建议格式：txt，img，url，hide，webgl，mp3，video，timestamp
 
 }
 ```
@@ -722,13 +696,9 @@ key is key from;
 delegates{
 
 uint64_t assetid; // asset id offered for claim;
-
 name owner; // asset owner;
-
 name delegatedto; // who can claim this asset;
-
 uint64_t cdate; // offer create date;
-
 uint64_t period; // Time in seconds that the asset will be lent. Lender cannot
 undelegate until
 
@@ -741,18 +711,12 @@ undelegate until
 ```
 stat {
 
-asset supply; // Tokens supply
-
-asset max_supply; // Max token supply
-
-name issuer; // Fungible token author
-
-uint64_t id; // Unique ID for this token
-
-bool authorctrl; // if true(1) allow token author (and not just owner) to burn
-and transfer.
-
-string data; // strigified json. recommended keys to include: \`img\`, \`name\`
+asset supply; // 提供代币
+asset max_supply; // 提供最大量代币
+name issuer; // 可替代代币（Fungible token）创建者
+uint64_t id; // 此代币的唯一ID
+bool authorctrl; // 如果 true（1）允许代币创建者（而不仅仅是所有者）进行烧录和传输
+string data; // 字符串化的json。 建议的keys包括： img，name
 
 }
 ```
@@ -761,27 +725,21 @@ string data; // strigified json. recommended keys to include: \`img\`, \`name\`
 ```
 accounts {
 
-uint64_t id; // token id, from stat table
-
-name author; // token author
-
-asset balance; // token balance
+uint64_t id; // 代币ID，来自 stat 表
+name author; // 代币创建者
+asset balance; // 代币余额
 
 }
 
 sofferf {
 
-uint64_t id; // id of the offer for claim (increments automatically)
+uint64_t id; // claim 此 offer 的ID（自动递增）
 
-name author; // ft author
-
-name owner; // ft owner
-
-asset quantity; // quantity
-
-name offeredto; // account who can claim the offer
-
-uint64_t cdate; // offer creation date
+name author; // 可替代代币(fungible token)创建者
+name owner; // 可替代代币(fungible token)所有者
+asset quantity; // 资产数量
+name offeredto; // 可以 claim 此 offer 的帐户
+uint64_t cdate; // offer创建日期
 
 }
 ```
@@ -792,11 +750,8 @@ uint64_t cdate; // offer creation date
 ## 创建资产并转移到所有者帐户ownerowner22：
 ```
 name SIMPLEASSETSCONTRACT = "simpleassets"_n;
-
 name author = get_self();
-
 name category = "weapon"_n;
-
 name owner = "ownerowner22"_n;
 
 string idata = "{\\"power\\": 10, \\"speed\\": 2.2, \\"name\\": \\"Magic
@@ -806,13 +761,9 @@ string mdata = "{\\"color\\": \\"bluegold\\", \\"level\\": 3, \\"stamina\\": 5,
 \\"img\\": \\"https://bit.ly/2MYh8EA\\" }";
 
 action createAsset = action(
-
 permission_level{author, "active"_n},
-
 SIMPLEASSETSCONTRACT,
-
 "create"_n,
-
 std::make_tuple( author, category, owner, idata, mdata, 0 )
 
 );
@@ -823,11 +774,8 @@ createAsset.send();
 ## 使用ownerowner22的requireclaim选项创建资产：
 ```
 name SIMPLEASSETSCONTRACT = "simpleassets"_n;
-
 name author = get_self();
-
 name category = "balls"_n;
-
 name owner = "ownerowner22"_n;
 
 string idata = "{\\"radius\\": 2, \\"weigh\\": 5, \\"material\\": \\"rubber\\",
@@ -837,13 +785,9 @@ string mdata = "{\\"color\\": \\"white\\", \\"decay\\": 99, \\"img\\":
 \\"https://i.imgur.com/QoTcosp.png\\" }";
 
 action createAsset = action(
-
 permission_level{author, "active"_n},
-
 SIMPLEASSETSCONTRACT,
-
 "create"_n,
-
 std::make_tuple( author, category, owner, idata, mdata, 1 )
 
 );
@@ -862,13 +806,9 @@ dumped）”，但只有abi可生成（包括self对象数组：std :: vector co
 TABLE account {
 
 uint64_t id;
-
 name author;
-
 asset balance;
-
 uint64_t primary_key()const {
-
 return id;
 
 }
@@ -880,23 +820,14 @@ typedef eosio::multi_index\< "accounts"_n, account \> accounts;
 TABLE sasset {
 
 uint64_t id;
-
 name owner;
-
 name author;
-
 name category;
-
 string idata;
-
 string mdata;
-
 std::vector\<sasset\> container;
-
 std::vector\<account\> containerf;
-
 auto primary_key() const {
-
 return id;
 
 }
@@ -920,51 +851,31 @@ eosio::indexed_by\< "author"_n, eosio::const_mem_fun\<sasset, uint64_t,
 2.  搜索和使用信息
 ```
 name SIMPLEASSETSCONTRACT = "simpleassets"_n;
-
 name author = get_self();
-
 name owner = "lioninjungle"_n;
-
 uint64_t assetid = 100000000000187
-
 sassets assets(SIMPLEASSETSCONTRACT, owner.value);
-
 auto idx = assets.find(assetid);
-
 check(idx != assets.end(), "Asset not found or not yours");
-
 check (idx-\>author == author, "Asset is not from this author");
-
 auto idata = json::parse(idx-\>idata); // for parsing json here is used nlohmann
 lib
-
 auto mdata = json::parse(idx-\>mdata); // https://github.com/nlohmann/json
-
 check(mdata["cd"] \< now(), "Not ready yet for usage");
 ```
 ---
 ## 更新资产
 ```
 name SIMPLEASSETSCONTRACT = "simpleassets"_n;
-
 auto mdata = json::parse(idxp-\>mdata);
-
 mdata["cd"] = now() + 84600;
-
 name author = get_self();
-
 name owner = "ownerowner22"_n;
-
 uint64_t assetid = 100000000000187;
-
 action saUpdate = action(
-
 permission_level{author, "active"_n},
-
 SIMPLEASSETSCONTRACT,
-
 "update"_n,
-
 std::make_tuple(author, owner, assetid, mdata.dump())
 
 );
@@ -975,29 +886,18 @@ saUpdate.send();
 ## 转移一个资产
 ```
 name SIMPLEASSETSCONTRACT = "simpleassets"_n;
-
 name author = get_self();
-
 name from = "lioninjungle"_n;
-
 name to = "ohtigertiger"_n;
-
 std::vector\<uint64_t\> assetids;
-
 assetids.push_back(assetid);
-
 string memo = "Transfer one asset";
-
 action saUpdate = action(
-
 permission_level{author, "active"_n},
 
 SIMPLEASSETSCONTRACT,
-
 "transfer"_n,
-
 std::make_tuple(from, to, assetids, memo)
-
 );
 
 saUpdate.send();
@@ -1006,31 +906,18 @@ saUpdate.send();
 ## 将两个资产转移到具有相同备忘录的同一接收器
 ```
 name SIMPLEASSETSCONTRACT = "simpleassets"_n;
-
 name author = get_self();
-
 name from = "lioninjungle"_n;
-
 name to = "ohtigertiger"_n;
-
 std::vector\<uint64_t\> assetids;
-
 assetids.push_back(assetid1);
-
 assetids.push_back(assetid2);
-
 string memo = "Transfer two asset"
-
 action saUpdate = action(
-
 permission_level{author, "active"_n},
-
 SIMPLEASSETSCONTRACT,
-
 "transfer"_n,
-
 std::make_tuple(from, to, assetids, memo)
-
 );
 
 saUpdate.send();
@@ -1039,29 +926,18 @@ saUpdate.send();
 ## issuef创建代币问题（可替代代币）
 ```
 name SIMPLEASSETSCONTRACT = "simpleassets"_n;
-
 asset wood;
-
 wood.amount = 100;
-
 wood.symbol = symbol("WOOD", 0);
-
 name author = get_self();
-
 name to = "lioninjungle"_n;
-
 std::string memo = "WOOD faucet";
-
 action saRes1 = action(
-
 permission_level{author, "active"_n},
 
 SIMPLEASSETSCONTRACT,
-
 "issuef"_n,
-
 std::make_tuple(to, author, wood, memo)
-
 );
 
 saRes1.send();
@@ -1074,27 +950,16 @@ saRes1.send();
 name SIMPLEASSETSCONTRACT = "simpleassets"_n;
 
 asset wood;
-
 wood.amount = 20;
-
 wood.symbol = symbol("WOOD", 0);
-
 name from = "lioninjungle"_n;
-
 name to = get_self();
-
 name author = get_self();
-
 std::string memo = "best WOOD";
-
 action saRes1 = action(
-
 permission_level{author, "active"_n},
-
 SIMPLEASSETSCONTRACT,
-
 "transferf"_n,
-
 std::make_tuple(from, to, author, wood, memo)
 
 );
@@ -1105,27 +970,16 @@ saRes1.send();
 ## 如果启用了authorctrl，则由创建者烧录代币（可替代）
 ```
 name SIMPLEASSETSCONTRACT = "simpleassets"_n;
-
 asset wood;
-
 wood.amount = 20;
-
 wood.symbol = symbol("WOOD", 0);
-
 name author = get_self();
-
 name from = "lioninjungle"_n;
-
 std::string memo = "WOOD for oven";
-
 action saRes1 = action(
-
 permission_level{author, "active"_n},
-
 SIMPLEASSETSCONTRACT,
-
 "burnf"_n,
-
 std::make_tuple(from, author, wood, memo)
 
 );
@@ -1135,6 +989,13 @@ saRes1.send();
 ```
 ------
 
+更新日志v1.1.0
+
+*代码重构
+*修复了为委托和转让的NFTs的分离批量处理功能
+*新合约允许延长借用NFT的委托期限
+*增加了外部（bash）单元测试
+---
 ## 更改日志v1.0.1
 
 -   `createlog`  操作中的新参数 `requireclaim`，用于 `create` 操作历史记录日志。
@@ -1303,8 +1164,9 @@ authors {
 	name  		author; 	// assets author, who will be able to create and update assets;
 	string  	data; 		// author’s data (json) will be used by markets for better display;
 				 	// recommendations: logo, info, url;
-	string  	stemplate;  	// data (json) schema for markets. key: state values, where key is key from;
-					// recommendations for non-text fields: txt, img, url, hide, webgl, mp3, video, timestamp;
+	string	stemplate;		// data (json) schema for third-party markets. 
+					// key: state values, where key is the key from mdata or idata;  
+					// recommended values: txt, img, url, hide, webgl, mp3, video, timestamp;  
 }
 ```
 
@@ -1330,7 +1192,7 @@ stat {
 	name  		issuer;  	// Fungible token author
 	uint64_t  	id; 		// Unique ID for this token
 	bool  		authorctrl; // if true(1) allow token author (and not just owner) to burn and transfer.
-	string  	data;  		// strigified json. recommended keys to include: `img`, `name`
+	string  	data;  		// stringified json. recommended keys to include: `img`, `name`
 }
 ```
 

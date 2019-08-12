@@ -1,4 +1,5 @@
 #sudo apt-get install bc
+#./unit_tests.sh alexnag12345 alexnag1tran PW5KUxSPhXY1YSH9risb7CVpTXzwH7DEVK84wQBugoy1uqBjo5Twm
 
 echo "Test account where deployed SimpleAsset: " $1
 echo "Account second to test transfer: " $2
@@ -11,8 +12,8 @@ KEY_TO_WALLET=$3
 
 CATEGORY=ctg
 WAIT_TIME=2
-NAME_CURRENCY=$(cat /dev/urandom | tr -dc 'A-Z' | fold -w 5 | head -n 1)
-#NAME_CURRENCY=PWLQF
+#NAME_CURRENCY=$(cat /dev/urandom | tr -dc 'A-Z' | fold -w 5 | head -n 1)
+NAME_CURRENCY=PWLQF
 echo $NAME_CURRENCY
 
 #---------------------------------------------------------------------------------------------------
@@ -21,6 +22,7 @@ echo $NAME_CURRENCY
 function unlock_wallet
 {
  	ERROR=$(./cleos.sh wallet unlock -n default --password $KEY_TO_WALLET 2>&1 >/dev/null)
+	echo "ERROR: " ${ERROR}
 }
 
 #---------------------------------------------------------------------------------------------------
@@ -281,8 +283,18 @@ function READ_ONE_OFFERF
 function PUSH_CREATE_ASSET
 {
 	sleep $WAIT_TIME
-	echo "create"
-	./cleos.sh push action ${ACC} create '{ "author":"'${ACC}'", "category":"'${CATEGORY}'", "owner":"'${ACC}'" ,"idata":"idata","mdata":"mdata" , "requireclaim":0}' -p $ACC@active
+	echo "create asset action"
+
+	output=$(./cleos.sh push action ${ACC} create '{ "author":"'${ACC}'", "category":"'${CATEGORY}'", "owner":"'${ACC}'" ,"idata":"idata","mdata":"mdata" , "requireclaim":0}' -p $ACC@active 2>&1)
+
+	if [[ $output =~ "${ACC} <= ${ACC}" ]]
+	then
+	   echo "Success"
+	else
+	   echo "Error"
+	   echo "Output: " $output
+	   exit 1
+	fi
 }
 
 function TEST_CREATE_UPDATE_TRANSFER
@@ -353,7 +365,6 @@ function TEST_CREATE_UPDATE_TRANSFER
 		exit 1
 	fi
 
-
 	CLEAN_ASSETS_TABLE
 }
 
@@ -409,9 +420,11 @@ function TEST_UNDELEGATE_DELEGATE_DELEGATEMORE
 	READ_ONE_ASSET
 	asset_id=$result_asset_id
 
-	sleep $WAIT_TIME
-	echo "delegate"
-	./cleos.sh push action $ACC delegate '{"owner":"'${ACC}'", "to":"'${ACC_TO}'", "assetids":['${asset_id}'], "period":'${period1}', "memo":"test"}' -p $ACC
+	PUSH_DELEGATE $asset_id ${period1} "test"
+
+	#sleep $WAIT_TIME
+	#echo "delegate"
+	#./cleos.sh push action $ACC delegate '{"owner":"'${ACC}'", "to":"'${ACC_TO}'", "assetids":['${asset_id}'], "period":'${period1}', "memo":"test"}' -p $ACC
 
 	# ----------------------------------------------- delegatemore testing ---------------------------------------------------------------------------------
 	get_period $asset_id
@@ -826,9 +839,7 @@ function TEST_DELEGATE_ATTACH_DETACH_UNDELEGATE
 	READ_ONE_ASSET
 	asset_id=$result_asset_id
 	
-	sleep $WAIT_TIME
-	echo "delegate"
-	./cleos.sh push action $ACC delegate '{"owner":"'${ACC}'", "to":"'${ACC_TO}'", "assetids":['${asset_id}'], "period":1, "memo":"test"}' -p $ACC
+	PUSH_DELEGATE $result_asset_id 1 "test"
 
 	CHECK_ATTACHED_ASSET ${array[0]} ${array[1]} ${ACC_TO}
 
@@ -847,7 +858,85 @@ function TEST_DELEGATE_ATTACH_DETACH_UNDELEGATE
 	CLEAN_ASSETS_TABLE
 }
 
+function PUSH_DELEGATE {
+	local asset_id=$1
+	local period=$2
+	local memo=$3
+
+	sleep $WAIT_TIME
+	./cleos.sh push action $ACC delegate '{"owner":"'${ACC}'", "to":"'${ACC_TO}'", "assetids":['${asset_id}'], "period":'${period}', "memo":"'${memo}'"}' -p $ACC
+}
+
+
+function CHECK_SUCCESS_EXECUTED_TRANSACTION
+{
+	local par1=$1
+        echo "Output1: " $par1
+	if [[ $1 =~ "${ACC} <= ${ACC}" ]]
+	then
+	   echo "Success."
+	else
+	   echo "Error"
+	   echo "Output: " $1
+	   exit 1
+	fi
+}
+
+#------------------------------------------------------------------------------------------------------------------------------
+# 2019-08-09 This test created after adding MEMO filed to SDELEGATE table
+#------------------------------------------------------------------------------------------------------------------------------
+function TEST_DELEGATE_MEMO_FIELD {
+
+	echo "----------------------------------- TEST_DELEGATE_MEMO_FIELD ----------------------------------------------------------------"
+
+	CLEAN_ASSETS_TABLE
+	CLEAN_DELEGATES_TABLE
+
+	PUSH_CREATE_ASSET
+
+	READ_ONE_ASSET
+	
+	output=$(PUSH_DELEGATE $result_asset_id 1 "64_symbols_are_maximum_for_such_type_of_string_This_string1234567" 2>&1)
+
+	if [[ $output =~ "Error. Size of memo cannot be bigger 64" ]]
+	then
+	   echo "Success. Memo should not be allowed be bigger then 64 symbols"
+	else
+	   echo "Error. Memo should not be allowed be bigger then 64 symbols. Not allowed!"
+	   echo "Output: " $output
+	   exit 1
+	fi
+
+	# executed transaction:
+	CLEAN_DELEGATES_TABLE
+	CLEAN_ASSETS_TABLE
+
+	PUSH_CREATE_ASSET
+
+	READ_ONE_ASSET
+	echo "delegate"
+	output=$(PUSH_DELEGATE $result_asset_id 1 "64_symbols_are_maximum_for_such_type_of_string_This_string123456" 2>&1)
+
+	if [[ $output =~ "${ACC} <= ${ACC}" ]]
+	then
+	   echo "Success"
+	else
+	   echo "Error"
+	   echo "Output: " $output
+	   exit 1
+	fi
+
+	# executed transaction:
+	CLEAN_DELEGATES_TABLE
+	CLEAN_ASSETS_TABLE
+}
+
 unlock_wallet
+
+TEST_DELEGATE_MEMO_FIELD
+#TEST_UNDELEGATE_DELEGATE_DELEGATEMORE
+
+exit 1
 
 TEST_AUTHORUPDATE
 
@@ -873,6 +962,9 @@ TEST_UNDELEGATE_DELEGATE_DELEGATEMORE
 
 # Test for Detach from Delegated Asset
 TEST_DELEGATE_ATTACH_DETACH_UNDELEGATE
+
+# 2019-08-09 This test created after adding MEMO filed to SDELEGATE table
+TEST_DELEGATE_MEMO_FIELD
 
 TEST_END
 

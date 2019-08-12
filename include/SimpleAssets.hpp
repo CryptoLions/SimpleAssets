@@ -647,6 +647,7 @@ CONTRACT SimpleAssets : public contract{
 			name			delegatedto;
 			uint64_t		cdate;
 			uint64_t		period;
+			string			memo;
 
 			auto primary_key() const {
 				return assetid;

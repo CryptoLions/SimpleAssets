@@ -50,7 +50,7 @@ ACTION SimpleAssets::create( name author, name category, name owner, string idat
 	require_auth( author );
 	check( is_account( owner ), "owner account does not exist" );
 	require_recipient( owner );
-	auto newID = getid();
+	const auto newID = getid();
 	name assetOwner = owner;
 	check( !( author.value == owner.value && requireclaim == 1 ), "Can't requireclaim if author == owner." );
 
@@ -115,11 +115,11 @@ ACTION SimpleAssets::claim( name claimer, std::vector<uint64_t>& assetids ) {
 			s.containerf = itr->containerf;
 		});
 
-		assets_f.erase( itr );
-		offert.erase( itrc );
-
 		//Events
 		uniqauthor[itr->author][assetids[i]] = itrc->owner;
+
+		assets_f.erase(itr);
+		offert.erase(itrc);
 	}
 
 	for ( auto uniqauthorIt = uniqauthor.begin(); uniqauthorIt != uniqauthor.end(); ++uniqauthorIt ) {
@@ -143,7 +143,7 @@ ACTION SimpleAssets::transfer( name from, name to, std::vector<uint64_t>& asseti
 	delegates delegatet( _self, _self.value );
 	offers offert( _self, _self.value );
 
-	auto rampayer = has_auth( to ) ? to : from;
+	const auto rampayer = has_auth( to ) ? to : from;
 
 	bool isDelegeting = false;
 
@@ -188,10 +188,9 @@ ACTION SimpleAssets::transfer( name from, name to, std::vector<uint64_t>& asseti
 
 		});
 
-		assets_f.erase(itr);
-
 		//Events
 		uniqauthor[itr->author].push_back( assetids[i] );
+		assets_f.erase(itr);
 	}
 
 	//Send Event as deferred
@@ -205,7 +204,7 @@ ACTION SimpleAssets::update( name author, name owner, uint64_t assetid, string m
 
 	require_auth( author );
 	sassets assets_f( _self, owner.value );
-	auto itr = assets_f.find( assetid );
+	const auto itr = assets_f.find( assetid );
 	check( itr != assets_f.end(), "asset not found" );
 	check( itr->author == author, "Only author can update asset." );
 
@@ -270,10 +269,9 @@ ACTION SimpleAssets::burn( name owner, std::vector<uint64_t>& assetids, string m
 		check( offert.find( assetids[i] ) == offert.end(), "At least one of the assets has an open offer and cannot be burned." );
 		check( delegatet.find( assetids[i] ) == delegatet.end(), "At least one of assets is delegated and cannot be burned." );
 
-		assets_f.erase( itr );
-
 		//Events
 		uniqauthor[itr->author].push_back( assetids[i] );
+		assets_f.erase(itr);
 	}
 
 	//Send Event as deferred
@@ -285,6 +283,7 @@ ACTION SimpleAssets::burn( name owner, std::vector<uint64_t>& assetids, string m
 
 ACTION SimpleAssets::delegate( name owner, name to, std::vector<uint64_t>& assetids, uint64_t period, string memo ) {
 
+	check(memo.size() <= 64, "Error. Size of memo cannot be bigger 64");
 	check( owner != to, "cannot delegate to yourself" );
 	require_auth( owner );
 	require_recipient( owner );
@@ -305,6 +304,7 @@ ACTION SimpleAssets::delegate( name owner, name to, std::vector<uint64_t>& asset
 			s.delegatedto = to;
 			s.cdate = now();
 			s.period = period;
+			s.memo = memo;
 		});
 	}
 
@@ -317,7 +317,7 @@ ACTION SimpleAssets::delegatemore( name owner, uint64_t assetidc, uint64_t perio
 	require_recipient( owner );
 
 	delegates delegatet( _self, _self.value );
-	auto itrc = delegatet.find( assetidc );
+	const auto itrc = delegatet.find( assetidc );
 	check( itrc != delegatet.end(), "Assets assetidc is not delegated." );
 	
 	delegatet.modify( itrc, owner, [&]( auto& s ) {
@@ -362,7 +362,7 @@ ACTION SimpleAssets::attach( name owner, uint64_t assetidc, std::vector<uint64_t
 	delegates delegatet( _self, _self.value );
 	offers offert( _self, _self.value );
 	require_recipient( owner );
-	auto ac_ = assets_f.find( assetidc );
+	const auto ac_ = assets_f.find( assetidc );
 	check( ac_ != assets_f.end(), "Asset cannot be found." );
 	require_auth( ac_->author );
 
@@ -387,7 +387,7 @@ ACTION SimpleAssets::detach( name owner, uint64_t assetidc, std::vector<uint64_t
 	require_recipient( owner );
 	sassets assets_f( _self, owner.value );
 
-	auto ac_ = assets_f.find( assetidc );
+	const auto ac_ = assets_f.find( assetidc );
 	check( ac_ != assets_f.end(), "Asset cannot be found." );
 
 	delegates delegatet( _self, _self.value );
@@ -421,7 +421,6 @@ ACTION SimpleAssets::detach( name owner, uint64_t assetidc, std::vector<uint64_t
 	}
 }
 
-
 ACTION SimpleAssets::attachf( name owner, name author, asset quantity, uint64_t assetidc ) {
 
 	attachdeatch( owner, author, quantity, assetidc, true );
@@ -436,7 +435,7 @@ ACTION SimpleAssets::detachf( name owner, name author, asset quantity, uint64_t 
 ACTION SimpleAssets::createf( name author, asset maximum_supply, bool authorctrl, string data ) {
 
 	require_auth( author );
-	auto sym = maximum_supply.symbol;
+	const auto sym = maximum_supply.symbol;
 	check( sym.is_valid(), "invalid symbol name" );
 	check( maximum_supply.is_valid(), "invalid supply" );
 	check( maximum_supply.amount > 0, "max-supply must be positive" );
@@ -459,7 +458,7 @@ ACTION SimpleAssets::updatef( name author, symbol sym, string data ) {
 	require_auth( author );
 	check( sym.is_valid(), "invalid symbol name" );
 	stats statstable( _self, author.value );
-	auto existing = statstable.find( sym.code().raw() );
+	const auto existing = statstable.find( sym.code().raw() );
 	check( existing != statstable.end(), "Symbol not exists" );
 
 	statstable.modify( existing, author, [&]( auto& a ) {
@@ -469,12 +468,12 @@ ACTION SimpleAssets::updatef( name author, symbol sym, string data ) {
 
 ACTION SimpleAssets::issuef( name to, name author, asset quantity, string memo ) {
 
-	auto sym = quantity.symbol;
+	const auto sym = quantity.symbol;
 	check( sym.is_valid(), "invalid symbol name" );
 	check( memo.size() <= 256, "memo has more than 256 bytes" );
 
 	stats statstable( _self, author.value );
-	auto existing = statstable.find( sym.code().raw() );
+	const auto existing = statstable.find( sym.code().raw() );
 	check( existing != statstable.end(), "token with symbol does not exist, create token before issue" );
 
 	require_auth( existing->issuer );
@@ -499,7 +498,7 @@ ACTION SimpleAssets::transferf( name from, name to, name author, asset quantity,
 
 	check( from != to, "cannot transfer to self" );
 	check( is_account( to ), "to account does not exist" );
-	auto sym = quantity.symbol.code();
+	const auto sym = quantity.symbol.code();
 	stats statstable( _self, author.value );
 	const auto& st = statstable.get( sym.raw() );
 
@@ -531,12 +530,12 @@ ACTION SimpleAssets::offerf( name owner, name newowner, name author, asset quant
 	require_recipient( newowner );
 	check( is_account( newowner ), "newowner account does not exist" );
 	check( owner != newowner, "cannot offer to yourself" );
-	auto sym = quantity.symbol;
+	const auto sym = quantity.symbol;
 	check( sym.is_valid(), "invalid symbol name" );
 	check( memo.size() <= 256, "memo has more than 256 bytes" );
 
 	stats statstable( _self, author.value );
-	auto existing = statstable.find( sym.code().raw() );
+	const auto existing = statstable.find( sym.code().raw() );
 	check( existing != statstable.end(), "token with symbol does not exist" );
 	check( quantity.is_valid(), "invalid quantity" );
 	check( quantity.amount > 0, "must retire positive quantity" );
@@ -598,7 +597,7 @@ ACTION SimpleAssets::burnf( name from, name author, asset quantity, string memo 
 	check( memo.size() <= 256, "memo has more than 256 bytes" );
 	stats statstable( _self, author.value );
 
-	auto existing = statstable.find( sym.code().raw() );
+	const auto existing = statstable.find( sym.code().raw() );
 	check( existing != statstable.end(), "token with symbol does not exist" );
 	require_auth( existing->authorctrl && has_auth( existing->issuer ) ? existing->issuer : from );
 
@@ -639,7 +638,7 @@ ACTION SimpleAssets::closef( name owner, name author, const symbol& symbol ) {
 	check( it->balance.amount == 0, "Cannot close because the balance is not zero." );
 
 	offerfs offert( _self, _self.value );
-	auto owner_index = offert.template get_index< "owner"_n >();
+	const auto owner_index = offert.template get_index< "owner"_n >();
 	for ( auto itro = owner_index.find( owner.value ); itro != owner_index.end(); itro++ ) {
 		check( !( itro->author == author && itro->quantity.symbol == symbol ), "You have open offers for this FT.." );
 	}
@@ -670,7 +669,7 @@ uint64_t SimpleAssets::getid( bool defer ) {
 uint64_t SimpleAssets::getFTIndex( name author, symbol symbol ) {
 
 	stats statstable( _self, author.value );
-	auto existing = statstable.find( symbol.code().raw() );
+	const auto existing = statstable.find( symbol.code().raw() );
 	check( existing != statstable.end(), "token with symbol does not exist." );
 	return existing->id;
 }
@@ -697,7 +696,7 @@ void SimpleAssets::attachdeatch( name owner, name author, asset quantity, uint64
 		require_auth( owner );  //deatach
 	}
 
-	auto itr = assets_f.find( assetidc );
+	const auto itr = assets_f.find( assetidc );
 	check( itr != assets_f.end(), "assetid cannot be found." );
 	check( itr->author == author, "Different authors." );
 	check( delegatet.find(assetidc) == delegatet.end(), "Asset is delegated." );
