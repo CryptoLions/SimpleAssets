@@ -75,6 +75,10 @@
                 {
                     "name": "stemplate",
                     "type": "string"
+                },
+                {
+                    "name": "imgpriority",
+                    "type": "string"
                 }
             ]
         },
@@ -503,6 +507,10 @@
                 {
                     "name": "stemplate",
                     "type": "string"
+                },
+                {
+                    "name": "imgpriority",
+                    "type": "string"
                 }
             ]
         },
@@ -558,6 +566,10 @@
                 },
                 {
                     "name": "stemplate",
+                    "type": "string"
+                },
+                {
+                    "name": "imgpriority",
                     "type": "string"
                 }
             ]

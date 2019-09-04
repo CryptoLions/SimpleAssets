@@ -59,9 +59,24 @@ CONTRACT SimpleAssets : public contract{
 		* @param stemplate	is stringified json with key:state values, where key is key from mdata or idata and
 		*		 state indicates recommended way of displaying field:
 		*		 url, img, webgl, mp3, video, hide (ie. don't display), etc.
+		* @param imgpriority is json with assosiation category with tipe of image or video 
+		* Example EOS:img, USD:mp3, KOLOBOK:webglb
+		* types of image
+		* txt		- default
+		* url		- show as clickable URL
+		* img		- link to img file
+		* webgl		- link to webgl file
+		* mp3		- link to mp3 file
+		* video		- link to video file
+		* hide		- do not show
+		* imgb 		- image as string in binary format
+		* webglb	- webgl binary
+		* mp3b 		- mp3 binary
+		* videob 	- video binary
+		*
 		* @return no return value
 		*/
-		ACTION regauthor( name author, string data, string stemplate );
+		ACTION regauthor( name author, string data, string stemplate, string imgpriority );
 		using regauthor_action = action_wrapper< "regauthor"_n, &SimpleAssets::regauthor >;
 
 		/*
@@ -76,9 +91,24 @@ CONTRACT SimpleAssets : public contract{
 		* @param stemplate is stringified json with key:state values, where key is key from mdata or idata and
 		*		  state indicates recommended way of displaying field:
 		*		  url, img, webgl, mp3, video, hide (ie. don't display), etc.
+		* @param imgpriority is json with assosiation category with tipe of image or video 
+		* Example EOS:img, USD:mp3, KOLOBOK:webglb
+		* types of image
+		* txt		- default
+		* url		- show as clickable URL
+		* img		- link to img file
+		* webgl		- link to webgl file
+		* mp3		- link to mp3 file
+		* video		- link to video file
+		* hide		- do not show
+		* imgb 		- image as string in binary format
+		* webglb	- webgl binary
+		* mp3b 		- mp3 binary
+		* videob 	- video binary
+		*
 		* @return no return value.
 		*/
-		ACTION authorupdate( name author, string data, string stemplate );
+		ACTION authorupdate( name author, string data, string stemplate, string imgpriority );
 		using authorupdate_action = action_wrapper< "authorupdate"_n, &SimpleAssets::authorupdate >;
 
 		/*
@@ -517,6 +547,7 @@ CONTRACT SimpleAssets : public contract{
 			name			author;
 			string			data;
 			string			stemplate;
+			string			imgpriority;
 
 			auto primary_key() const {
 				return author.value;

@@ -7,7 +7,7 @@ ACTION SimpleAssets::updatever( string version ) {
 	configs.set( tokenconfigs{ "simpleassets"_n, version }, _self );
 }
 
-ACTION SimpleAssets::regauthor( name author, string data, string stemplate ) {
+ACTION SimpleAssets::regauthor( name author, string data, string stemplate, string imgpriority ) {
 
 	require_auth( author );
 	require_recipient( author );
@@ -19,6 +19,7 @@ ACTION SimpleAssets::regauthor( name author, string data, string stemplate ) {
 			s.author = author;
 			s.data = data;
 			s.stemplate = stemplate;
+			s.imgpriority = imgpriority;
 		});
 	}
 	else {
@@ -26,7 +27,7 @@ ACTION SimpleAssets::regauthor( name author, string data, string stemplate ) {
 	}
 }
 
-ACTION SimpleAssets::authorupdate( name author, string data, string stemplate ) {
+ACTION SimpleAssets::authorupdate( name author, string data, string stemplate, string imgpriority ) {
 
 	require_auth( author );
 	require_recipient( author );
@@ -41,6 +42,7 @@ ACTION SimpleAssets::authorupdate( name author, string data, string stemplate ) 
 		author_.modify( itr, author, [&]( auto& s ) {
 			s.data = data;
 			s.stemplate = stemplate;
+			s.imgpriority = imgpriority;
 		});
 	}
 }
