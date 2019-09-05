@@ -423,7 +423,7 @@ saRes1.send();
 -----------------
 ## Change Log v1.1.2
 - added `string imgpriority` field in sauthor table and to `regauthor` and `authorupdate` actions.
-
+- IMPORTANT:  Self-deployed instances of Simple Assets may need to migrate the regauthor table (if used).
 
 ## Change Log v1.1.1
 - optimized claim/transfer/burn functionality
