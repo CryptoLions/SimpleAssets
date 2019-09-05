@@ -422,7 +422,7 @@ saRes1.send();
 
 -----------------
 ## Change Log v1.1.2
-- added `string imgpriorit`field in sauthor table and to `regauthor` and `authorupdate` actions
+- added `string imgpriority` field in sauthor table and to `regauthor` and `authorupdate` actions.
 
 
 ## Change Log v1.1.1
