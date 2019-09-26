@@ -27,8 +27,10 @@ Use Simple Assets by making calls to the Simple Assets contract.  It's like a Da
 Jungle Testnet: **simpleassets**  
 
 EOS Mainnet: **simpleassets**  
+WAX Mainnet: **simpleassets**  
 MEETONE Mainnet: **smplassets.m**  
 TELOS Mainnet: **simpleassets**  
+
   
 Simple Assets is a separate contract which other Dapps can call to manage their digital assets.  This serves as an additional guarantee to users of the Dapp that the ownership of assets is managed by a reputable outside authority, and that once created, the Dapp can only manage the asset's mdata.  All the ownership-related functionality exists outside the game.    
   
@@ -52,7 +54,7 @@ Each symbol in imdata and mdata is +1 byte.
 1. [Contract actions](#contract-actions)
 2. [Data Structures](#data-structures)
 3. [EXAMPLES: how to use Simple Assets in smart contracts](#examples-how-to-use-simple-assets-in-smart-contracts)
-4. [ChangeLog](#change-log-v112)
+4. [ChangeLog](#change-log-v113)
 ---------------------------  
 
 # Contract actions  
@@ -60,6 +62,10 @@ A description of each parameter can be found here:
 https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp  
 
 ```
+ regauthor		(name author, data, stemplate, string imgpriority)  
+ authorupdate		(author, data, stemplate, string imgpriority)  
+
+
  # -- For Non-Fungible Tokens ---
  
  create			(author, category, owner, idata, mdata, requireсlaim)  
@@ -71,9 +77,6 @@ https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp
  canceloffer		(owner, [assetid1,..,assetidn])  
  claim			(claimer, [assetid1,..,assetidn])  
   
- regauthor		(name author, data, stemplate, string imgpriorit)  
- authorupdate		(author, data, stemplate, string imgpriorit)  
- 
  delegate		(owner, to, [assetid1,..,assetidn], period, memo)  
  undelegate		(owner, from, [assetid1,..,assetidn])  
  delegatemore		(owner, assetid, period)  
@@ -116,7 +119,10 @@ sasset {
 	account[]	containerf;	// FTs attached to this asset
 }  
 ```
-// Please include in idata or mdata info about asset name img desc which will be used by Markets  
+// To help third party asset explorers, we recommend including the following fields in `idata` or `mdata`:
+// `name` (text)
+// `img` (url to image file)
+// and maybe `desc` (text description)
 
 ## Offers  
 ```
@@ -132,12 +138,36 @@ offers {
 ```
 authors {  
 	name	author;			// assets author, who will be able to create and update assets;  
+
 	string	data;			// author’s data (json) will be used by markets for better display;
 					// recommendations: logo, info, url;  
-	string	stemplate;		// data (json) schema for third-party markets. 
-					// key: state values, where key is the key from mdata or idata;  
-					// recommended values: txt, img, url, hide, webgl, mp3, video, timestamp;  
-	string	imgpriority;		// Image priority to  use for by 3d-party tools for better displaying assets.
+
+	string	stemplate;		// data (json) schema to tell third-party markets how to display each NFT field.
+					// key: state values, where key is the key from mdata or idata;
+					// recommended values: 
+					// txt    | default type
+					// url    | show as clickable URL
+					// img    | link to img file
+					// webgl  | link to webgl file
+					// mp3    | link to mp3 file
+					// video  | link to video file
+					// hide   | do not show
+					// imgb   | image as string in binary format
+					// webglb | webgl binary
+					// mp3b   | mp3 binary
+					// videob | video binary
+
+	string	imgpriority;		// Specifies primary image field for categories of NFTs.
+					//
+					// This is used when you want your NFTs primary image to be something other
+					// than a URL to an image field specified in the field img.  It also allows you to
+					// create categories of NFTs with different primary image fields.
+					// 
+					// data is a strigified json.
+					// key: NFT categories.
+					// value: a field from idata or mdata to be used as the primary image for 
+					// all NFTs of that category.
+
 }  
 ```
 
@@ -421,9 +451,15 @@ saRes1.send();
 
 
 -----------------
+## Change Log v1.1.3
+- ricardian contracts updated.
+- fungible token offer issue fix
+
+
 ## Change Log v1.1.2
-- added `string imgpriority` field in sauthor table and to `regauthor` and `authorupdate` actions.
+- added `string imgpriority` field in `sauthor` table and to `regauthor` and `authorupdate` actions
 - IMPORTANT:  Self-deployed instances of Simple Assets may need to migrate the regauthor table (if used).
+
 
 ## Change Log v1.1.1
 - optimized claim/transfer/burn functionality

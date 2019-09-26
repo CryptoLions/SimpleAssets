@@ -601,7 +601,7 @@
                 {
                     "name": "memo",
                     "type": "string"
-                }				
+                }
             ]
         },
         {
@@ -810,142 +810,142 @@
         {
             "name": "attach",
             "type": "attach",
-            "ricardian_contract": "## ACTION NAME: attach\n\n\t### INTENT\n\t\tAttach other NFTs to the specified NFT. Restrictions:\n\t\t1. Only the Asset Author can do this\n\t\t2. All assets must have the same author\n\t\t3. All assets much have the same owner\n\n\t### Input parameters:\n\t\t`owner`\t   - owner of NFTs\n\t\t`assetidc` - id of container NFT\n\t\t`assetids` - array of asset ids to attach\t\n\n\t\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Attach other NFTs to the specified NFT\nsummary: Attach other NFTs to the specified NFT\nicon: https://cryptolions.io/assets/images/sa-icons-256/attach.png#0b039adbbe1011a494959963917df4765dbae378004e00911464f865e58ef452\n---\n\nRestrictions. Only the Asset Author can do this. All assets must have the same author. All assets much have the same owner. \n\nInput parameters:\n`owner`\t   - owner of NFTs\n`assetidc` - id of container NFT\n`assetids` - array of asset ids to attach\t\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "attachf",
             "type": "attachf",
-            "ricardian_contract": "## ACTION NAME: attachf\n\n\t### INTENT\n\tAttach FTs to the specified NFT. Restrictions:\n\t1. Only the Asset Author can do this\n\t2. All assets must have the same author\n\t3. All assets much have the same owner\n\n\t### Input parameters:\n\t`owner`\t   - owner of assets\n\t`author`   - author of the assets\n\t`assetidc` - id of container NFT\n\t`quantity` - quantity to attach and token name (for example: \"10 WOOD\", \"42.00 GOLD\")\n\t\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Attach FTs to the specified NFT\nsummary: Attach FTs to the specified NFT \nicon: https://cryptolions.io/assets/images/sa-icons-256/attachf.png#2d190203c6ae474e01cd70963c82a54cb542d95e29174e7572acb8c7653d8a8c\n---\n\nRestrictions. Only the Asset Author can do this. All assets must have the same author. All assets much have the same owner \n\nInput parameters:\n`owner`\t   - owner of assets\n`author`   - author of the assets\n`assetidc` - id of container NFT\n`quantity` - quantity to attach and token name (for example: \"10 WOOD\", \"42.00 GOLD\")\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "authorupdate",
             "type": "authorupdate",
-            "ricardian_contract": "## ACTION NAME: authorupdate\n\n\t### INTENT\n\tAuthors info update. Used to updated author information, and asset display recommendations created with the regauthor action. This action replaces the fields data and stemplate.\n\n\tTo remove author entry, call this action with null strings for data and stemplate.\n\n\t### Input parameters:\n\t`author`      - authors account who will create assets; \n\t`data`        - stringified json. Recommendations to include: game, company, logo, url, desc;\n\t`stemplate`   - stringified json with key:state values, where key is key from mdata or idata and \n\t\t\t\t\tstate indicates recommended way of displaying field: \n\t\t\t\t\turl, img, webgl, mp3, video, hide (ie. don't display), etc.\n\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Authors info update\nsummary: Authors info update \nicon: https://cryptolions.io/assets/images/sa-icons-256/authorupdate.png#0b11c9c4e41b6ba1b00bd907c671f7ddc9e2f9caf26580f0b2e7c73e02f36ff3\n---\n\nUsed to updated author information, and asset display recommendations created with the regauthor action. This action replaces the fields data and stemplate. To remove author entry, call this action with null strings for data and stemplate.\n\nInput parameters:\n`author`      - authors account who will create assets; \n`data`        - stringified json. Recommendations to include: game, company, logo, url, desc;\n`stemplate`   - stringified json with key:state values, where key is key from mdata or idata and \n\t\t\t\tstate indicates recommended way of displaying field: \n\t\t\t\turl, img, webgl, mp3, video, hide (ie. don't display), etc.\n`imgpriority` - json with assosiation category with type of image or video \n\t\t\t\ttxt\t- default\n\t\t\t\turl\t- show as clickable URL\n\t\t\t\timg\t- link to img file\n\t\t\t\twebgl\t- link to webgl file\n\t\t\t\tmp3\t- link to mp3 file\n\t\t\t\tvideo\t- link to video file\n\t\t\t\thide\t- do not show\n\t\t\t\timgb \t- image as string in binary format\n\t\t\t\twebglb\t- webgl binary\n\t\t\t\tmp3b \t- mp3 binary\n\t\t\t\tvideob \t- video binary\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "burn",
             "type": "burn",
-            "ricardian_contract": "## ACTION NAME: burn\n\n\t### INTENT\n\tBurns asset {{assetid}}. This action is only available for the asset owner. After executing, the \n\tasset will disappear forever, and RAM used for asset will be released.\n\n\t### Input parameters:\n\t`owner`    - current asset owner account;\n\t`assetids` - array of assetid's to burn;\n\t`memo`     - memo for burn action;\n\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Burn asset\nsummary: Burn asset\nicon: https://cryptolions.io/assets/images/sa-icons-256/burn.png#76954820d84563187e968b461a706ab089a9c00f5332df96a4e5bb2e69ed5e84\n---\n\nThis action is only available for the asset owner. After executing, the asset will disappear forever, and RAM used for asset will be released.\n\nInput parameters:\n`owner`    - current asset owner account;\n`assetids` - array of assetid's to burn;\n`memo`     - memo for burn action;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "burnf",
             "type": "burnf",
-            "ricardian_contract": "## ACTION NAME: burnf\n\n\t### INTENT\n\tBurns a fungible token. This action is available for the token owner and author. After executing, \n\taccounts balance and supply in stats table for this token will reduce by the specified quantity.\n\n\t### Input parameters:\n\t`from`     - account who burns the token;\n\t`author`   - account of fungible token author;\n\t`quantity` - amount to burn, example \"1.00 WOOD\";\n\t`memo`     - memo for burnf action;\n\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Burns a fungible token\nsummary: Burns a fungible token\nicon: https://cryptolions.io/assets/images/sa-icons-256/burn.png#76954820d84563187e968b461a706ab089a9c00f5332df96a4e5bb2e69ed5e84\n---\n\nThis action is available for the token owner and author. After executing, accounts balance and supply in stats table for this token will reduce by the specified quantity\n\nInput parameters:\n`from`     - account who burns the token;\n`author`   - account of fungible token author;\n`quantity` - amount to burn, example \"1.00 WOOD\";\n`memo`     - memo for burnf action;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "canceloffer",
             "type": "canceloffer",
-            "ricardian_contract": "## ACTION NAME: canceloffer\n\n\t### INTENT\n\tCancel and remove offer. Available for the asset owner.\n\n\t### Input parameters:\n\t`owner`    - current asset owner account;\n\t`assetids` - array of assetid's to cancel offer;\n\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Cancel and remove offer\nsummary: Cancel and remove offer. Available for the asset owner\nicon: https://cryptolions.io/assets/images/sa-icons-256/canceloffer.png#83328bae49f18f0aeca6d04c2e3003e49637a462b44a492d3439a9c44724a654\n---\n\nInput parameters:\n`owner`    - current asset owner account;\n`assetids` - array of assetid's to cancel offer;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "cancelofferf",
             "type": "cancelofferf",
-            "ricardian_contract": "## ACTION NAME: cancelofferf\n\n\t### INTENT\n\tCancels offer of FTs\n\n\t### Input parameters:\n\t`owner`      - riginal owner of the FT\n\t`ftofferids` - id of the FT offer\n\t\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Cancels offer of FTs\nsummary: Cancels offer of FTs \nicon: https://cryptolions.io/assets/images/sa-icons-256/cancelofferf.png#9c35f488e2c53464f430e0e31e5a4b3bd2e914fe3b6db126722166a8a408fa83\n---\n\nInput parameters:\n`owner`      - riginal owner of the FT\n`ftofferids` - id of the FT offer\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "claim",
             "type": "claim",
-            "ricardian_contract": "## ACTION NAME: claim\n\n\t### INTENT\n\tClaim the specified asset (assuming it was offered to claimer by the asset owner).\n\n\t### Input parameters:\n\t`claimer`  - account claiming the asset\n\t`assetids` - array of assetid's to claim\n\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Claim the specified asset\nsummary: Claim the specified asset (assuming it was offered to claimer by the asset owner)\nicon: https://cryptolions.io/assets/images/sa-icons-256/claim.png#8c3fdf140ea14a3cb9762a0f6ec0f0d73f8c2eeeec3ea2f109f394a9f35f472d\n---\n\nInput parameters:\n`claimer`  - account claiming the asset\n`assetids` - array of assetid's to claim\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "claimf",
             "type": "claimf",
-            "ricardian_contract": "## ACTION NAME: claimf\n\n\t### INTENT\n\tClaim FTs which have been offered\n\n\t### Input parameters:\n\t`claimer`    - Account claiming FTs which have been offered\n\t`ftofferids` - array of FT offer ids\n\t\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Claim FTs which have been offered\nsummary: Claim FTs which have been offered\nicon: https://cryptolions.io/assets/images/sa-icons-256/claimf.png#80086207646470fa9cbaf4638ba0dedec96ea0e84d5059b567adc9e4b8543c30\n---\n\nInput parameters:\n`claimer`    - Account claiming FTs which have been offered\n`ftofferids` - array of FT offer ids\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "closef",
             "type": "closef",
-            "ricardian_contract": "## ACTION NAME: closef\n\n\t### INTENT\n\tCloses accounts table for provided fungible token and releases RAM.\n\tAction works only if balance is 0;\n\n\t### Input parameters:\n\t`owner`  - account who woud like to close table with fungible token;\n\t`author` - account of fungible token author;\n\t`symbol` - token symbol, example \"WOOD\", \"ROCK\", \"GOLD\";\n\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Closes accounts table\nsummary: Action works only if balance is 0.  for provided fungible token and releases RAM\nicon: https://cryptolions.io/assets/images/sa-icons-256/attach.png#0b039adbbe1011a494959963917df4765dbae378004e00911464f865e58ef452\n---\n\nInput parameters:\n`owner`  - account who woud like to close table with fungible token;\n`author` - account of fungible token author;\n`symbol` - token symbol, example \"WOOD\", \"ROCK\", \"GOLD\";\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "create",
             "type": "create",
-            "ricardian_contract": "## ACTION NAME: create\n\n\t### INTENT\n\t—reate a new asset.\n\n\t### Input parameters:\n\t`author`         - asset's author, who will able to updated asset's mdata;\n\t`category`       - assets category;\n\t`owner`          - assets owner;\n\t`idata`          - stringified json with immutable assets data\n\t`mdata`          - stringified json with mutable assets data, can be changed only by author\n\t`requireclaim`   - true or false. If disabled, upon creation, the asset will be transfered to owner (but \n\t\t\t\t\t   but AUTHOR'S memory will be used until the asset is transferred again).  If enabled,\n\t\t\t\t\t   author will remain the owner, but an offer will be created for the account specified in \n\t\t\t\t\t   the owner field to claim the asset using the account's RAM.\n\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Create a new asset\nsummary: Create a new asset\nicon: https://cryptolions.io/assets/images/sa-icons-256/create.png#db2bc53cef5dbbce5247543a91234373ec4bd1baf743301a0d92a35b053eeb70\n---\t\n\nInput parameters:\n`author`         - asset's author, who will able to updated asset's mdata;\n`category`       - assets category;\n`owner`          - assets owner;\n`idata`          - stringified json with immutable assets data\n`mdata`          - stringified json with mutable assets data, can be changed only by author\n`requireclaim`   - true or false. If disabled, upon creation, the asset will be transfered to owner (but \n\t\t\t\t   but AUTHOR'S memory will be used until the asset is transferred again).  If enabled,\n\t\t\t\t   author will remain the owner, but an offer will be created for the account specified in \n\t\t\t\t   the owner field to claim the asset using the account's RAM.\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "createf",
             "type": "createf",
-            "ricardian_contract": "## ACTION NAME: createf\n\n\t### INTENT\n\tCreates fungible token with specified maximum supply; You can not change anything after creation.\n\n\t### Input parameters:\n\t`author`         - fungible token author;\n\t`maximum_supply` - maximum token supply, example \"10000000.0000 GOLD\", \"10000000 SEED\", \"100000000.00 WOOD\". Precision is also important here;\n\t`authorctrl`     - if true(1) allow token author (and not just owner) to burnf and transferf. Cannot be changed after creation!\n\t`data`           - stringify json (recommend including keys `img` and `name` for better displaying by markets)\n\t\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Creates fungible token\nsummary: Creates fungible token\nicon: https://cryptolions.io/assets/images/sa-icons-256/createf.png#5fb6788f19b8fb08ce46e765a9b0ae8758cba7e4da9895f840d34d143912fd3d\n---\n\nCreates fungible token with specified maximum supply; You can not change anything after creation.\n\nInput parameters:\n`author`         - fungible token author;\n`maximum_supply` - maximum token supply, example \"10000000.0000 GOLD\", \"10000000 SEED\", \"100000000.00 WOOD\". Precision is also important here;\n`authorctrl`     - if true(1) allow token author (and not just owner) to burnf and transferf. Cannot be changed after creation!\n`data`           - stringify json (recommend including keys `img` and `name` for better displaying by markets)\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "createlog",
             "type": "createlog",
-            "ricardian_contract": "## ACTION NAME: createlog (internal)"
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: createlog (internal)\nsummary: createlog (internal) \nicon: https://cryptolions.io/assets/images/sa-icons-256/claimf.png#80086207646470fa9cbaf4638ba0dedec96ea0e84d5059b567adc9e4b8543c30\n---"
         },
         {
             "name": "delegate",
             "type": "delegate",
-            "ricardian_contract": "## ACTION NAME: delegate\n\n\t### INTENT\n\tDelegates asset to {{to}}. This action changes the asset owner by calling the transfer action.\n\tIt also adds a record in the delegates table to record the asset as borrowed.  This blocks\n\tthe asset from all owner actions (transfers, offers, burning by borrower).\n\n\t### Input parameters:\n\t`owner`     - current asset owner account;\n\t`to`        - borrower account name;\n\t`assetids`  - array of assetid's to delegate;\n\t`period`    - time in seconds that the asset will be lent. Lender cannot undelegate until \n\t\t\t\t  the period expires, however the receiver can transfer back at any time.\n\t`memo`      - memo for delegate action\n\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
-        },
-        {
-            "name": "detach",
-            "type": "detach",
-            "ricardian_contract": "## ACTION NAME: detach\n\n\t### INTENT\n\tDetach NFTs from the specified NFT.\n\n\t### Input parameters:\n\t`owner`    - owner of NFTs\n\t`assetidc` - the id of the NFT from which we are detaching\n\t`assetids` - the ids of the NFTS to be detached\n\t\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
-        },
-        {
-            "name": "detachf",
-            "type": "detachf",
-            "ricardian_contract": "## ACTION NAME: detachf\n\n\t### INTENT\n\tDetach FTs from the specified NFT.\n\n\t### Input parameters:\n\t`owner`    - owner of NFTs\n\t`author`   - author of the assets\n\t`assetidc` - id of the container NFT\n\t`quantity` - quantity to detach and token name (for example: \"10 WOOD\", \"42.00 GOLD\")\n\t\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
-        },
-        {
-            "name": "issuef",
-            "type": "issuef",
-            "ricardian_contract": "## ACTION NAME: issuef\n\n\t### INTENT\n\tThis action issues a fungible token.\t\t\n\n\t### Input parameters:\n\t`to`       - account receiver;\n\t`author`   - fungible token author;\n\t`quantity` - amount to issue, example \"1000.00 WOOD\";\n\t`memo`     - transfers memo;\n\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
-        },
-        {
-            "name": "offer",
-            "type": "offer",
-            "ricardian_contract": "## ACTION NAME: offer\n\n\t### INTENT\n\tOffer asset for claim. This is an alternative to the transfer action. Offer can be used by an \n\tasset owner to transfer the asset without using their RAM. After an offer is made, the account\n\tspecified in {{newowner}} is able to make a claim, and take control of the asset using their RAM.\n\tOffer action is not available if an asste is delegated (borrowed).\n\n\t### Input parameters:\n\t`owner`    - current asset owner account;\n\t`newowner` - new asset owner, who will able to claim;\n\t`assetids` - array of assetid's to offer;\n\t`memo`     - memo for offer action\n\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
-        },
-        {
-            "name": "offerf",
-            "type": "offerf",
-            "ricardian_contract": "## ACTION NAME: offerf\n\n\t### INTENT\n\tOffer fungible tokens for another EOS user to claim. \n\tThis is an alternative to the transfer action. Offer can be used by a \n\tFT owner to transfer the FTs without using their RAM. After an offer is made, the account\n\tspecified in {{newowner}} is able to make a claim, and take control of the asset using their RAM.\n\tFTs will be removed from the owner's balance while the offer is open.\n\n\t### Input parameters:\n\t`owner`    - original owner of the FTs\n\t`newowner` - account which will be able to claim the offer\n\t`author`   - account of fungible token author;\t\n\t`quantity` - amount to transfer, example \"1.00 WOOD\";\n\t`memo`     - offer's comment;\n\t\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
-        },
-        {
-            "name": "openf",
-            "type": "openf",
-            "ricardian_contract": "## ACTION NAME: openf\n\n\t### INTENT\n\tOpens accounts table for specified fungible token.\n\n\t### Input parameters:\n\t`owner`     - account who woud like to close table with fungible token;\n\t`author`    - account of fungible token author;\n\t`symbol`    - token symbol, example \"WOOD\", \"ROCK\", \"GOLD\";\n\t`ram_payer` - account who will pay for ram used for table creation;\n\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
-        },
-        {
-            "name": "regauthor",
-            "type": "regauthor",
-            "ricardian_contract": "## ACTION NAME: regauthor\n\n\t### INTENT\n\tNew Author registration. Action is not mandatory.  Markets *may* choose to use information here \n\tto display info about the author, and to follow specifications expressed here for displaying asset fields.\n\n\t### Input parameters:\n\t`author`      -\tauthors account who will create assets;\n\t`data`        - stringified json. Recommendations to include: game, company, logo, url, desc;\n\t`stemplate`   - stringified json with key:state values, where key is key from mdata or idata and \n\t\t\t\t\tstate indicates recommended way of displaying field: \n\t\t\t\t\turl, img, webgl, mp3, video, hide (ie. don't display), etc.\n\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
-        },
-        {
-            "name": "transfer",
-            "type": "transfer",
-            "ricardian_contract": "## ACTION NAME: transfer\n\n\t### INTENT\n\tThis actions transfers an asset. On transfer owner asset's and scope asset's changes to {{to}}'s.\n\tSenders RAM will be charged to transfer asset.\n\tTransfer will fail if asset is offered for claim or is delegated.\n\n\t### Input parameters:\n\t`from`     - account who sends the asset;\n\t`to`       - account of receiver;\n\t`assetids` - array of assetid's to transfer;\n\t`memo`     - transfers comment;\n\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
-        },
-        {
-            "name": "transferf",
-            "type": "transferf",
-            "ricardian_contract": "## ACTION NAME: transferf\n\tThis actions transfers an fungible token.\n\n\t### INTENT\n\tThis actions transfers a specified quantity of fungible tokens.\n\n\t### Input parameters:\n\t`from`     - account who sends the token;\n\t`to`       - account of receiver;\n\t`author`   - account of fungible token author;\n\t`quantity` - amount to transfer, example \"1.00 WOOD\";\n\t`memo`     - transfers comment;\n\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
-        },
-        {
-            "name": "undelegate",
-            "type": "undelegate",
-            "ricardian_contract": "## ACTION NAME: undelegate\n\n\t### INTENT\n\tUndelegates an asset from {{from}} account. Executing action by real owner will return asset immediately,\n\tand the entry in the delegates table recording the borrowing will be erased.\n\n\t### Input parameters:\n\t`owner`    - real asset owner account;\n\t`from`     - current account owner (borrower);\n\t`assetids` - array of assetid's to undelegate;\n\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
-        },
-        {
-            "name": "update",
-            "type": "update",
-            "ricardian_contract": "## ACTION NAME: update\n\n\t### INTENT\n\tUpdate assets mutable data (mdata) field. Action is available only for authors.\n\n\t### Input parameters:\n\t`author`  - authors account;\n\t`owner`   - current assets owner;\n\t`assetid` - assetid to update;\n\t`mdata`   - stringified json with mutable assets data. All mdata will be replaced;\n\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
-        },
-        {
-            "name": "updatef",
-            "type": "updatef",
-            "ricardian_contract": "## ACTION NAME: updatef\n\n\t### INTENT\n\tUpdate the data field of a fungible token.\n\n\t### Input parameters:\n\t`author` - fungible token author;\n\t`sym`    - fingible token symbol (\"GOLD\", \"WOOD\", etc.)\n\t`data`   - stringify json (recommend including keys `img` and `name` for better displaying by markets)\n\t\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
-        },
-        {
-            "name": "updatever",
-            "type": "updatever",
-            "ricardian_contract": "## ACTION NAME: updatever (internal)"
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Delegates asset\nsummary: Delegates asset\nicon: https://cryptolions.io/assets/images/sa-icons-256/delegate.png#f8d91c1b9c0f376464e69aadf41142a17492af1e75d394601872b6a992b420bc\n---\n\nThis action changes the asset owner by calling the transfer action. It also adds a record in the delegates table to record the asset as borrowed. This block the asset from all owner actions (transfers, offers, burning by borrower).\n\nInput parameters:\n`owner`     - current asset owner account;\n`to`        - borrower account name;\n`assetids`  - array of assetid's to delegate;\n`period`    - time in seconds that the asset will be lent. Lender cannot undelegate until \n\t\t\t  the period expires, however the receiver can transfer back at any time;\n`memo`      - memo for delegate action;\n`autoreturn`- automatic return for delegated action;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "delegatemore",
             "type": "delegatemore",
-            "ricardian_contract": "## ACTION NAME: delegatemore\n\n\t### INTENT\n\tExtend period of delegated asset. \n\n\t### Input parameters:\n\t`owner`    - real asset owner account;\n\t`assetids` - assetid's to extend period;\n\t`period`    - time in seconds that the asset will be lent. Lender cannot undelegate until \n\t\t\t\t  the period expires, however the receiver can transfer back at any time.\n\n\t### TERM\n\tThis Contract expires at the conclusion of code execution.\n\n\tby CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Extend period of delegating of asset\nsummary: Extend period of delegating of asset\nicon: https://cryptolions.io/assets/images/sa-icons-256/delegate_more.png#6d1f7319569e3780e25cfb717d83f4ad58c91c0890ab234f106d1593956dfd10\n---\n\nInput parameters:\n`owner`     - current asset owner account;\n`assetidc`  - assetid to delegate;\n`period`    - time in seconds that the asset will be lent. Lender cannot undelegate until \n\t\t\t  the period expires, however the receiver can transfer back at any time.\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "detach",
+            "type": "detach",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Detach NFTs from the specified NFT\nsummary: Detach NFTs from the specified NFT\nicon: https://cryptolions.io/assets/images/sa-icons-256/detach.png#a075de69e2cf8eed78306834cc5688b64ce6ed660c0db762ae20c7c7a1d19a6b\n---\n\nInput parameters:\n`owner`    - owner of NFTs\n`assetidc` - the id of the NFT from which we are detaching\n`assetids` - the ids of the NFTS to be detached\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "detachf",
+            "type": "detachf",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Detach FTs from the specified NFT\nsummary: Action is not mandatory\nicon: https://cryptolions.io/assets/images/sa-icons-256/detachf.png#2476bc6b7c02a4ec7e0e307b60f44a02486b4bebb4d91714817e5816063198e8\n---\n\nInput parameters:\n`owner`    - owner of NFTs\n`author`   - author of the assets\n`assetidc` - id of the container NFT\n`quantity` - quantity to detach and token name (for example: \"10 WOOD\", \"42.00 GOLD\")\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "issuef",
+            "type": "issuef",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Issue a fungible token\nsummary: This action issues a fungible token\nicon: https://cryptolions.io/assets/images/sa-icons-256/issuef.png#a40d77b2162d646cd3ce0488dfeab1cdfae8801fcc1d0c6ef1f16f2547b16551\n---\n\nInput parameters:\n`to`       - account receiver;\n`author`   - fungible token author;\n`quantity` - amount to issue, example \"1000.00 WOOD\";\n`memo`     - transfers memo;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "offer",
+            "type": "offer",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Offer asset for claim\nsummary: Offer asset for claim\nicon: https://cryptolions.io/assets/images/sa-icons-256/offer.png#4aea6612c87df6cde081689f861b55ddba2c277cc553f4faeb65a4cb26656c66\n---\n\nThis is an alternative to the transfer action. Offer can be used by an asset owner to transfer the asset without using their RAM. After an offer is made, the account specified in {{newowner}} is able to make a claim, and take control of the asset using their RAM. Offer action is not available if an asste is delegated (borrowed). \n\nInput parameters:\n`owner`    - current asset owner account;\n`newowner` - new asset owner, who will able to claim;\n`assetids` - array of assetid's to offer;\n`memo`     - memo for offer action\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "offerf",
+            "type": "offerf",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Offer fungible tokens to claim\nsummary: Offer fungible tokens for another EOS user to claim\nicon: https://cryptolions.io/assets/images/sa-icons-256/offerf.png#a34462918e536372610a523225e5221cd2685eff3c329499ded7298907f8524b\n---\n\nThis is an alternative to the transfer action. Offer can be used by a FT owner to transfer the FTs without using their RAM. After an offer is made, the account specified in new owner is able to make a claim, and take control of the asset using their RAM. FTs will be removed from the owner's balance while the offer is open\n\nInput parameters:\n`owner`    - original owner of the FTs\n`newowner` - account which will be able to claim the offer\n`author`   - account of fungible token author;\t\n`quantity` - amount to transfer, example \"1.00 WOOD\";\n`memo`     - offer's comment;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "openf",
+            "type": "openf",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Opens accounts table for fungible token\nsummary: Opens accounts table for specified fungible token\nicon: https://cryptolions.io/assets/images/sa-icons-256/attach.png#0b039adbbe1011a494959963917df4765dbae378004e00911464f865e58ef452\n---\n\nInput parameters:\n`owner`     - account who woud like to close table with fungible token;\n`author`    - account of fungible token author;\n`symbol`    - token symbol, example \"WOOD\", \"ROCK\", \"GOLD\";\n`ram_payer` - account who will pay for ram used for table creation;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "regauthor",
+            "type": "regauthor",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: New Author registration\nsummary: New Author registration \nicon: https://cryptolions.io/assets/images/sa-icons-256/regauthor.png#c6a539be8e7dfd1a4c466ba9cabfd13571cd77d5c988c652d2e8f87096f3548e\n---\n\nAction is not mandatory.  Markets *may* choose to use information here to display info about the author, and to follow specifications expressed here for displaying asset fields.\n\nInput parameters:\n`author`      -\tauthors account who will create assets;\n`data`        - stringified json. Recommendations to include: game, company, logo, url, desc;\n`stemplate`   - stringified json with key:state values, where key is key from mdata or idata and \n\t\t\t\tstate indicates recommended way of displaying field: \n\t\t\t\turl, img, webgl, mp3, video, hide (ie. don't display), etc.\n`imgpriority` - json with assosiation category with type of image or video \n\t\t\t\ttxt\t- default\n\t\t\t\turl\t- show as clickable URL\n\t\t\t\timg\t- link to img file\n\t\t\t\twebgl\t- link to webgl file\n\t\t\t\tmp3\t- link to mp3 file\n\t\t\t\tvideo\t- link to video file\n\t\t\t\thide\t- do not show\n\t\t\t\timgb \t- image as string in binary format\n\t\t\t\twebglb\t- webgl binary\n\t\t\t\tmp3b \t- mp3 binary\n\t\t\t\tvideob \t- video binary\n\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "transfer",
+            "type": "transfer",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: This actions transfers an asset\nsummary: This actions transfers an asset\nicon: https://cryptolions.io/assets/images/sa-icons-256/transfer.png#23227a4901414db5cd0973d1cc5df13f9b82375b21c6315fd3402cb4acd50cbf\n---\n\nOn transfer owner asset's and scope asset's changes to {{to}}'s. Senders RAM will be charged to transfer asset. Transfer will fail if asset is offered for claim or is delegated.\n\nInput parameters:\n`from`     - account who sends the asset;\n`to`       - account of receiver;\n`assetids` - array of assetid's to transfer;\n`memo`     - transfers comment;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "transferf",
+            "type": "transferf",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Transfer a fungible token\nsummary: This action transfer the specified quantity of fungible tokens\nicon: https://cryptolions.io/assets/images/sa-icons-256/transfer.png#23227a4901414db5cd0973d1cc5df13f9b82375b21c6315fd3402cb4acd50cbf\n---\n\nInput parameters:\n`from`     - account who sends the token;\n`to`       - account of receiver;\n`author`   - account of fungible token author;\n`quantity` - amount to transfer, example \"1.00 WOOD\";\n`memo`     - transfers comment;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "undelegate",
+            "type": "undelegate",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Undelegates an asset\nsummary: Undelegates an asset\nicon: https://cryptolions.io/assets/images/sa-icons-256/delegate.png#f8d91c1b9c0f376464e69aadf41142a17492af1e75d394601872b6a992b420bc\n---\n\nExecuting action by real owner will return asset immediately, and the entry in the delegates table recording the borrowing will be erased.\n\nInput parameters:\n`owner`    - real asset owner account;\n`from`     - current account owner (borrower);\n`assetids` - array of assetid's to undelegate;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "update",
+            "type": "update",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Update assets mutable data\nsummary: Update assets mutable data (mdata) field. Action is available only for authors\nicon: https://cryptolions.io/assets/images/sa-icons-256/update.png#305b640fe614876c6e6f5fed5ac21f8157c80f7bee39f3db26228986c1fc5e0e\n---\n\nInput parameters:\n`author`  - authors account;\n`owner`   - current assets owner;\n`assetid` - assetid to update;\n`mdata`   - stringified json with mutable assets data. All mdata will be replaced;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "updatef",
+            "type": "updatef",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Update the data field of a fungible token\nsummary: Update the data field of a fungible token\nicon: https://cryptolions.io/assets/images/sa-icons-256/updatef.png#f5d5af2ed6af508777f9f0b3c3a8e24b61eeca2ea623cfec6f6d0e9ea2c4d1a7\n---\n\nInput parameters:\n`author` - fungible token author;\n`sym`    - fingible token symbol (\"GOLD\", \"WOOD\", etc.)\n`data`   - stringify json (recommend including keys `img` and `name` for better displaying by markets)\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "updatever",
+            "type": "updatever",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Update version (internal)\nsummary: Update version (internal)\nicon: https://cryptolions.io/assets/images/sa-icons-256/claimf.png#80086207646470fa9cbaf4638ba0dedec96ea0e84d5059b567adc9e4b8543c30\n---"
         }
     ],
     "tables": [

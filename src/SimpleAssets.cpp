@@ -547,7 +547,17 @@ ACTION SimpleAssets::offerf( name owner, name newowner, name author, asset quant
 	auto owner_index = offert.template get_index< "owner"_n >();
 
 	for ( auto itro = owner_index.find( owner.value ); itro != owner_index.end(); itro++ ) {
-		check( !( itro->author == author && itro->offeredto == newowner && itro->quantity.symbol == quantity.symbol ), "Such an offer already exists" );
+		if ( itro->author == author && itro->offeredto == newowner && itro->quantity.symbol == quantity.symbol ) {
+			auto itr = offert.find( itro->id );
+			if ( itr != offert.end() ) {
+				  offert.modify( itr, owner, [&](auto& s) {
+					s.quantity.amount += quantity.amount;
+					s.cdate = now();
+				});
+				sub_balancef( owner, author, quantity );
+				return ;
+			}
+		}
 	}
 
 	offert.emplace( owner, [&]( auto& s ) {
