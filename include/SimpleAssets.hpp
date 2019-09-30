@@ -52,7 +52,7 @@ CONTRACT SimpleAssets : public contract{
 		* New Author registration.
 		*
 		* This action registers a new new author account. It is not mandatory.  Markets *may* choose to use
-                * information here to display the information about the author, and to follow specifications expressed
+                * information here to display information about the author, and to follow specifications expressed
                 * here for displaying asset fields.
 		*
 		* @param author     is author's account who will create assets.
@@ -72,7 +72,7 @@ CONTRACT SimpleAssets : public contract{
 		* videob 	- video binary
 		*
 		* @param imgpriority is JSON which assosiates an NFT category with the field name from idata or mdata
-		* that specifies the main image 
+		* that specifies the main image field for that category of NFTs.
 		*
 		* @return no return value
 		*/
@@ -83,8 +83,8 @@ CONTRACT SimpleAssets : public contract{
 		* Authors info update.
 		*
 		* This action updates author's information and the asset display recommendations. This action replaces
-                * the fields "data" and "stemplate".
-		* To remove author entry, call this action with null strings for data and stemplate.
+                * the fields data, stemplate, and imgpriority.
+		* To remove author entry, call this action with null strings for data, stemplate, and imgpriority.
 		*
 		* (See regauthor action for parameter info.)
 		*
@@ -137,26 +137,26 @@ CONTRACT SimpleAssets : public contract{
 		/*
 		* Claim asset.
 		*
-		* This action claims the assets that were offered to the claimer by the asset owner.
+		* This action claims the specified assets (assuming they were offered to claimer by the asset owner).
 		*
 		* @param claimer is account claiming the asset.
-		* @param assetids is array of asset identifiers to claim.
+		* @param assetids is array of asset id's to claim.
 		* @return no return value.
 		*/
 		ACTION claim( name claimer, std::vector< uint64_t >& assetids );
 		using claim_action = action_wrapper< "claim"_n, &SimpleAssets::claim >;
 
 		/*
-		* Transfer assets.
+		* Transfers one or more assets.
 		*
-		* This action transfers assets by changing the owner to the new value.
-		* The asset will be re-allocated to charge the sender's RAM.
-		* The transfer will fail if asset is offered for claim or is delegated.
+		* This action transfers one or more assets by changing scope.
+		* Sender's RAM will be charged to transfer asset.
+		* Transfer will fail if asset is offered for claim or is delegated.
 		*
-		* @param from is account sending the asset.
-		* @param to is the receiver account.
-		* @param assetids is array of asseti identifiers to transfer.
-		* @param memo is comment string for the transfer.
+		* @param from is account who sends the asset.
+		* @param to is account of receiver.
+		* @param assetids is array of assetid's to transfer.
+		* @param memo is transfers comment.
 		* @return no return value.
 		*/
 		ACTION transfer( name from, name to, std::vector< uint64_t >& assetids, string memo );
@@ -169,7 +169,7 @@ CONTRACT SimpleAssets : public contract{
 		*
 		* @param author	is author account.
 		* @param owner is current asset owner.
-		* @param assetid is asset identifier to update.
+		* @param assetid is asset id to update.
 		* @param mdata is stringified JSON with mutable assets data. All mdata will be replaced.
 		* @return no return value.
 		*/
@@ -180,13 +180,13 @@ CONTRACT SimpleAssets : public contract{
 		* Offer asset for claim.
 		*
 		* This is an alternative to the transfer action. Offer can be used by an
-		* asset owner to transfer the asset without using the sender's RAM. After an offer is made, the account
+		* asset owner to transfer the asset without using the their RAM. After an offer is made, the account
 		* specified in {{newowner}} is able to make a claim, and take control of the asset using their RAM.
 		* Offer action is not available if an asset is delegated (borrowed).
 		*
 		* @param owner is the accout of current owner.
 		* @param newowner is the future owner of the asset.
-		* @param assetids is array of asset identifiers to offer.
+		* @param assetids is array of asset id's to offer.
 		* @param memo is memo for offer action.
 		* @return no return value.
 		*/
@@ -199,7 +199,7 @@ CONTRACT SimpleAssets : public contract{
 		* This action cancels an offer. Only the current owner of an asset is allowed to execute it.
 		*
 		* @param owner		- current asset owner account.
-		* @param assetids	- array of asset identifiers to cancel from offer.
+		* @param assetids	- array of asset id's to cancel from offer.
 		* @return no return value.
 		*/
 		ACTION canceloffer( name owner, std::vector<uint64_t>& assetids );
@@ -213,7 +213,7 @@ CONTRACT SimpleAssets : public contract{
                 * attached fungible and non-fungible assets will be destroyed too.
 		*
 		* @param owner is current asset owner account.
-		* @param assetids is array of asset identifiers to burn.
+		* @param assetids is array of asset id's to burn.
 		* @param memo is memo for burn action.
 		* @return no return value.
 		*/
@@ -229,7 +229,7 @@ CONTRACT SimpleAssets : public contract{
 		*
 		* @param owner is current asset owner account.
 		* @param to is borrower account name.
-		* @param assetids is array of asset identifiers to delegate.
+		* @param assetids is array of asset id's to delegate.
 		* @param period	is time in seconds that the asset will be lent for. The lender cannot undelegate until
 		*		 the period expires, however the receiver can transfer back at any time.
 		* @param memo is memo for delegate action.
@@ -246,7 +246,7 @@ CONTRACT SimpleAssets : public contract{
 		*
 		* @param owner is the account of real owner of the assets.
 		* @param from is current account owner (borrower).
-		* @param assetids is array of asset identifiers to undelegate.
+		* @param assetids is array of asset id's to undelegate.
 		* @return no return value.
 		*/
 		ACTION undelegate( name owner, name from, std::vector< uint64_t >& assetids );
@@ -262,7 +262,7 @@ CONTRACT SimpleAssets : public contract{
 		*
 		* @param owner is owner of NFTs.
 		* @param assetidc is id of container NFT.
-		* @param assetids is array of asset identifiers to attach.
+		* @param assetids is array of asset id's to attach.
 		* @return no return value.
 		*/
 		ACTION attach( name owner, uint64_t assetidc, std::vector< uint64_t >& assetids );
@@ -275,8 +275,8 @@ CONTRACT SimpleAssets : public contract{
                 * allowed to execute this action.
 		*
 		* @param owner is owner of NFTs.
-		* @param assetidc is the identifier of the NFT from which we are detaching.
-		* @param assetids is the array of identifiers of the NFTS to be detached.
+		* @param assetidc is the id of the NFT from which we are detaching.
+		* @param assetids is the array of id's of the NFTS to be detached.
 		* @return no return value.
 		*/
 		ACTION detach( name owner, uint64_t assetidc, std::vector< uint64_t >& assetids );
@@ -285,11 +285,11 @@ CONTRACT SimpleAssets : public contract{
 		/*
 		* Extend the delegation.
 		*
-		* This action extends the delegation period of a delegated asset.
+		* This action extends the period of a delegated asset.
 		*
 		* @param owner is owner of NFTs.
-		* @param assetidc is the identifier of the NFT for which we are extending the period.
-		* @param period is new added to existing amount of period.
+		* @param assetidc is the id of the NFT for which we are extending the period.
+		* @param period is number of seconds added to existing amount of period.
 		* @return no return value.
 		*/
 		ACTION delegatemore( name owner, uint64_t assetidc, uint64_t period );
@@ -305,7 +305,7 @@ CONTRACT SimpleAssets : public contract{
 		*
 		* @param owner is the owner of the asset.
 		* @param author	is author of the asset.
-		* @param assetidc is identifier of container NFT.
+		* @param assetidc is id of container NFT.
 		* @param quantity is quantity to attach and token name (for example: "10 WOOD", "42.00 GOLD").
 		* @return no return value.
 		*/
@@ -319,7 +319,7 @@ CONTRACT SimpleAssets : public contract{
 		*
 		* @param owner is the owner of NFTs.
 		* @param author	is the author of the assets.
-		* @param assetidc is identifier of the container NFT.
+		* @param assetidc is id of the container NFT.
 		* @param quantity is quantity to detach and token name (for example: 10 WOOD, 42.00 GOLD).
 		* @return no return value.
 		*/
@@ -334,9 +334,9 @@ CONTRACT SimpleAssets : public contract{
 		*
 		* @param author is fungible token author;
 		* @param maximum_supply is maximum token supply, example "10000000.0000 GOLD", "10000000 SEED",
-                *        "100000000.00 WOOD". The amount must specify the exact precision.
-		* @param authorctrl is IMPORTANT! If set to "true", it allows token author (in addition to the owner)
-                * to burnf and transferf. This cannot be changed after token creation.
+                * 	"100000000.00 WOOD". The amount must specify the exact precision.
+		* @param authorctrl is IMPORTANT! If true(1) allows token author (and not just owner) to burnf and transferf.
+                * 	Cannot be changed after creation!
 		* @param data is stringified JSON (recommend including keys `img` and `name` for better displaying by markets).
 		* @return no return value.
 		*/
@@ -422,7 +422,7 @@ CONTRACT SimpleAssets : public contract{
 		* This action claims FTs which have been offered.
 		*
 		* @param claimer is account claiming FTs which have been offered.
-		* @param ftofferids is array of FT offer identifiers.
+		* @param ftofferids is array of FT offer id's.
 		* @return no return value.
 		*/
 		ACTION claimf( name claimer, std::vector< uint64_t >& ftofferids );
@@ -485,7 +485,7 @@ CONTRACT SimpleAssets : public contract{
 		static asset get_supply( name token_contract_account, name author, symbol_code sym_code );
 
 		/*
-		* Return token balance for account.
+		* Returns token balance for account.
 		*
 		* This function returns token balance for account.
 		*
