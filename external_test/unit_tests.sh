@@ -54,6 +54,46 @@ function CLEAN_DELEGATES_TABLE
 }
 
 #---------------------------------------------------------------------------------------------------
+# clean up nttoffers table
+#---------------------------------------------------------------------------------------------------
+function CLEAN_NTTOFFERS_TABLE 
+{
+	sleep $WAIT_TIME
+	size=$(./cleos.sh get table $ACC $SCOPE nttoffers | jq -r '.rows | length')
+	nttoffer_ids=$(./cleos.sh get table $ACC $SCOPE nttoffers | jq -r '.rows[].assetid')
+
+	if (( size > 0 ))
+	  then
+		echo "nttofferstable has $size data [$nttoffer_ids]"
+		for id in ${nttoffer_ids}; do
+			echo ${id}
+			./cleos.sh push action $ACC cancelnttofr '["'${ACC}'", ["'${id}'"]]' -p $ACC
+			echo "${id} is canceled"
+		done
+	  else
+		echo "nttoffers table is empty"
+	fi
+
+	sleep $WAIT_TIME
+	size=$(./cleos.sh get table $ACC $SCOPE nttoffers | jq -r '.rows | length')
+
+	sleep $WAIT_TIME
+	if (( size > 0 ))
+	  then
+
+		size=$(./cleos.sh get table $ACC $SCOPE nttoffers | jq -r '.rows | length')
+
+		if (( size > 0 ))
+		  then
+			echo "Error. nttoffers table is not fully cleaned. size: " $size 
+			echo "offers_ids: " $(./cleos.sh get table $ACC $SCOPE  nttoffers | jq -r '.rows[].assetid')
+			exit 1
+		fi
+	  fi
+}
+
+
+#---------------------------------------------------------------------------------------------------
 # clean up offers table
 #---------------------------------------------------------------------------------------------------
 function CLEAN_OFFERS_TABLE 
@@ -89,6 +129,49 @@ function CLEAN_OFFERS_TABLE
 			echo "offers_ids: " $(./cleos.sh get table $ACC $SCOPE  offers | jq -r '.rows[].assetid')
 			exit 1
 		fi
+	  fi
+}
+
+#---------------------------------------------------------------------------------------------------
+# clean up snttassets table
+#---------------------------------------------------------------------------------------------------
+function CLEAN_NTTASSETS_TABLE
+{
+	local localacc=$1
+	sleep $WAIT_TIME
+	size=$(./cleos.sh get table $ACC $localacc snttassets | jq -r '.rows | length')
+	size=$(./cleos.sh get table $ACC $localacc snttassets | jq -r '.rows | length')
+	nttasset_ids=$(./cleos.sh get table $ACC $localacc snttassets | jq -r '.rows[].id')
+
+	if (( size > 0 ))
+	  then
+		echo "snttassets table has $size data [$nttasset_ids]"
+		for id in ${nttasset_ids}; do
+			echo ${id}
+			./cleos.sh push action $ACC burnntt '["'${localacc}'", ["'${id}'"], "burntt"]' -p $localacc
+			echo "nttasset: [${id}] is burned"
+		done
+	  else
+		echo "Nothing to clean. snttasset table is empty"
+	fi
+
+
+	sleep $WAIT_TIME
+	sleep $WAIT_TIME
+	size=$(./cleos.sh get table $ACC $localacc snttassets | jq -r '.rows | length')
+
+
+	if (( size > 0 ))
+	  then
+		size=$(./cleos.sh get table $ACC $localacc snttassets | jq -r '.rows | length')
+
+		if (( size > 0 ))
+		  then
+			echo "Error. snttasset table is not fully cleaned. size: " $size
+			echo "asset_ids: " $(./cleos.sh get table $ACC $localacc snttassets | jq -r '.rows[].id')
+			exit 1
+		  fi
+
 	  fi
 }
 
@@ -231,6 +314,37 @@ function READ_ONE_ASSET
 }
 
 #---------------------------------------------------------------------------------------------------
+# read one record from snttassets table
+#---------------------------------------------------------------------------------------------------
+function READ_ONE_NTTASSET
+{
+	local accscope=$1
+	sleep $WAIT_TIME
+	size=$(./cleos.sh get table $ACC $accscope snttassets | jq -r '.rows | length')
+	nttasset_ids=$(./cleos.sh get table $ACC $accscope snttassets | jq -r '.rows[].id')
+
+	if (( size > 1 ))
+	  then
+		size=$(./cleos.sh get table $ACC $accscope snttassets | jq -r '.rows | length')
+		if (( size > 1 ))
+	  	then
+			echo "snttassets table has more then one record. EXIT" ${size}
+			exit 1;
+		fi
+	fi
+
+	if (( size == 1 ))
+	  then
+		result_nttasset_id=$nttasset_ids
+	  else
+		echo "Error. snttassets table is empty"
+		./cleos.sh get table $ACC $accscope snttassets
+		exit 1
+	fi
+}
+
+
+#---------------------------------------------------------------------------------------------------
 # read one record from offer table
 #---------------------------------------------------------------------------------------------------
 function READ_ONE_OFFER
@@ -277,6 +391,26 @@ function READ_ONE_OFFERF
 	  else
 		echo "offerfs table is empty"
 		exit 1
+	fi
+}
+
+function PUSH_CREATE_NTTASSET
+{
+	local requireclaim=$1
+	local owner=$2
+
+	sleep $WAIT_TIME
+	echo "create nttasset action"
+
+	output=$(./cleos.sh push action ${ACC} createntt '{ "author":"'${ACC}'", "category":"'${CATEGORY}'", "owner":"'${owner}'" ,"idata":"idata","mdata":"mdata" , "requireclaim":'${requireclaim}'}' -p $ACC@active 2>&1)
+
+	if [[ $output =~ "${ACC} <= ${ACC}" ]]
+	then
+	   echo "Success"
+	else
+	   echo "Error"
+	   echo "Output: " $output
+	   exit 1
 	fi
 }
 
@@ -484,8 +618,8 @@ function TEST_OFFER
 
 	READ_ONE_OFFER
 
-	CLEAN_OFFERS_TABLE
-	CLEAN_ASSETS_TABLE
+	#CLEAN_OFFERS_TABLE
+	#CLEAN_ASSETS_TABLE
 }
 
 function TEST_OFFERFS
@@ -931,12 +1065,89 @@ function TEST_DELEGATE_MEMO_FIELD {
 	CLEAN_ASSETS_TABLE
 }
 
+
+function TEST_CREATENTT_CLAIMNTT_BURNNTT
+{
+	# createntt
+	echo "----------------------------------- TEST_CREATENTT ----------------------------------------------------------------"
+	new_mdata="test_test_2345"
+	
+	# ----------------------------------- create test ----------------------------------------------------------------
+	
+	CLEAN_NTTOFFERS_TABLE
+	CLEAN_NTTASSETS_TABLE ${ACC}
+	CLEAN_NTTASSETS_TABLE ${ACC_TO}
+
+	PUSH_CREATE_NTTASSET 0 ${ACC}
+
+	READ_ONE_NTTASSET ${ACC}
+	nttasset_id=$result_nttasset_id
+
+	# ----------------------------------- update test ----------------------------------------------------------------
+
+	sleep $WAIT_TIME
+	echo "update"
+	./cleos.sh push action ${ACC} updatentt '{ "author":"'${ACC}'", "owner":"'${ACC}'" , "assetid":'${nttasset_id}', "mdata":"'${new_mdata}'" }' -p $ACC@active
+
+	sleep $WAIT_TIME
+	mdata_updated=$(./cleos.sh get table $ACC $SCOPE snttassets -l 1000 | jq -r '.rows[] | select(.id | contains("'${nttasset_id}'")) | .mdata')
+
+	if [ "$mdata_updated" = "$new_mdata" ]
+	then
+		echo "Success. mdata was updated"
+	else
+		echo "new_mdata: " $new_mdata
+		echo "mdata_updated: " $mdata_updated
+		echo "Error. Update action failed. mdata values is $mdata_updated and it was not changed to $new_mdata"
+		exit 1
+	fi
+
+	CLEAN_NTTASSETS_TABLE ${ACC}
+
+	PUSH_CREATE_NTTASSET 1 ${ACC_TO}
+
+	READ_ONE_NTTASSET ${ACC}
+	nttasset_id=$result_nttasset_id
+	
+	sleep $WAIT_TIME
+	
+	size=$(./cleos.sh get table $ACC $SCOPE nttoffers | jq -r '.rows | length')
+	nttoffer_ids=$(./cleos.sh get table $ACC $SCOPE nttoffers | jq -r '.rows[].assetid')
+
+	if [ "$nttasset_id" = "$nttoffer_ids" ]
+	then
+		echo "Success. Offer successfully added"
+	else
+		echo "nttasset_id: " $nttasset_id
+		echo "nttoffer_ids: " $nttoffer_ids
+		echo "Error. Offer was not added."
+		exit 1
+	fi
+
+	./cleos.sh push action ${ACC} claimntt '{ "claimer":"'${ACC_TO}'", "assetids":["'${nttasset_id}'"]  }' -p $ACC_TO@active
+
+	READ_ONE_NTTASSET ${ACC_TO}
+	nttasset_id=$result_nttasset_id
+
+	if [ "$nttasset_id" = "$nttoffer_ids" ]
+	then
+		echo "Success. Claim successfully passed"
+	else
+		echo "nttasset_id: " $nttasset_id
+		echo "nttoffer_ids: " $nttoffer_ids
+		echo "Error. Offer was not added."
+		exit 1
+	fi
+
+	CLEAN_NTTASSETS_TABLE ${ACC_TO}
+}
+
 unlock_wallet
 
-TEST_DELEGATE_MEMO_FIELD
-#TEST_UNDELEGATE_DELEGATE_DELEGATEMORE
+# 2019-10-02 This test created after adding createntt claimntt burnntt actions
+TEST_CREATENTT_CLAIMNTT_BURNNTT
 
-exit 1
+TEST_UNDELEGATE_DELEGATE_DELEGATEMORE
 
 TEST_AUTHORUPDATE
 

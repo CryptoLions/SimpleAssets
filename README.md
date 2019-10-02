@@ -4,7 +4,7 @@
 
 [한국어 번역](#한국어)
 
-A simple standard for digital assets (both fungible and non-fungible tokens - NFTs) for EOSIO blockchains   
+A simple standard for digital assets on EOSIO blockchains: Non-Fungible Tokens (NFTs), Fungible Tokens (FTs), and Non-Transferable Tokens (NTTs).   
 by [CryptoLions](https://CryptoLions.io)  
   
 web: http://simpleassets.io  
@@ -54,7 +54,7 @@ Each symbol in imdata and mdata is +1 byte.
 1. [Contract actions](#contract-actions)
 2. [Data Structures](#data-structures)
 3. [EXAMPLES: how to use Simple Assets in smart contracts](#examples-how-to-use-simple-assets-in-smart-contracts)
-4. [ChangeLog](#change-log-v113)
+4. [ChangeLog](#change-log-v120)
 ---------------------------  
 
 # Contract actions  
@@ -66,7 +66,7 @@ https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp
  authorupdate		(author, data, stemplate, string imgpriority)  
 
 
- # -- For Non-Fungible Tokens ---
+ # -- For Non-Fungible Tokens (NFTs)---
  
  create			(author, category, owner, idata, mdata, requireсlaim)  
  update			(author, owner, assetid, mdata)  
@@ -87,7 +87,7 @@ https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp
  attachf		(owner, author, quantity, assetidc)
  detachf		(owner, author, quantity, assetidc)
  
- # -- For Fungible Tokens ---
+ # -- For Fungible Tokens (FTs) ---
  
  createf		(author, maximum_supply, authorctrl, data)
  updatef		(author, sym, data)
@@ -102,6 +102,13 @@ https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp
  openf			(owner, author, symbol, ram_payer)
  closef			(owner, author, symbol)
  
+ # -- For Non-Transferable Tokens (NTTs) ---
+
+ createntt		(author, category, owner, idata, mdata, requireсlaim)  
+ updatentt		(author, owner, assetid, mdata)  
+ burnntt		(owner, [assetid1,..,assetidn], memo)  
+ claimntt		(claimer, [assetid1,..,assetidn])  
+
 ```
 
 # Data Structures  
@@ -207,7 +214,32 @@ accounts {
 ```
 
 ```
-sofferf {
+offerfs {
+	uint64_t	id;		// id of the offer for claim (increments automatically) 
+	name		author;		// ft author
+	name		owner;		// ft owner
+	asset		quantity;	// quantity
+	name		offeredto;	// account which can claim the offer
+	uint64_t	cdate;		// offer creation date
+}
+```    
+  
+
+## NTT  
+```
+snttassets {  
+	uint64_t	id; 		// NTT id used for claim or burn;  
+	name		owner;  	// asset owner (mutable - by owner!!!);  
+	name		author;		// asset author (game contract, immutable);  
+	name		category;	// asset category, chosen by author, immutable;  
+	string		idata;		// immutable assets data. Can be stringified JSON or just sha256 string;  
+	string		mdata;		// mutable assets data, added on creation or asset update by author. Can be  
+					// stringified JSON or just sha256 string;  
+}  
+```
+  
+```
+nttoffers {
 	uint64_t	id;		// id of the offer for claim (increments automatically) 
 	name		author;		// ft author
 	name		owner;		// ft owner
@@ -451,6 +483,14 @@ saRes1.send();
 
 
 -----------------
+## Change Log v1.2.0
+- NON TRANSFERRABLE TOKENS (NTTs) - new tables: snttassets and nttoffers
+- new NTT actions: createntt, createnttlog, claimntt, updatentt, burnntt
+- delegatemore action fix (thanks to cc32d9)
+- ricardian contracts updated.
+- external tests for NTT logic added.
+
+
 ## Change Log v1.1.3
 - ricardian contracts updated.
 - fungible token offer issue fix

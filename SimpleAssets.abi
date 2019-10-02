@@ -803,10 +803,205 @@
                     "type": "uint64"
                 }
             ]
+        },
+	{
+            "name": "snttasset",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "category",
+                    "type": "name"
+                },
+                {
+                    "name": "idata",
+                    "type": "string"
+                },
+                {
+                    "name": "mdata",
+                    "type": "string"
+                }
+            ]
+	},
+	{
+            "name": "snttoffer",
+            "base": "",
+            "fields": [
+                {
+                    "name": "assetid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "offeredto",
+                    "type": "name"
+                },
+                {
+                    "name": "cdate",
+                    "type": "uint64"
+                }
+            ]
+	},
+	{
+            "name": "createntt",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "category",
+                    "type": "name"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "idata",
+                    "type": "string"
+                },
+                {
+                    "name": "mdata",
+                    "type": "string"
+                },
+                {
+                    "name": "requireclaim",
+                    "type": "bool"
+                }
+            ]
+	},
+        {
+            "name": "burnntt",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "assetids",
+                    "type": "uint64[]"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "createnttlog",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "category",
+                    "type": "name"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "idata",
+                    "type": "string"
+                },
+                {
+                    "name": "mdata",
+                    "type": "string"
+                },
+                {
+                    "name": "assetid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "requireclaim",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "claimntt",
+            "base": "",
+            "fields": [
+                {
+                    "name": "claimer",
+                    "type": "name"
+                },
+                {
+                    "name": "assetids",
+                    "type": "uint64[]"
+                }
+            ]
+        },
+        {
+            "name": "updatentt",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "assetid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "mdata",
+                    "type": "string"
+                }
+            ]
         }
     ],
     "types": [],
     "actions": [
+        {
+            "name": "updatentt",
+            "type": "updatentt",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Update assets mutable data\nsummary: Update assets mutable data (mdata) field. Action is available only for authors\nicon: https://cryptolions.io/assets/images/sa-icons-256/update.png#305b640fe614876c6e6f5fed5ac21f8157c80f7bee39f3db26228986c1fc5e0e\n---\n\nInput parameters:\n`author`  - authors account;\n`owner`   - current assets owner;\n`assetid` - assetid to update;\n`mdata`   - stringified json with mutable assets data. All mdata will be replaced;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "createntt",
+            "type": "createntt",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Create a new non transferable asset\nsummary: Create a new asset\nicon: https://cryptolions.io/assets/images/sa-icons-256/create.png#db2bc53cef5dbbce5247543a91234373ec4bd1baf743301a0d92a35b053eeb70\n---\t\n\nInput parameters:\n`author`         - asset's author, who will able to updated asset's mdata;\n`category`       - assets category;\n`owner`          - assets owner;\n`idata`          - stringified json with immutable assets data\n`mdata`          - stringified json with mutable assets data, can be changed only by author\n`requireclaim`   - true or false. If disabled, upon creation, the asset will be transfered to owner (but \n\t\t\t\t   but AUTHOR'S memory will be used until the asset is transferred again).  If enabled,\n\t\t\t\t   author will remain the owner, but an offer will be created for the account specified in \n\t\t\t\t   the owner field to claim the asset using the account's RAM.\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "createnttlog",
+            "type": "createnttlog",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: createlog (internal)\nsummary: createlog (internal) \nicon: https://cryptolions.io/assets/images/sa-icons-256/claimf.png#80086207646470fa9cbaf4638ba0dedec96ea0e84d5059b567adc9e4b8543c30\n---"
+        },
+        {
+            "name": "claimntt",
+            "type": "claimntt",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Claim the specified asset\nsummary: Claim the specified asset (assuming it was offered to claimer by the asset owner)\nicon: https://cryptolions.io/assets/images/sa-icons-256/claim.png#8c3fdf140ea14a3cb9762a0f6ec0f0d73f8c2eeeec3ea2f109f394a9f35f472d\n---\n\nInput parameters:\n`claimer`  - account claiming the asset\n`assetids` - array of assetid's to claim\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "burnntt",
+            "type": "burnntt",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Burn non transferable asset\nsummary: Burn non transferable asset\nicon: https://cryptolions.io/assets/images/sa-icons-256/burn.png#76954820d84563187e968b461a706ab089a9c00f5332df96a4e5bb2e69ed5e84\n---\n\nThis action is only available for the asset owner. After executing, the asset will disappear forever, and RAM used for asset will be released.\n\nInput parameters:\n`owner`    - current asset owner account;\n`assetids` - array of assetid's to burn;\n`memo`     - memo for burn action;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
         {
             "name": "attach",
             "type": "attach",
@@ -1008,6 +1203,20 @@
         {
             "name": "tokenconfigs",
             "type": "tokenconfigs",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "snttassets",
+            "type": "snttasset",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "nttoffers",
+            "type": "snttoffer",
             "index_type": "i64",
             "key_names": [],
             "key_types": []

@@ -556,3 +556,90 @@ title: createlog (internal)
 summary: createlog (internal) 
 icon: https://cryptolions.io/assets/images/sa-icons-256/claimf.png#80086207646470fa9cbaf4638ba0dedec96ea0e84d5059b567adc9e4b8543c30
 ---
+
+<h1 class="contract"> createntt </h1>
+
+---
+spec_version: 0.0.2
+title: create Non transferable token (NTT)
+summary: This action create a new Non transferable token (NTT).
+icon: https://cryptolions.io/assets/images/sa-icons-256/create.png#db2bc53cef5dbbce5247543a91234373ec4bd1baf743301a0d92a35b053eeb70
+---
+
+Input parameters:
+`owner`    - original owner of the FTs
+`newowner` - account which will be able to claim the offer
+`author`   - account of fungible token author;	
+`quantity` - amount to transfer, example "1.00 WOOD";
+`memo`     - offer's comment;
+
+TERM
+This Contract expires at the conclusion of code execution.
+by CryptoLions [ https://cryptolions.io ]
+
+<h1 class="contract"> claimntt </h1>
+
+---
+spec_version: 0.0.2
+title: Claim the specified asset
+summary: Claim the specified asset (assuming it was offered to claimer by the asset owner)
+icon: https://cryptolions.io/assets/images/sa-icons-256/claim.png#8c3fdf140ea14a3cb9762a0f6ec0f0d73f8c2eeeec3ea2f109f394a9f35f472d
+---
+
+Input parameters:
+`claimer`  - account claiming the asset
+`assetids` - array of assetid's to claim
+
+TERM
+This Contract expires at the conclusion of code execution.
+by CryptoLions [ https://cryptolions.io ]
+
+
+<h1 class="contract"> createnttlog </h1>
+		
+---
+spec_version: 0.0.2
+title: createlog (internal)
+summary: createlog (internal) 
+icon: https://cryptolions.io/assets/images/sa-icons-256/claimf.png#80086207646470fa9cbaf4638ba0dedec96ea0e84d5059b567adc9e4b8543c30
+---
+
+<h1 class="contract"> burnntt </h1>
+
+---
+spec_version: 0.0.2
+title: Burn non transferable asset
+summary: Burn non transferable asset
+icon: https://cryptolions.io/assets/images/sa-icons-256/burn.png#76954820d84563187e968b461a706ab089a9c00f5332df96a4e5bb2e69ed5e84
+---
+
+This action is only available for the asset owner. After executing, the asset will disappear forever, and RAM used for asset will be released.
+
+Input parameters:
+`owner`    - current asset owner account;
+`assetids` - array of assetid's to burn;
+`memo`     - memo for burn action;
+
+TERM
+This Contract expires at the conclusion of code execution.
+by CryptoLions [ https://cryptolions.io ]
+
+<h1 class="contract"> updatentt </h1>
+
+---
+spec_version: 0.0.2
+title: Update assets mutable data
+summary: Update assets mutable data (mdata) field. Action is available only for authors
+icon: https://cryptolions.io/assets/images/sa-icons-256/update.png#305b640fe614876c6e6f5fed5ac21f8157c80f7bee39f3db26228986c1fc5e0e
+---
+
+Input parameters:
+`author`  - authors account;
+`owner`   - current assets owner;
+`assetid` - assetid to update;
+`mdata`   - stringified json with mutable assets data. All mdata will be replaced;
+
+TERM
+This Contract expires at the conclusion of code execution.
+by CryptoLions [ https://cryptolions.io ]
+

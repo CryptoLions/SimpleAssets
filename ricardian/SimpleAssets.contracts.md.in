@@ -556,3 +556,90 @@ title: createlog (internal)
 summary: createlog (internal) 
 icon: @ICON_BASE_URL@/@CLAIMF_ICON_URI@
 ---
+
+<h1 class="contract"> createntt </h1>
+
+---
+spec_version: 0.0.2
+title: create Non transferable token (NTT)
+summary: This action create a new Non transferable token (NTT).
+icon: @ICON_BASE_URL@/@CREATE_ICON_URI@
+---
+
+Input parameters:
+`owner`    - original owner of the FTs
+`newowner` - account which will be able to claim the offer
+`author`   - account of fungible token author;	
+`quantity` - amount to transfer, example "1.00 WOOD";
+`memo`     - offer's comment;
+
+TERM
+This Contract expires at the conclusion of code execution.
+by CryptoLions [ https://cryptolions.io ]
+
+<h1 class="contract"> claimntt </h1>
+
+---
+spec_version: 0.0.2
+title: Claim the specified asset
+summary: Claim the specified asset (assuming it was offered to claimer by the asset owner)
+icon: @ICON_BASE_URL@/@CLAIM_ICON_URI@
+---
+
+Input parameters:
+`claimer`  - account claiming the asset
+`assetids` - array of assetid's to claim
+
+TERM
+This Contract expires at the conclusion of code execution.
+by CryptoLions [ https://cryptolions.io ]
+
+
+<h1 class="contract"> createnttlog </h1>
+		
+---
+spec_version: 0.0.2
+title: createlog (internal)
+summary: createlog (internal) 
+icon: @ICON_BASE_URL@/@CLAIMF_ICON_URI@
+---
+
+<h1 class="contract"> burnntt </h1>
+
+---
+spec_version: 0.0.2
+title: Burn non transferable asset
+summary: Burn non transferable asset
+icon: @ICON_BASE_URL@/@BURN_ICON_URI@
+---
+
+This action is only available for the asset owner. After executing, the asset will disappear forever, and RAM used for asset will be released.
+
+Input parameters:
+`owner`    - current asset owner account;
+`assetids` - array of assetid's to burn;
+`memo`     - memo for burn action;
+
+TERM
+This Contract expires at the conclusion of code execution.
+by CryptoLions [ https://cryptolions.io ]
+
+<h1 class="contract"> updatentt </h1>
+
+---
+spec_version: 0.0.2
+title: Update assets mutable data
+summary: Update assets mutable data (mdata) field. Action is available only for authors
+icon: @ICON_BASE_URL@/@UPDATE_ICON_URI@
+---
+
+Input parameters:
+`author`  - authors account;
+`owner`   - current assets owner;
+`assetid` - assetid to update;
+`mdata`   - stringified json with mutable assets data. All mdata will be replaced;
+
+TERM
+This Contract expires at the conclusion of code execution.
+by CryptoLions [ https://cryptolions.io ]
+

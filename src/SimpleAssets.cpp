@@ -321,7 +321,8 @@ ACTION SimpleAssets::delegatemore( name owner, uint64_t assetidc, uint64_t perio
 	delegates delegatet( _self, _self.value );
 	const auto itrc = delegatet.find( assetidc );
 	check( itrc != delegatet.end(), "Assets assetidc is not delegated." );
-	
+	check( owner == itrc->owner, "You are not the owner of this asset." );
+
 	delegatet.modify( itrc, owner, [&]( auto& s ) {
 		s.period = itrc->period + period;
 	});
@@ -789,6 +790,127 @@ void SimpleAssets::add_balancef( name owner, name author, asset value, name ram_
 	}
 }
 
+ACTION SimpleAssets::createntt( name author, name category, name owner, string idata, string mdata, bool requireclaim ) {
+
+	require_auth( author );
+	check( is_account( owner ), "owner account does not exist" );
+	require_recipient( owner );
+	const auto newID = getid();
+	name assetOwner = owner;
+	check( !( author.value == owner.value && requireclaim == 1 ), "Can't requireclaim if author == owner." );
+
+	if ( requireclaim ) {
+		assetOwner = author;
+		//add info to offers table
+		nttoffers nttoffer( _self, _self.value );
+		nttoffer.emplace( author, [&]( auto& s ) {
+			s.assetid   = newID;
+			s.offeredto = owner;
+			s.owner     = author;
+			s.cdate     = now();
+		});
+	}
+
+	snttassets ntt(_self, assetOwner.value);
+	ntt.emplace( author, [&](auto& s) {
+		s.id       = newID;
+		s.owner    = assetOwner;
+		s.author   = author;
+		s.category = category;
+		s.mdata    = mdata; // mutable data
+		s.idata    = idata; // immutable data
+	});
+
+	SEND_INLINE_ACTION( *this, createnttlog, { {_self, "active"_n} }, { author, category, owner, idata, mdata, newID, requireclaim } );
+}
+
+ACTION SimpleAssets::createnttlog( name author, name category, name owner, string idata, string mdata, uint64_t assetid, bool requireclaim ) {
+
+	require_auth(get_self());
+}
+
+ACTION SimpleAssets::updatentt( name author, name owner, uint64_t assetid, string mdata ) {
+
+	require_auth(author);
+	snttassets assets_f(_self, owner.value);
+	const auto itr = assets_f.find(assetid);
+	check(itr != assets_f.end(), "asset not found");
+	check(itr->author == author, "Only author can update asset.");
+
+	assets_f.modify(itr, author, [&](auto& a) {
+		a.mdata = mdata;
+	});
+}
+
+ACTION SimpleAssets::claimntt( name claimer, std::vector<uint64_t>& assetids ) {
+
+	require_auth( claimer );
+	require_recipient( claimer );
+	nttoffers nttoffert( _self, _self.value );
+	snttassets assets_claimer( _self, claimer.value );
+
+	std::map< name, std::map< uint64_t, name > > uniqauthor;
+	for ( auto i = 0; i < assetids.size(); ++i ) {
+		auto itrc = nttoffert.find( assetids[i] );
+		check( !( itrc == nttoffert.end() ), "Cannot find at least one of the offers you're attempting to claim." );
+		check( claimer == itrc->offeredto, "At least one of the assets has not been offerred to you." );
+
+		snttassets assets_owner( _self, itrc->owner.value );
+		auto itr = assets_owner.find( assetids[i] );
+		check( !(itr == assets_owner.end() ), "Cannot find at least one of the assets you're attempting to claim." );
+		check( itrc->owner.value == itr->owner.value, "Owner was changed for at least one of the items!?" );
+
+		assets_claimer.emplace( claimer, [&](auto& s) {
+			s.id = itr->id;
+			s.owner = claimer;
+			s.author = itr->author;
+			s.category = itr->category;
+			s.mdata = itr->mdata; 		// mutable data
+			s.idata = itr->idata; 		// immutable data
+		});
+
+		//Events
+		uniqauthor[itr->author][assetids[i]] = itrc->owner;
+
+		assets_owner.erase( itr );
+		nttoffert.erase( itrc );
+	}
+
+	//for ( auto uniqauthorIt = uniqauthor.begin(); uniqauthorIt != uniqauthor.end(); ++uniqauthorIt ) {
+	//	name keyauthor = std::move( uniqauthorIt->first );
+	//	sendEvent( keyauthor, claimer, "saeclaim"_n, std::make_tuple( claimer, uniqauthor[keyauthor] ) );
+	//}
+}
+
+ACTION SimpleAssets::burnntt( name owner, std::vector<uint64_t>& assetids, string memo ) {
+
+	require_auth( owner );
+	require_recipient( owner );
+
+	snttassets assets_ntt( _self, owner.value );
+	nttoffers nttoffert( _self, _self.value );
+
+	for ( auto i = 0; i < assetids.size(); ++i ) {
+		auto itr_asset = assets_ntt.find( assetids[i] );
+		check( itr_asset != assets_ntt.end(), "At least one of the assets was not found." );
+
+		auto itroffer = nttoffert.find( assetids[i] );
+
+		if ( itroffer != nttoffert.end() ) {
+			check( owner.value == itroffer->owner.value, "You're not the owner of at least one of the assets whose offers you're attempting to cancel." );
+			nttoffert.erase( itroffer );
+		}
+
+		assets_ntt.erase( itr_asset );
+	}
+
+	//Send Event as deferred
+	//for ( auto uniqauthorIt = uniqauthor.begin(); uniqauthorIt != uniqauthor.end(); ++uniqauthorIt ) {
+	//	name keyauthor = std::move( uniqauthorIt->first );
+	//	sendEvent( keyauthor, owner, "saeburn"_n, std::make_tuple( owner, uniqauthor[keyauthor], memo ) );
+	//}
+}
+
 template<typename... Args>
 void SimpleAssets::sendEvent( name author, name rampayer, name seaction, const std::tuple<Args...> &adata ) {
 
@@ -816,7 +938,7 @@ EOSIO_DISPATCH( SimpleAssets, ( create )( createlog )( transfer )( burn )( updat
 ( createf )( updatef )( issuef )( transferf )( burnf )
 ( offerf )( cancelofferf )( claimf )
 ( attachf )( detachf )( openf )( closef )
-( updatever ) )
+( updatever )  ( createntt ) ( burnntt ) ( createnttlog ) ( claimntt ) ( updatentt ) )
 
 
 //============================================================================================================

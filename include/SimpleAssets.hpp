@@ -497,6 +497,85 @@ CONTRACT SimpleAssets : public contract{
 		*/
 		static asset get_balance( name token_contract_account, name owner, name author, symbol_code sym_code );
 
+
+		/*
+		* This action create a new Non transferable token (NTT).
+		*
+		* @param author	is asset's author, who will able to updated asset's mdata.
+		* @param category is assets category.
+		* @param owner is assets owner.
+		* @param idata is stringified json or just sha256 string with immutable assets data
+		* @param mdata is stringified json or just sha256 string with mutable assets data, can be changed only by author;
+		* @param requireclaim is true or false. If disabled, upon creation, the asset will be transfered to owner (but
+		*		  but AUTHOR'S memory will be used).  If enabled,
+		*		  author will remain the owner, but an offer will be created for the account specified in
+		*		  the owner field to claim the asset using the account's RAM.
+		* @return no return value.
+		*/
+		ACTION createntt ( name author, name category, name owner, string idata, string mdata, bool requireclaim );
+		using createntt_action = action_wrapper< "createntt"_n, &SimpleAssets::createntt >;
+		
+		/*
+		* Create a new NTT log.
+		*
+		* This is empty action. Used by createntt action to log assetid so that third party explorers can
+		* easily get new asset ids and other information.
+		*
+		* @param author	is asset's author, who will able to updated asset's mdata.
+		* @param category is assets category.
+		* @param owner is assets owner.
+		* @param idata is stringified json or just sha256 string with immutable assets data.
+		* @param mdata is stringified json or just sha256 string with mutable assets data, can be changed only by author.
+		* @param assetid is id of the asset
+		* @param requireclaim is true or false. If disabled, upon creation, the asset will be transfered to owner (but
+		*		 but AUTHOR'S memory will be used until the asset is transferred again).  If enabled,
+		*		 author will remain the owner, but an offer will be created for the account specified in
+		*		 the owner field to claim the asset using the account's RAM.
+		* @return no return value.
+		*/
+		ACTION createnttlog( name author, name category, name owner, string idata, string mdata, uint64_t assetid, bool requireclaim );
+		using createnttlog_action = action_wrapper< "createnttlog"_n, &SimpleAssets::createnttlog >;
+
+		/*
+		* Claim NTT.
+		*
+		* This action claim the specified NTT asset (assuming it was offered to claimer by the asset owner).
+		*
+		* @param claimer is account claiming the NTT asset.
+		* @param assetids is array of NTT assetid's to claim.
+		* @return no return value.
+		*/
+		ACTION claimntt( name claimer, std::vector< uint64_t >& assetids );
+		using claimntt_action = action_wrapper< "claimntt"_n, &SimpleAssets::claimntt >;		
+		
+		/*
+		* Update NTT assets mdata.
+		*
+		* This action update NTT assets mutable data (mdata) field. Action is available only for authors.
+		*
+		* @param author	is authors account.
+		* @param owner is current assets owner.
+		* @param assetid is assetid to update.
+		* @param mdata is stringified json with mutable assets data. All mdata will be replaced.
+		* @return no return value.
+		*/
+		ACTION updatentt( name author, name owner, uint64_t assetid, string mdata );
+		using updatentt_action = action_wrapper< "updatentt"_n, &SimpleAssets::updatentt >;		
+		
+		/*
+		* Burn NTT asset.
+		*
+		* This action burn NTT asset {{assetid}}. This action is only available for the asset owner. After executing, the
+		* asset will disappear forever, and RAM used for asset will be released.
+		*
+		* @param owner is current asset owner account.
+		* @param assetids is array of assetid's to burn.
+		* @param memo is memo for burn action.
+		* @return no return value.
+		*/
+		ACTION burnntt( name owner, std::vector< uint64_t >& assetids, string memo );
+		using burnntt_action = action_wrapper< "burnntt"_n, &SimpleAssets::burnntt >;
+
 	private:
 		/*
 		* Get new asset id.
@@ -605,6 +684,30 @@ CONTRACT SimpleAssets : public contract{
 			> sassets;
 
 		/*
+		* NTT table which stores information about Non transferable tokens.
+		* Scope: asset owner
+		*/
+		TABLE snttasset {
+			uint64_t                id;
+			name                    owner;
+			name                    author;
+			name                    category;
+			string                  idata; // immutable data
+			string                  mdata; // mutable data
+
+			auto primary_key() const {
+				return id;
+			}
+			uint64_t by_author() const {
+				return author.value;
+			}
+
+		};
+		typedef eosio::multi_index< "snttassets"_n, snttasset,
+			eosio::indexed_by< "author"_n, eosio::const_mem_fun<snttasset, uint64_t, &snttasset::by_author> >
+			> snttassets;
+
+		/*
 		* Offers table keeps records of open offers of assets (ie. assets waiting to be claimed by their
 		* intendend recipients. Scope: self
 		*/
@@ -655,6 +758,31 @@ CONTRACT SimpleAssets : public contract{
 			eosio::indexed_by< "owner"_n, eosio::const_mem_fun< sofferf, uint64_t, &sofferf::by_owner > >,
 			eosio::indexed_by< "offeredto"_n, eosio::const_mem_fun< sofferf, uint64_t, &sofferf::by_offeredto > >
 			> offerfs;
+
+		/*
+		* NTT Offers table keeps records of open offers of NTT assets (ie. assets waiting to be claimed by their
+		* intendend recipients. Scope: self
+		*/
+		TABLE snttoffer {
+			uint64_t		assetid;
+			name			owner;
+			name			offeredto;
+			uint64_t		cdate;
+
+			auto primary_key() const {
+				return assetid;
+			}
+			uint64_t by_owner() const {
+				return owner.value;
+			}
+			uint64_t by_offeredto() const {
+				return offeredto.value;
+			}
+		};
+		typedef eosio::multi_index< "nttoffers"_n, snttoffer,
+			eosio::indexed_by< "owner"_n, eosio::const_mem_fun< snttoffer, uint64_t, &snttoffer::by_owner > >,
+			eosio::indexed_by< "offeredto"_n, eosio::const_mem_fun< snttoffer, uint64_t, &snttoffer::by_offeredto > >
+			> nttoffers;
 
 		/*
 		* Delegates table keeps records about borrowed assets.Scope: self
