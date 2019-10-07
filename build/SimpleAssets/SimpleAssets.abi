@@ -1,6 +1,7 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Mon Apr 15 20:43:11 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT ",
     "version": "eosio::abi/1.1",
+    "types": [],
     "structs": [
         {
             "name": "account",
@@ -123,6 +124,24 @@
             ]
         },
         {
+            "name": "burnntt",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "assetids",
+                    "type": "uint64[]"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
             "name": "canceloffer",
             "base": "",
             "fields": [
@@ -174,6 +193,20 @@
                 },
                 {
                     "name": "ftofferids",
+                    "type": "uint64[]"
+                }
+            ]
+        },
+        {
+            "name": "claimntt",
+            "base": "",
+            "fields": [
+                {
+                    "name": "claimer",
+                    "type": "name"
+                },
+                {
+                    "name": "assetids",
                     "type": "uint64[]"
                 }
             ]
@@ -283,6 +316,70 @@
             ]
         },
         {
+            "name": "createntt",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "category",
+                    "type": "name"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "idata",
+                    "type": "string"
+                },
+                {
+                    "name": "mdata",
+                    "type": "string"
+                },
+                {
+                    "name": "requireclaim",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "createnttlog",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "category",
+                    "type": "name"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "idata",
+                    "type": "string"
+                },
+                {
+                    "name": "mdata",
+                    "type": "string"
+                },
+                {
+                    "name": "assetid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "requireclaim",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
             "name": "currency_stats",
             "base": "",
             "fields": [
@@ -335,6 +432,24 @@
                 {
                     "name": "memo",
                     "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "delegatemore",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "assetidc",
+                    "type": "uint64"
+                },
+                {
+                    "name": "period",
+                    "type": "uint64"
                 }
             ]
         },
@@ -605,6 +720,58 @@
             ]
         },
         {
+            "name": "snttasset",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "category",
+                    "type": "name"
+                },
+                {
+                    "name": "idata",
+                    "type": "string"
+                },
+                {
+                    "name": "mdata",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "snttoffer",
+            "base": "",
+            "fields": [
+                {
+                    "name": "assetid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "offeredto",
+                    "type": "name"
+                },
+                {
+                    "name": "cdate",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
             "name": "soffer",
             "base": "",
             "fields": [
@@ -777,6 +944,28 @@
             ]
         },
         {
+            "name": "updatentt",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "assetid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "mdata",
+                    "type": "string"
+                }
+            ]
+        },
+        {
             "name": "updatever",
             "base": "",
             "fields": [
@@ -785,223 +974,9 @@
                     "type": "string"
                 }
             ]
-        },
-        {
-            "name": "delegatemore",
-            "base": "",
-            "fields": [
-                {
-                    "name": "owner",
-                    "type": "name"
-                },
-                {
-                    "name": "assetidc",
-                    "type": "uint64"
-                },
-                {
-                    "name": "period",
-                    "type": "uint64"
-                }
-            ]
-        },
-	{
-            "name": "snttasset",
-            "base": "",
-            "fields": [
-                {
-                    "name": "id",
-                    "type": "uint64"
-                },
-                {
-                    "name": "owner",
-                    "type": "name"
-                },
-                {
-                    "name": "author",
-                    "type": "name"
-                },
-                {
-                    "name": "category",
-                    "type": "name"
-                },
-                {
-                    "name": "idata",
-                    "type": "string"
-                },
-                {
-                    "name": "mdata",
-                    "type": "string"
-                }
-            ]
-	},
-	{
-            "name": "snttoffer",
-            "base": "",
-            "fields": [
-                {
-                    "name": "assetid",
-                    "type": "uint64"
-                },
-                {
-                    "name": "owner",
-                    "type": "name"
-                },
-                {
-                    "name": "offeredto",
-                    "type": "name"
-                },
-                {
-                    "name": "cdate",
-                    "type": "uint64"
-                }
-            ]
-	},
-	{
-            "name": "createntt",
-            "base": "",
-            "fields": [
-                {
-                    "name": "author",
-                    "type": "name"
-                },
-                {
-                    "name": "category",
-                    "type": "name"
-                },
-                {
-                    "name": "owner",
-                    "type": "name"
-                },
-                {
-                    "name": "idata",
-                    "type": "string"
-                },
-                {
-                    "name": "mdata",
-                    "type": "string"
-                },
-                {
-                    "name": "requireclaim",
-                    "type": "bool"
-                }
-            ]
-	},
-        {
-            "name": "burnntt",
-            "base": "",
-            "fields": [
-                {
-                    "name": "owner",
-                    "type": "name"
-                },
-                {
-                    "name": "assetids",
-                    "type": "uint64[]"
-                },
-                {
-                    "name": "memo",
-                    "type": "string"
-                }
-            ]
-        },
-        {
-            "name": "createnttlog",
-            "base": "",
-            "fields": [
-                {
-                    "name": "author",
-                    "type": "name"
-                },
-                {
-                    "name": "category",
-                    "type": "name"
-                },
-                {
-                    "name": "owner",
-                    "type": "name"
-                },
-                {
-                    "name": "idata",
-                    "type": "string"
-                },
-                {
-                    "name": "mdata",
-                    "type": "string"
-                },
-                {
-                    "name": "assetid",
-                    "type": "uint64"
-                },
-                {
-                    "name": "requireclaim",
-                    "type": "bool"
-                }
-            ]
-        },
-        {
-            "name": "claimntt",
-            "base": "",
-            "fields": [
-                {
-                    "name": "claimer",
-                    "type": "name"
-                },
-                {
-                    "name": "assetids",
-                    "type": "uint64[]"
-                }
-            ]
-        },
-        {
-            "name": "updatentt",
-            "base": "",
-            "fields": [
-                {
-                    "name": "author",
-                    "type": "name"
-                },
-                {
-                    "name": "owner",
-                    "type": "name"
-                },
-                {
-                    "name": "assetid",
-                    "type": "uint64"
-                },
-                {
-                    "name": "mdata",
-                    "type": "string"
-                }
-            ]
         }
     ],
-    "types": [],
     "actions": [
-        {
-            "name": "updatentt",
-            "type": "updatentt",
-            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Update assets mutable data\nsummary: Update assets mutable data (mdata) field. Action is available only for authors\nicon: https://cryptolions.io/assets/images/sa-icons-256/update.png#305b640fe614876c6e6f5fed5ac21f8157c80f7bee39f3db26228986c1fc5e0e\n---\n\nInput parameters:\n`author`  - authors account;\n`owner`   - current assets owner;\n`assetid` - assetid to update;\n`mdata`   - stringified json with mutable assets data. All mdata will be replaced;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
-        },
-        {
-            "name": "createntt",
-            "type": "createntt",
-            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Create a new non transferable asset\nsummary: Create a new asset\nicon: https://cryptolions.io/assets/images/sa-icons-256/create.png#db2bc53cef5dbbce5247543a91234373ec4bd1baf743301a0d92a35b053eeb70\n---\t\n\nInput parameters:\n`author`         - asset's author, who will able to updated asset's mdata;\n`category`       - assets category;\n`owner`          - assets owner;\n`idata`          - stringified json with immutable assets data\n`mdata`          - stringified json with mutable assets data, can be changed only by author\n`requireclaim`   - true or false. If disabled, upon creation, the asset will be transfered to owner (but \n\t\t\t\t   but AUTHOR'S memory will be used until the asset is transferred again).  If enabled,\n\t\t\t\t   author will remain the owner, but an offer will be created for the account specified in \n\t\t\t\t   the owner field to claim the asset using the account's RAM.\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
-        },
-        {
-            "name": "createnttlog",
-            "type": "createnttlog",
-            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: createlog (internal)\nsummary: createlog (internal) \nicon: https://cryptolions.io/assets/images/sa-icons-256/claimf.png#80086207646470fa9cbaf4638ba0dedec96ea0e84d5059b567adc9e4b8543c30\n---"
-        },
-        {
-            "name": "claimntt",
-            "type": "claimntt",
-            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Claim the specified asset\nsummary: Claim the specified asset (assuming it was offered to claimer by the asset owner)\nicon: https://cryptolions.io/assets/images/sa-icons-256/claim.png#8c3fdf140ea14a3cb9762a0f6ec0f0d73f8c2eeeec3ea2f109f394a9f35f472d\n---\n\nInput parameters:\n`claimer`  - account claiming the asset\n`assetids` - array of assetid's to claim\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
-        },
-        {
-            "name": "burnntt",
-            "type": "burnntt",
-            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Burn non transferable asset\nsummary: Burn non transferable asset\nicon: https://cryptolions.io/assets/images/sa-icons-256/burn.png#76954820d84563187e968b461a706ab089a9c00f5332df96a4e5bb2e69ed5e84\n---\n\nThis action is only available for the asset owner. After executing, the asset will disappear forever, and RAM used for asset will be released.\n\nInput parameters:\n`owner`    - current asset owner account;\n`assetids` - array of assetid's to burn;\n`memo`     - memo for burn action;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
-        },
         {
             "name": "attach",
             "type": "attach",
@@ -1015,7 +990,7 @@
         {
             "name": "authorupdate",
             "type": "authorupdate",
-            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Authors info update\nsummary: Authors info update \nicon: https://cryptolions.io/assets/images/sa-icons-256/authorupdate.png#0b11c9c4e41b6ba1b00bd907c671f7ddc9e2f9caf26580f0b2e7c73e02f36ff3\n---\n\nUsed to updated author information, and asset display recommendations created with the regauthor action. This action replaces the fields data and stemplate. To remove author entry, call this action with null strings for data and stemplate.\n\nInput parameters:\n`author`      - authors account who will create assets; \n`data`        - stringified json. Recommendations to include: game, company, logo, url, desc;\n`stemplate`   - stringified json with key:state values, where key is key from mdata or idata and \n\t\t\t\tstate indicates recommended way of displaying field: \n\t\t\t\turl, img, webgl, mp3, video, hide (ie. don't display), etc.\n`imgpriority` - json with assosiation category with type of image or video \n\t\t\t\ttxt\t- default\n\t\t\t\turl\t- show as clickable URL\n\t\t\t\timg\t- link to img file\n\t\t\t\twebgl\t- link to webgl file\n\t\t\t\tmp3\t- link to mp3 file\n\t\t\t\tvideo\t- link to video file\n\t\t\t\thide\t- do not show\n\t\t\t\timgb \t- image as string in binary format\n\t\t\t\twebglb\t- webgl binary\n\t\t\t\tmp3b \t- mp3 binary\n\t\t\t\tvideob \t- video binary\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Authors info update\nsummary: Authors info update \nicon: https://cryptolions.io/assets/images/sa-icons-256/authorupdate.png#0b11c9c4e41b6ba1b00bd907c671f7ddc9e2f9caf26580f0b2e7c73e02f36ff3\n---\n\nUsed to updated author information, and asset display recommendations created with the regauthor action. This action replaces the fields data and stemplate. To remove author entry, call this action with null strings for data and stemplate.\n\nInput parameters:\n`author`      - authors account who will create assets; \n`data`        - stringified json. Recommendations to include: game, company, logo, url, desc;\n`stemplate`   - stringified json with key:state values, where key is key from mdata or idata and \n\t\t\t\tstate indicates recommended way of displaying field: \n\t\t\t\turl, img, webgl, mp3, video, hide (ie. don't display), etc.\n`imgpriority` - json with assosiation category with type of image or video \n\t\t\t\ttxt\t    - default\n\t\t\t\turl\t    - show as clickable URL\n\t\t\t\timg\t    - link to img file\n\t\t\t\twebgl\t- link to webgl file\n\t\t\t\tmp3\t    - link to mp3 file\n\t\t\t\tvideo\t- link to video file\n\t\t\t\thide\t- do not show\n\t\t\t\timgb \t- image as string in binary format\n\t\t\t\twebglb\t- webgl binary\n\t\t\t\tmp3b \t- mp3 binary\n\t\t\t\tvideob \t- video binary\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "burn",
@@ -1026,6 +1001,11 @@
             "name": "burnf",
             "type": "burnf",
             "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Burns a fungible token\nsummary: Burns a fungible token\nicon: https://cryptolions.io/assets/images/sa-icons-256/burn.png#76954820d84563187e968b461a706ab089a9c00f5332df96a4e5bb2e69ed5e84\n---\n\nThis action is available for the token owner and author. After executing, accounts balance and supply in stats table for this token will reduce by the specified quantity\n\nInput parameters:\n`from`     - account who burns the token;\n`author`   - account of fungible token author;\n`quantity` - amount to burn, example \"1.00 WOOD\";\n`memo`     - memo for burnf action;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "burnntt",
+            "type": "burnntt",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Burn non transferable asset\nsummary: Burn non transferable asset\nicon: https://cryptolions.io/assets/images/sa-icons-256/burn.png#76954820d84563187e968b461a706ab089a9c00f5332df96a4e5bb2e69ed5e84\n---\n\nThis action is only available for the asset owner. After executing, the asset will disappear forever, and RAM used for asset will be released.\n\nInput parameters:\n`owner`    - current asset owner account;\n`assetids` - array of assetid's to burn;\n`memo`     - memo for burn action;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "canceloffer",
@@ -1048,6 +1028,11 @@
             "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Claim FTs which have been offered\nsummary: Claim FTs which have been offered\nicon: https://cryptolions.io/assets/images/sa-icons-256/claimf.png#80086207646470fa9cbaf4638ba0dedec96ea0e84d5059b567adc9e4b8543c30\n---\n\nInput parameters:\n`claimer`    - Account claiming FTs which have been offered\n`ftofferids` - array of FT offer ids\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
         },
         {
+            "name": "claimntt",
+            "type": "claimntt",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Claim the specified asset\nsummary: Claim the specified asset (assuming it was offered to claimer by the asset owner)\nicon: https://cryptolions.io/assets/images/sa-icons-256/claim.png#8c3fdf140ea14a3cb9762a0f6ec0f0d73f8c2eeeec3ea2f109f394a9f35f472d\n---\n\nInput parameters:\n`claimer`  - account claiming the asset\n`assetids` - array of assetid's to claim\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
             "name": "closef",
             "type": "closef",
             "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Closes accounts table\nsummary: Action works only if balance is 0.  for provided fungible token and releases RAM\nicon: https://cryptolions.io/assets/images/sa-icons-256/attach.png#0b039adbbe1011a494959963917df4765dbae378004e00911464f865e58ef452\n---\n\nInput parameters:\n`owner`  - account who woud like to close table with fungible token;\n`author` - account of fungible token author;\n`symbol` - token symbol, example \"WOOD\", \"ROCK\", \"GOLD\";\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
@@ -1060,11 +1045,21 @@
         {
             "name": "createf",
             "type": "createf",
-            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Creates fungible token\nsummary: Creates fungible token\nicon: https://cryptolions.io/assets/images/sa-icons-256/createf.png#5fb6788f19b8fb08ce46e765a9b0ae8758cba7e4da9895f840d34d143912fd3d\n---\n\nCreates fungible token with specified maximum supply; You can not change anything after creation.\n\nInput parameters:\n`author`         - fungible token author;\n`maximum_supply` - maximum token supply, example \"10000000.0000 GOLD\", \"10000000 SEED\", \"100000000.00 WOOD\". Precision is also important here;\n`authorctrl`     - if true(1) allow token author (and not just owner) to burnf and transferf. Cannot be changed after creation!\n`data`           - stringify json (recommend including keys `img` and `name` for better displaying by markets)\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Creates fungible token\nsummary: Creates fungible token\nicon: https://cryptolions.io/assets/images/sa-icons-256/claimf.png#80086207646470fa9cbaf4638ba0dedec96ea0e84d5059b567adc9e4b8543c30\n---\n\nCreates fungible token with specified maximum supply; You can not change anything after creation.\n\nInput parameters:\n`author`         - fungible token author;\n`maximum_supply` - maximum token supply, example \"10000000.0000 GOLD\", \"10000000 SEED\", \"100000000.00 WOOD\". Precision is also important here;\n`authorctrl`     - if true(1) allow token author (and not just owner) to burnf and transferf. Cannot be changed after creation!\n`data`           - stringify json (recommend including keys `img` and `name` for better displaying by markets)\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "createlog",
             "type": "createlog",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: createlog (internal)\nsummary: createlog (internal) \nicon: https://cryptolions.io/assets/images/sa-icons-256/claimf.png#80086207646470fa9cbaf4638ba0dedec96ea0e84d5059b567adc9e4b8543c30\n---"
+        },
+        {
+            "name": "createntt",
+            "type": "createntt",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: create Non transferable token (NTT)\nsummary: This action create a new Non transferable token (NTT).\nicon: https://cryptolions.io/assets/images/sa-icons-256/create.png#db2bc53cef5dbbce5247543a91234373ec4bd1baf743301a0d92a35b053eeb70\n---\n\nInput parameters:\n`owner`    - original owner of the FTs\n`newowner` - account which will be able to claim the offer\n`author`   - account of fungible token author;\t\n`quantity` - amount to transfer, example \"1.00 WOOD\";\n`memo`     - offer's comment;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "createnttlog",
+            "type": "createnttlog",
             "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: createlog (internal)\nsummary: createlog (internal) \nicon: https://cryptolions.io/assets/images/sa-icons-256/claimf.png#80086207646470fa9cbaf4638ba0dedec96ea0e84d5059b567adc9e4b8543c30\n---"
         },
         {
@@ -1110,7 +1105,7 @@
         {
             "name": "regauthor",
             "type": "regauthor",
-            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: New Author registration\nsummary: New Author registration \nicon: https://cryptolions.io/assets/images/sa-icons-256/regauthor.png#c6a539be8e7dfd1a4c466ba9cabfd13571cd77d5c988c652d2e8f87096f3548e\n---\n\nAction is not mandatory.  Markets *may* choose to use information here to display info about the author, and to follow specifications expressed here for displaying asset fields.\n\nInput parameters:\n`author`      -\tauthors account who will create assets;\n`data`        - stringified json. Recommendations to include: game, company, logo, url, desc;\n`stemplate`   - stringified json with key:state values, where key is key from mdata or idata and \n\t\t\t\tstate indicates recommended way of displaying field: \n\t\t\t\turl, img, webgl, mp3, video, hide (ie. don't display), etc.\n`imgpriority` - json with assosiation category with type of image or video \n\t\t\t\ttxt\t- default\n\t\t\t\turl\t- show as clickable URL\n\t\t\t\timg\t- link to img file\n\t\t\t\twebgl\t- link to webgl file\n\t\t\t\tmp3\t- link to mp3 file\n\t\t\t\tvideo\t- link to video file\n\t\t\t\thide\t- do not show\n\t\t\t\timgb \t- image as string in binary format\n\t\t\t\twebglb\t- webgl binary\n\t\t\t\tmp3b \t- mp3 binary\n\t\t\t\tvideob \t- video binary\n\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: New Author registration\nsummary: New Author registration \nicon: https://cryptolions.io/assets/images/sa-icons-256/regauthor.png#c6a539be8e7dfd1a4c466ba9cabfd13571cd77d5c988c652d2e8f87096f3548e\n---\n\nAction is not mandatory.  Markets *may* choose to use information here to display info about the author, and to follow specifications expressed here for displaying asset fields.\n\nInput parameters:\n`author`      -\tauthors account who will create assets;\n`data`        - stringified json. Recommendations to include: game, company, logo, url, desc;\n`stemplate`   - stringified json with key:state values, where key is key from mdata or idata and \n\t\t\t\tstate indicates recommended way of displaying field: \n\t\t\t\turl, img, webgl, mp3, video, hide (ie. don't display), etc.\n`imgpriority` - json with assosiation category with type of image or video \n\t\t\t\ttxt\t    - default\n\t\t\t\turl\t    - show as clickable URL\n\t\t\t\timg\t    - link to img file\n\t\t\t\twebgl\t- link to webgl file\n\t\t\t\tmp3\t    - link to mp3 file\n\t\t\t\tvideo\t- link to video file\n\t\t\t\thide\t- do not show\n\t\t\t\timgb \t- image as string in binary format\n\t\t\t\twebglb\t- webgl binary\n\t\t\t\tmp3b \t- mp3 binary\n\t\t\t\tvideob \t- video binary\n\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "transfer",
@@ -1125,7 +1120,7 @@
         {
             "name": "undelegate",
             "type": "undelegate",
-            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Undelegates an asset\nsummary: Undelegates an asset\nicon: https://cryptolions.io/assets/images/sa-icons-256/delegate.png#f8d91c1b9c0f376464e69aadf41142a17492af1e75d394601872b6a992b420bc\n---\n\nExecuting action by real owner will return asset immediately, and the entry in the delegates table recording the borrowing will be erased.\n\nInput parameters:\n`owner`    - real asset owner account;\n`from`     - current account owner (borrower);\n`assetids` - array of assetid's to undelegate;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Undelegates an asset\nsummary: Undelegates an asset\nicon: https://cryptolions.io/assets/images/sa-icons-256/updatef.png#f5d5af2ed6af508777f9f0b3c3a8e24b61eeca2ea623cfec6f6d0e9ea2c4d1a7\n---\n\nExecuting action by real owner will return asset immediately, and the entry in the delegates table recording the borrowing will be erased.\n\nInput parameters:\n`owner`    - real asset owner account;\n`from`     - current account owner (borrower);\n`assetids` - array of assetid's to undelegate;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "update",
@@ -1136,6 +1131,11 @@
             "name": "updatef",
             "type": "updatef",
             "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Update the data field of a fungible token\nsummary: Update the data field of a fungible token\nicon: https://cryptolions.io/assets/images/sa-icons-256/updatef.png#f5d5af2ed6af508777f9f0b3c3a8e24b61eeca2ea623cfec6f6d0e9ea2c4d1a7\n---\n\nInput parameters:\n`author` - fungible token author;\n`sym`    - fingible token symbol (\"GOLD\", \"WOOD\", etc.)\n`data`   - stringify json (recommend including keys `img` and `name` for better displaying by markets)\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "updatentt",
+            "type": "updatentt",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Update assets mutable data\nsummary: Update assets mutable data (mdata) field. Action is available only for authors\nicon: https://cryptolions.io/assets/images/sa-icons-256/update.png#305b640fe614876c6e6f5fed5ac21f8157c80f7bee39f3db26228986c1fc5e0e\n---\n\nInput parameters:\n`author`  - authors account;\n`owner`   - current assets owner;\n`assetid` - assetid to update;\n`mdata`   - stringified json with mutable assets data. All mdata will be replaced;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "updatever",
@@ -1173,6 +1173,13 @@
             "key_types": []
         },
         {
+            "name": "nttoffers",
+            "type": "snttoffer",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
             "name": "offerfs",
             "type": "sofferf",
             "index_type": "i64",
@@ -1194,6 +1201,13 @@
             "key_types": []
         },
         {
+            "name": "snttassets",
+            "type": "snttasset",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
             "name": "stat",
             "type": "currency_stats",
             "index_type": "i64",
@@ -1203,20 +1217,6 @@
         {
             "name": "tokenconfigs",
             "type": "tokenconfigs",
-            "index_type": "i64",
-            "key_names": [],
-            "key_types": []
-        },
-        {
-            "name": "snttassets",
-            "type": "snttasset",
-            "index_type": "i64",
-            "key_names": [],
-            "key_types": []
-        },
-        {
-            "name": "nttoffers",
-            "type": "snttoffer",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
@@ -1280,6 +1280,5 @@
             "body": "In witness whereof, the parties hereto have caused this Agreement to be executed by themselves or their duly authorized representatives as of the date of execution, and authorized as proven by the cryptographic signature on the transaction that invokes this contract."
         }
     ],
-    "variants": [],
-    "abi_extensions": []
+    "variants": []
 }

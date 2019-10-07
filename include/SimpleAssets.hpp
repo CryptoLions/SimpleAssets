@@ -24,10 +24,10 @@
  *    Event Receiver: https://github.com/CryptoLions/SimpleAssets-EventReceiverExample
  */
 
-#include <eosiolib/eosio.hpp>
-#include <eosiolib/asset.hpp>
-#include <eosiolib/singleton.hpp>
-#include <eosiolib/transaction.hpp>
+#include <eosio/eosio.hpp>
+#include <eosio/asset.hpp>
+#include <eosio/singleton.hpp>
+#include <eosio/transaction.hpp>
 
 using namespace eosio;
 using std::string;

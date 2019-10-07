@@ -16,9 +16,9 @@ ACTION SimpleAssets::regauthor( name author, string data, string stemplate, stri
 
 	if ( author_.find( author.value ) == author_.end() ) {
 		author_.emplace( author, [&]( auto& s ) {
-			s.author = author;
-			s.data = data;
-			s.stemplate = stemplate;
+			s.author      = author;
+			s.data        = data;
+			s.stemplate   = stemplate;
 			s.imgpriority = imgpriority;
 		});
 	}
@@ -40,8 +40,8 @@ ACTION SimpleAssets::authorupdate( name author, string data, string stemplate, s
 	}
 	else {
 		author_.modify( itr, author, [&]( auto& s ) {
-			s.data = data;
-			s.stemplate = stemplate;
+			s.data        = data;
+			s.stemplate   = stemplate;
 			s.imgpriority = imgpriority;
 		});
 	}
@@ -61,21 +61,21 @@ ACTION SimpleAssets::create( name author, name category, name owner, string idat
 		//add info to offers table
 		offers offert( _self, _self.value );
 		offert.emplace( author, [&]( auto& s ) {
-			s.assetid = newID;
+			s.assetid   = newID;
 			s.offeredto = owner;
-			s.owner = author;
-			s.cdate = now();
+			s.owner     = author;
+			s.cdate     = current_time_point().sec_since_epoch();
 		});
 	}
 
 	sassets assets( _self, assetOwner.value );
 	assets.emplace( author, [&]( auto& s ) {
-		s.id = newID;
-		s.owner = assetOwner;
-		s.author = author;
+		s.id       = newID;
+		s.owner    = assetOwner;
+		s.author   = author;
 		s.category = category;
-		s.mdata = mdata; // mutable data
-		s.idata = idata; // immutable data
+		s.mdata    = mdata; // mutable data
+		s.idata    = idata; // immutable data
 	});
 
 	//Events
@@ -107,21 +107,21 @@ ACTION SimpleAssets::claim( name claimer, std::vector<uint64_t>& assetids ) {
 		check( itrc->owner.value == itr->owner.value, "Owner was changed for at least one of the items!?" );
 
 		assets_t.emplace( claimer, [&]( auto& s ) {
-			s.id = itr->id;
-			s.owner = claimer;
-			s.author = itr->author;
-			s.category = itr->category;
-			s.mdata = itr->mdata; 		// mutable data
-			s.idata = itr->idata; 		// immutable data
-			s.container = itr->container;
+			s.id         = itr->id;
+			s.owner      = claimer;
+			s.author     = itr->author;
+			s.category   = itr->category;
+			s.mdata      = itr->mdata; 		// mutable data
+			s.idata      = itr->idata; 		// immutable data
+			s.container  = itr->container;
 			s.containerf = itr->containerf;
 		});
 
 		//Events
 		uniqauthor[itr->author][assetids[i]] = itrc->owner;
 
-		assets_f.erase(itr);
-		offert.erase(itrc);
+		assets_f.erase( itr );
+		offert.erase( itrc );
 	}
 
 	for ( auto uniqauthorIt = uniqauthor.begin(); uniqauthorIt != uniqauthor.end(); ++uniqauthorIt ) {
@@ -179,13 +179,13 @@ ACTION SimpleAssets::transfer( name from, name to, std::vector<uint64_t>& asseti
 		check( offert.find( assetids[i] ) == offert.end(), "At least one of the assets has been offered for a claim and cannot be transferred. Cancel offer?" );
 
 		assets_t.emplace( rampayer, [&]( auto& s ) {
-			s.id = itr->id;
-			s.owner = to;
-			s.author = itr->author;
-			s.category = itr->category;
-			s.idata = itr->idata; 		// immutable data
-			s.mdata = itr->mdata; 		// mutable data
-			s.container = itr->container;
+			s.id         = itr->id;
+			s.owner      = to;
+			s.author     = itr->author;
+			s.category   = itr->category;
+			s.idata      = itr->idata; 		// immutable data
+			s.mdata      = itr->mdata; 		// mutable data
+			s.container  = itr->container;
 			s.containerf = itr->containerf;
 
 		});
@@ -233,10 +233,10 @@ ACTION SimpleAssets::offer( name owner, name newowner, std::vector<uint64_t>& as
 		check( delegatet.find( assetids[i] ) == delegatet.end(), "At least one of the assets is delegated and cannot be offered." );
 
 		offert.emplace( owner, [&]( auto& s ) {
-			s.assetid = assetids[i];
+			s.assetid   = assetids[i];
 			s.offeredto = newowner;
-			s.owner = owner;
-			s.cdate = now();
+			s.owner     = owner;
+			s.cdate     = current_time_point().sec_since_epoch();
 		});
 	}
 }
@@ -301,12 +301,12 @@ ACTION SimpleAssets::delegate( name owner, name to, std::vector<uint64_t>& asset
 		check( offert.find( assetids[i] ) == offert.end(), "At least one of the assets has an open offer and cannot be delegated." );
 
 		delegatet.emplace( owner, [&]( auto& s ) {
-			s.assetid = assetids[i];
-			s.owner = owner;
+			s.assetid     = assetids[i];
+			s.owner       = owner;
 			s.delegatedto = to;
-			s.cdate = now();
-			s.period = period;
-			s.memo = memo;
+			s.cdate       = current_time_point().sec_since_epoch();
+			s.period      = period;
+			s.memo        = memo;
 		});
 	}
 
@@ -346,7 +346,7 @@ ACTION SimpleAssets::undelegate( name owner, name from, std::vector<uint64_t>& a
 		check( owner == itrc->owner, "You are not the owner of at least one of these assets." );
 		check( from == itrc->delegatedto, "FROM does not match DELEGATEDTO for at least one of the assets." );
 		check( itr->owner == itrc->delegatedto, "FROM does not match DELEGATEDTO for at least one of the assets." );
-		check( ( itrc->cdate + itrc->period ) < now(), "Cannot undelegate until the PERIOD expires." );
+		check( ( itrc->cdate + itrc->period ) < current_time_point().sec_since_epoch(), "Cannot undelegate until the PERIOD expires." );
 
 		if ( i != 0 ) {
 			assetidsmemo += ", ";
@@ -403,13 +403,13 @@ ACTION SimpleAssets::detach( name owner, uint64_t assetidc, std::vector<uint64_t
 			auto acc = ac_->container[j];
 			if ( assetids[i] == acc.id ) {
 				assets_f.emplace( owner, [&]( auto& s ) {
-					s.id = acc.id;
-					s.owner = owner;
-					s.author = acc.author;
-					s.category = acc.category;
-					s.idata = acc.idata; 		// immutable data
-					s.mdata = acc.mdata; 		// mutable data
-					s.container = acc.container;
+					s.id         = acc.id;
+					s.owner      = owner;
+					s.author     = acc.author;
+					s.category   = acc.category;
+					s.idata      = acc.idata; 		// immutable data
+					s.mdata      = acc.mdata; 		// mutable data
+					s.container  = acc.container;
 					s.containerf = acc.containerf;
 				});
 			}
@@ -448,11 +448,11 @@ ACTION SimpleAssets::createf( name author, asset maximum_supply, bool authorctrl
 
 	statstable.emplace( author, [&]( auto& s ) {
 		s.supply.symbol = maximum_supply.symbol;
-		s.max_supply = maximum_supply;
-		s.issuer = author;
-		s.id = getid();
-		s.authorctrl = authorctrl;
-		s.data = data;
+		s.max_supply    = maximum_supply;
+		s.issuer        = author;
+		s.id            = getid();
+		s.authorctrl    = authorctrl;
+		s.data          = data;
 	});
 }
 
@@ -553,7 +553,7 @@ ACTION SimpleAssets::offerf( name owner, name newowner, name author, asset quant
 			if ( itr != offert.end() ) {
 				  offert.modify( itr, owner, [&](auto& s) {
 					s.quantity.amount += quantity.amount;
-					s.cdate = now();
+					s.cdate = current_time_point().sec_since_epoch();
 				});
 				sub_balancef( owner, author, quantity );
 				return ;
@@ -562,12 +562,12 @@ ACTION SimpleAssets::offerf( name owner, name newowner, name author, asset quant
 	}
 
 	offert.emplace( owner, [&]( auto& s ) {
-		s.id = getid( true );
-		s.author = author;
-		s.quantity = quantity;
+		s.id        = getid( true );
+		s.author    = author;
+		s.quantity  = quantity;
 		s.offeredto = newowner;
-		s.owner = owner;
-		s.cdate = now();
+		s.owner     = owner;
+		s.cdate     = current_time_point().sec_since_epoch();
 	});
 	sub_balancef( owner, author, quantity );
 }
@@ -635,8 +635,8 @@ ACTION SimpleAssets::openf( name owner, name author, const symbol& symbol, name 
 
 	if ( acnts.find( st.id ) == acnts.end() ) {
 		acnts.emplace( ram_payer, [&]( auto& a ) {
-			a.id = st.id;
-			a.author = author;
+			a.id      = st.id;
+			a.author  = author;
 			a.balance = asset{ 0, symbol };
 		});
 	}
@@ -736,8 +736,8 @@ void SimpleAssets::attachdeatch( name owner, name author, asset quantity, uint64
 
 	if ( !found && attach ) {
 		account addft;
-		addft.id = st.id;
-		addft.author = author;
+		addft.id      = st.id;
+		addft.author  = author;
 		addft.balance = quantity;
 
 		newcontainerf.push_back( addft );
@@ -778,9 +778,9 @@ void SimpleAssets::add_balancef( name owner, name author, asset value, name ram_
 
 	if ( to == to_acnts.end() ) {
 		to_acnts.emplace( ram_payer, [&]( auto& a ) {
-			a.id = ftid;
+			a.id      = ftid;
 			a.balance = value;
-			a.author = author;
+			a.author  = author;
 		});
 	}
 	else {
@@ -807,7 +807,7 @@ ACTION SimpleAssets::createntt( name author, name category, name owner, string i
 			s.assetid   = newID;
 			s.offeredto = owner;
 			s.owner     = author;
-			s.cdate     = now();
+			s.cdate     = current_time_point().sec_since_epoch();
 		});
 	}
 
@@ -862,11 +862,11 @@ ACTION SimpleAssets::claimntt( name claimer, std::vector<uint64_t>& assetids ) {
 
 		assets_claimer.emplace( claimer, [&](auto& s) {
 			s.id = itr->id;
-			s.owner = claimer;
-			s.author = itr->author;
+			s.owner    = claimer;
+			s.author   = itr->author;
 			s.category = itr->category;
-			s.mdata = itr->mdata; 		// mutable data
-			s.idata = itr->idata; 		// immutable data
+			s.mdata    = itr->mdata; 		// mutable data
+			s.idata    = itr->idata; 		// immutable data
 		});
 
 		//Events

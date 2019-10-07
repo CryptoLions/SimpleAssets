@@ -1,11 +1,10 @@
 # SimpleAssets  
 
-[中文翻译](#中文翻译)
-
-[한국어 번역](#한국어)
-
 A simple standard for digital assets on EOSIO blockchains: Non-Fungible Tokens (NFTs), Fungible Tokens (FTs), and Non-Transferable Tokens (NTTs).   
 by [CryptoLions](https://CryptoLions.io)  
+
+中文翻译: https://github.com/CryptoLions/SimpleAssets/blob/master/README_ZH.md  
+한국어 번역: https://github.com/CryptoLions/SimpleAssets/blob/master/README_KR.md  
   
 web: http://simpleassets.io  
 Git: https://github.com/CryptoLions/SimpleAssets    
@@ -15,11 +14,8 @@ Intro & Demos:  https://medium.com/@cryptolions/introducing-simple-assets-b4e17c
 
 Events Receiver Example for authors: https://github.com/CryptoLions/SimpleAssets-EventReceiverExample   
 
-**WARNING!!! CDT currently has a bug that doesn't allow compilation on v1.6.x.
-  1.5.0 also has a bug "Segmentation fault (core dumped)", but only with abi generation.
-  Recommendation: Use 1.5.0 for contract compilation and use our abi**  
-  issue: https://github.com/EOSIO/eosio.cdt/issues/527  
-    
+**WARNING** The minimum dependency on eosio.cdt is now v1.6.3.  
+
 ---------------------------  
 
 Use Simple Assets by making calls to the Simple Assets contract.  It's like a Dapp for Dapps.  
@@ -54,7 +50,7 @@ Each symbol in imdata and mdata is +1 byte.
 1. [Contract actions](#contract-actions)
 2. [Data Structures](#data-structures)
 3. [EXAMPLES: how to use Simple Assets in smart contracts](#examples-how-to-use-simple-assets-in-smart-contracts)
-4. [ChangeLog](#change-log-v120)
+4. [ChangeLog](#change-log-v130)
 ---------------------------  
 
 # Contract actions  
@@ -292,8 +288,7 @@ createAsset.send();
 
 ## Search asset and get assets info
 1. Please add in your hpp file info about assets structure 
-	**WARNING!!! CDT currently has a bug that doesn't allow compilation (v1.6.1).  
-	1.5.0 also has a bug "Segmentation fault (core dumped)", but only with abi generation (including array of self objects : std::vector<sasset> container;)**
+
 ```
 TABLE account {
 	uint64_t	id;
@@ -483,6 +478,12 @@ saRes1.send();
 
 
 -----------------
+## Change Log v1.3.0
+- Upgrade work with latest Contract Develper Toolkit (CDT v1.6.3).  
+  (Resolves this compilation [issue](https://github.com/EOSIO/eosio.cdt/issues/527))  
+- minor code refactoring.
+
+
 ## Change Log v1.2.0
 - NON TRANSFERRABLE TOKENS (NTTs) - new tables: snttassets and nttoffers
 - new NTT actions: createntt, createnttlog, claimntt, updatentt, burnntt
