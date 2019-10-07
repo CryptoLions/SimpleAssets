@@ -479,7 +479,7 @@ saRes1.send();
 
 -----------------
 ## Change Log v1.3.0
-- Upgrade work with latest Contract Developer Toolkit (CDT v1.6.3).  
+- Upgrade work with latest Contract Development Toolkit (CDT v1.6.3).  
   (Resolves this compilation [issue](https://github.com/EOSIO/eosio.cdt/issues/527))  
 - minor code refactoring.
 
