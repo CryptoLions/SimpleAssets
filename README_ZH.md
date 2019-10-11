@@ -3,27 +3,28 @@
 ﻿﻿﻿﻿﻿﻿﻿﻿﻿简单资产（Simple Assets）
 =========================
 
-一款EOSIO区块链上的数字资产（可替代和不可替代代币——NFTs）标准，由CryptoLions开发创建。    
+一款EOSIO区块链上的数字资产标准，适用于不可替代代币（Non-Fungible Tokens，NFTs）、可替代代币(Fungible Tokens，FTs) 和 不可转让代币（Non-Transferable Tokens，NTTs），由CryptoLions开发创建。    
  
-web: [http://simpleassets.io](http://simpleassets.io/    
+web: [http://simpleassets.io](http://simpleassets.io/)    
 Git: <https://github.com/CryptoLions/SimpleAssets>  
 Telegram: <https://t.me/simpleassets>  
-  
+
 简介和演示：https://medium.com/\@cryptolions/introducing-simple-assets-b4e17caafaa4  
   
 作者的事件接收器示例：https://github.com/CryptoLions/SimpleAssets-EventReceiverExample  
   
-警告！！！CDT目前有一个不被允许在v1.6.x版本上编译漏洞。 1.5.0版本上也有一个漏洞"Segmentation fault (core dumped)"，但仅基于abi可生成。 建议：使用1.5.0版本合约和我们的abi编译. 问题: https://github.com/EOSIO/eosio.cdt/issues/527
+**警告**现在最小基于eosio.cdt v1.6.3版。
 
 ---
 
 通过调用简单资产（Simple Assets）合约来使用Simple Assets。这就像是Dapps的Dapp。 
   
-丛林测试网: `simpleassets`  
-  
-EOS 主网: `simpleassets`  
-MEETONE 主网: `smplassets.m`  
-TELOS 主网: `simpleassets`  
+丛林测试网:**`simpleassets`**  
+
+EOS 主网: **`simpleassets`**  
+WAX 主网： **`simpleassets`**  
+MEETONE 主网: **`smplassets.m`**  
+TELOS 主网: **`simpleassets`**   
   
 简单资产（Simple Assets）是一个独立的合约，其他Dapps可以直接调用它来管理自己的数字资产。这为Dapp用户提供了额外的保证，即资产的所有权由信誉良好的外部机构管理，并且一旦创建，Dapp只能管理资产的mdata部分。 所有与所有权相关的功能都存在于游戏之外。
   
@@ -64,7 +65,12 @@ imdata和mdata中的每个符号都是+1字节。
 [https](https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp)*：*[//github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp](https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp)
 
 ```
-\# -- For Non-Fungible Tokens ---
+
+regauthor		(name author, data, stemplate, string imgpriority)
+authorupdate		(author, data, stemplate, string imgpriority)  
+
+
+\# -- For Non-Fungible Tokens （NTFs） ---
 
 create (author, category, owner, idata, mdata, requireсlaim)
 update (author, owner, assetid, mdata)
@@ -75,19 +81,17 @@ offer (owner, newowner, [assetid1,..,assetidn], memo)
 canceloffer (owner, [assetid1,..,assetidn])
 claim (claimer, [assetid1,..,assetidn])
 
-regauthor (name author, data, stemplate)
-authorupdate (author, data, stemplate)
-
-delegate (owner, to, [assetid1,..,assetidn], period, memo)
+delegate		(owner, to, [assetid1,..,assetidn], period, memo)
 undelegate (owner, from, [assetid1,..,assetidn])
 delegatemore		(owner, assetid, period)  
 
 attach (owner, assetidc, [assetid1,..,assetidn])
 detach (owner, assetidc, [assetid1,..,assetidn])
+
 attachf (owner, author, quantity, assetidc)
 detachf (owner, author, quantity, assetidc)
 
-\# -- For Fungible Tokens ---
+\# -- For Fungible Tokens (FTs)---
 
 createf (author, maximum_supply, authorctrl, data)
 updatef (author, sym, data)
@@ -101,6 +105,14 @@ claimf (claimer, [ftofferid1,...,ftofferidn])
 
 openf (owner, author, symbol, ram_payer)
 closef (owner, author, symbol)
+
+\# -- For Non-Transferable Tokens (NTTs) ---
+
+ createntt		(author, category, owner, idata, mdata, requireсlaim)  
+ updatentt		(author, owner, assetid, mdata)  
+ burnntt		(owner, [assetid1,..,assetidn], memo)  
+ claimntt		(claimer, [assetid1,..,assetidn])
+
 ```
 ---
 数据结构
@@ -122,8 +134,8 @@ account[] containerf; 	// FTs(可替代代币)附加到此资产
 
 }
 
-//请包含有关资产名称img desc的idata或mdata信息，这些信息将由Markets使用。 
 ```
+//为帮助第三方资产浏览器，我们建议在`idata`或`mdata`请包含以下字段：//`name`（文本）//`img` (图像的网页链接) //以及 `desc`（文本描述）的信息。 
 ----
 ## 报价
 
@@ -147,8 +159,29 @@ name author; 			// 资产创建者，将能够创建和更新资产
 string data; 			// 创建者的数据（json）将被商城用于更好的展示
  				// 建议：形象徽标（logo），信息，网址;
 
-string	stemplate;		// 商城的数据（json）模式。 key：状态值，其中 key 是 idata 或 mdata 的字段名
-				// 对非文本字段的建议格式：txt，img，url，hide，webgl，mp3，video，timestamp
+string	stemplate;		// 数据（json）模式将告诉第三方市场如何显示每个NFT field。
+                //key：状态值，其中 key 是 idata 或 mdata 的字段名
+                //建议格式：
+                //txt | 默认类型
+                //url | 显示可点击的网页链接
+                //img | 链接至img文件
+                //webgl | 链接至webgl文件
+                //mp3 | 链接至mp3文件
+                //video | 链接至视频文件
+                //hide | 不显示
+                //imgb | 图片作为二进制字符串
+                //webglb | webgl二进制
+                //mp3b | mp3二进制
+                //videob | 视频二进制
+
+string imgpriority;  //指定NFTs类别的主图像字段
+                //
+                // 这用于当您想把自己的NFTs主要图像移作他用
+                // 不仅是一个指向image field中指定的img图片URL链接, 也允许您创建具有不同image field的NFTs类别
+                //
+                //数据是分层的json
+                //value： 来自idata或mdata field, 将用作
+                //所有类别NFTs的主要图像
 
 }
 ```
@@ -157,14 +190,13 @@ string	stemplate;		// 商城的数据（json）模式。 key：状态值，其�
 ```
 delegates{
 
-uint64_t assetid; 	// asset id offered for claim;
-name owner; 		// asset owner;
-name delegatedto; 	// who can claim this asset;
-uint64_t cdate; 	// offer create date;
-uint64_t period; 	// Time in seconds that the asset will be lent. Lender cannot
-undelegate until
-
-// the period expires, however the receiver can transfer back at any time.
+uint64_t assetid; 	// 提供用于claim的资产ID;
+name owner; 		// 资产所有者;
+name delegatedto; 	// claim该资产者;
+uint64_t cdate; 	// 提供创建日期;
+uint64_t period; 	// 借出资产时间（以秒为单位），借出人不可取消，直到期限到期
+                    // 期限到期，但接收方可随时转回
+string memo;        // 合约参数备忘录，最长64字节
 
 }
 ```
@@ -192,8 +224,9 @@ name author; 	// 代币创建者
 asset balance;	// 代币余额
 
 }
-
-sofferf {
+```
+```
+offerfs {
 
 uint64_t id;	// claim 此 offer 的ID（自动递增）
 
@@ -205,8 +238,30 @@ uint64_t cdate; // offer创建日期
 
 }
 ```
+## NTT
+```
+snttassets {  
+	uint64_t	id; 		// NTT id 用于 claim 或 burn;  
+	name		owner;  	// 资产所有者 (可变 - 基于所有者!!!);  
+	name		author;		// 资产创建者 (游戏合约, 不可变);  
+	name		category;	// 资产类别, 有创建者选择, 不可变;  
+	string		idata;		// 不可变资产数据. 可以是 JSON 字符串化或只是 sha256 字符串;  
+	string		mdata;		// 可变资产数据, 有创建者创建或更新资产时添加  
+					// 可以是 JSON 字符串化或只是 sha256 字符串;  
+}  
+```
+```
+nttoffers {
+	uint64_t	id;		// 用于 claim 的 offer id  (自动递增) 
+	name		author;		// ft 创建者
+	name		owner;		// ft 所有者
+	asset		quantity;	// 数量
+	name		offeredto;	// 可以 claim the offer 的账户
+	uint64_t	cdate;		// offer 的创建日期
+}
+```
 ---
-示例：如何在智能合约中使用简单资产
+# 示例：如何在智能合约中使用简单资产
 ==================================
 
 ## 创建资产并转移到所有者帐户ownerowner22：
@@ -260,9 +315,6 @@ createAsset.send();
 ## 搜索资产并获取资产信息  
 
 1.  请添加有关资产结构的hpp文件信息。
-
-**警告! CDT目前有一个不允许编译的漏洞（v1.6.1)。1.5.0也有一个漏洞“Segmentation fault（core
-dumped）”，但只有abi可生成（包括self对象数组：std :: vector container;）**
 
 ```
 TABLE account {
@@ -325,6 +377,7 @@ lib
 auto mdata = json::parse(idx-\>mdata); // https://github.com/nlohmann/json
 check(mdata["cd"] \< now(), "Not ready yet for usage");
 ```
+
 ---
 ## 更新资产
 ```
@@ -405,9 +458,7 @@ std::make_tuple(to, author, wood, memo)
 saRes1.send();
 ```
 ---
-
 ## 如果启用了authorctrl，则由创建者转让代币（可替代）  
-
 ```
 name SIMPLEASSETSCONTRACT = "simpleassets"_n;
 
@@ -451,12 +502,42 @@ saRes1.send();
 ```
 ------
 
-## 更新日志v1.1.0
+## 更改日志v1.3.0
+* 使用最新的合约开发工具包（CDT v1.6.3）进行升级（解决了此编译[问题](https://github.com/EOSIO/eosio.cdt/issues/527)
+* 次要代码重构
+
+---
+## 更改日志v1.2.0
+* 不可转让代币（NTTs）-新tables: snttassets 和 nttoffers
+* 新 NTT 操作: createntt, createnttlog, claimntt, updatentt, burnntt
+* 委托更多修复操作（感谢 cc32d9）
+* ricardian 合约更新
+* 为NTT添加外部逻辑测试
+
+---
+## 更改日志v1.1.3
+* ricardian 合约更新
+* 可替代代币报价问题修复
+
+---
+## 更改日志v1.1.2
+* 把 `string imgpriority` 字段添加至 `sauthor` 表以及 `regauthor` 和 `authorupdate` 操作中
+* 重要信息：自我部署简单资产可能需要迁移 regauthor 表（如果使用）
+
+---
+## 更改日志v1.1.1
+* 优化 claim/transfer/burn 功能
+* 备注字段已添加至delegates表（这允许出租者/游戏创建不同类别的借入资产-例如高风险/低风险）。在进行delegate操作时，操作参数的备忘录将存储至此新字段。最多64字节
+* 为delegate备忘录添加三个新测试单元
+---
+
+## 更改日志v1.1.0
 
 * 代码重构
 * 修复了为委托和转让的NFTs的分离批量处理功能
 * 新合约允许延长借用NFT的委托期限
 * 增加了外部（bash）单元测试
+
 ---
 ## 更改日志v1.0.1
 
@@ -466,14 +547,17 @@ saRes1.send();
 ## 更改日志v1.0.0
 
 -   阻止所有者向自己提供资产
+
 ---
 ## 更改日志v0.4.2
 
--   `saeclaim` 事项的格式已更改：由map \<assetid，from\>替换asseti数组
+-   `saeclaim` 事项的格式已更改：由 map <assetid，from>替换asseti数组
+
 ---
 ## 更改日志v0.4.1
 
 -   添加了require_recipient（所有者）来执行`create`操作
+
 ---
 ## 更改日志v0.4.0
 
@@ -499,11 +583,6 @@ saRes1.send();
 
 **集装资产**
 
-**警告!!! CDT目前有一个不被允许在v1.6.1上编译的漏洞。
-1.5.0也有一个漏洞“Segmentation fault（core dumped）”，但只有abi生效。**
-
-**建议：使用1.5.0进行合约编译，并使用我们的abi。**
-
 -   nft资产结构中用于附加和分离其他NFT或FT的新字段“container”和“containerf”
 
 -   新操作 `attach`，`detach`
@@ -515,12 +594,14 @@ saRes1.send();
 -   字段重命名 `lasted`- \>` lnftid`，`spare`- \> `defid`（内部用法）在表 `global` 中
 
 -   字段 `providedTo` 在 `soffer` 表中重命名为 `offersto`
+
 ---
 ## 更改日志v0.3.2
 
 -   为操作 `offer` 添加了 `memo` 参数;
 
 -   为操作 `delegate` 添加了 `memo` 参数;
+
 ---
 ## 更改日志v0.3.1
 
@@ -535,6 +616,7 @@ configs.get("simpleassets"_n);
 -   增加了操作 `updatever`。它为第三方钱包，市场等更新了SimpleAstes部署的版本;
 
 -   事件通知的新示例： <https://github.com/CryptoLions/SimpleAssets-EventReceiverExample>
+
 ---
 ## 更改日志v0.3.0
 
@@ -551,6 +633,7 @@ ACTION saeburn ( name account, std::vector\<uint64_t\>& assetids, std::string
 memo );
 ```
 -   `untildate` 参数更改为 `period`（以秒为单位）的操作 `delegate` 和表 `sdelegates` 
+
 ---
 ## 更改日志v0.2.0
 
@@ -569,6 +652,7 @@ memo );
 -   李嘉图合约已更新
 
 -   以下有更多用法示例
+
 ---
 ## 更改日志v0.1.1
 

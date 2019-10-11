@@ -544,9 +544,6 @@ saRes1.send();
 - on `closef` check if no open offers (internal)
 
 **Containerizing assets**  
-**WARNING!!! CDT currently has a bug that doesn't allow compilation (v1.6.1).  
-  1.5.0 also has a bug "Segmentation fault (core dumped)", but only with abi generation.
-  Recommendation: Use 1.5.0 for contract compilation and use our abi**
 - new fields `container` and `containerf` in nft asset structure for attaching and detaching other NFT or FT
 - new actions `attach`, `detach`
 - new actions `attachf`, `detachf`
