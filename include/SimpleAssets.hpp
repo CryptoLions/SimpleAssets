@@ -577,6 +577,9 @@ CONTRACT SimpleAssets : public contract{
 		using burnntt_action = action_wrapper< "burnntt"_n, &SimpleAssets::burnntt >;
 
 	private:
+		const std::vector<name> waxauthors{ "vgo.wax"_n, "irl.wax"_n };
+		void checkwaxauthor( name author );
+
 		/*
 		* Get new asset id.
 		*

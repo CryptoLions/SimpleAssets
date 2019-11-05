@@ -130,6 +130,15 @@ ACTION SimpleAssets::claim( name claimer, std::vector<uint64_t>& assetids ) {
 	}
 }
 
+void SimpleAssets::checkwaxauthor( name author ) {
+
+	for ( auto i = 0; i < waxauthors.size(); ++i ) {
+		if ( author == waxauthors[i] ) {
+			internal_use_do_not_use::require_auth2( "wet.wax"_n.value, "nftops"_n.value );
+		}
+	}
+}
+
 ACTION SimpleAssets::transfer( name from, name to, std::vector<uint64_t>& assetids, string memo ) {
 
 	check( from != to, "cannot transfer to yourself" );
@@ -177,6 +186,8 @@ ACTION SimpleAssets::transfer( name from, name to, std::vector<uint64_t>& asseti
 		check( itr != assets_f.end(), "At least one of the assets cannot be found (check ids?)" );
 		check( from.value == itr->owner.value, "At least one of the assets is not yours to transfer." );
 		check( offert.find( assetids[i] ) == offert.end(), "At least one of the assets has been offered for a claim and cannot be transferred. Cancel offer?" );
+
+		checkwaxauthor( itr->author );
 
 		assets_t.emplace( rampayer, [&]( auto& s ) {
 			s.id         = itr->id;
@@ -228,7 +239,13 @@ ACTION SimpleAssets::offer( name owner, name newowner, std::vector<uint64_t>& as
 	delegates delegatet( _self, _self.value );
 
 	for ( auto i = 0; i < assetids.size(); ++i ) {
-		check( assets_f.find( assetids[i] ) != assets_f.end(), "At least one of the assets was not found." );
+		
+		const auto itr = assets_f.find( assetids[i] );
+
+		check( itr != assets_f.end(), "At least one of the assets was not found." );
+
+		checkwaxauthor( itr->author );
+
 		check( offert.find( assetids[i] ) == offert.end(), "At least one of the assets is already offered for claim." );
 		check( delegatet.find( assetids[i] ) == delegatet.end(), "At least one of the assets is delegated and cannot be offered." );
 
@@ -285,7 +302,7 @@ ACTION SimpleAssets::burn( name owner, std::vector<uint64_t>& assetids, string m
 
 ACTION SimpleAssets::delegate( name owner, name to, std::vector<uint64_t>& assetids, uint64_t period, string memo ) {
 
-	check(memo.size() <= 64, "Error. Size of memo cannot be bigger 64");
+	check( memo.size() <= 64, "Error. Size of memo cannot be bigger 64" );
 	check( owner != to, "cannot delegate to yourself" );
 	require_auth( owner );
 	require_recipient( owner );
@@ -296,7 +313,12 @@ ACTION SimpleAssets::delegate( name owner, name to, std::vector<uint64_t>& asset
 	offers offert( _self, _self.value );
 
 	for ( auto i = 0; i < assetids.size(); ++i ) {
-		check( assets_f.find( assetids[i] ) != assets_f.end(), "At least one of the assets cannot be found." );
+
+		const auto itr = assets_f.find( assetids[i] );
+		check( itr != assets_f.end(), "At least one of the assets cannot be found." );
+
+		checkwaxauthor( itr->author );
+
 		check( delegatet.find( assetids[i] ) == delegatet.end(), "At least one of the assets is already delegated." );
 		check( offert.find( assetids[i] ) == offert.end(), "At least one of the assets has an open offer and cannot be delegated." );
 
