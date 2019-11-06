@@ -857,7 +857,7 @@ ACTION SimpleAssets::updatentt( name author, name owner, uint64_t assetid, strin
 	require_auth( author );
 	snttassets assets_ntt( _self, owner.value );
 	const auto itr = assets_ntt.find( assetid );
-	check( itr != assets_f.end(), "asset not found" );
+	check( itr != assets_ntt.end(), "asset not found" );
 	check( itr->author == author, "Only author can update asset." );
 
 	assets_ntt.modify( itr, author, [&](auto& a) {
