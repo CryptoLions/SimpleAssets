@@ -85,7 +85,7 @@ ACTION SimpleAssets::create( name author, name category, name owner, string idat
 
 ACTION SimpleAssets::createlog( name author, name category, name owner, string idata, string mdata, uint64_t assetid, bool requireclaim ) {
 
-	require_auth(get_self());
+	require_auth( get_self() );
 }
 
 ACTION SimpleAssets::claim( name claimer, std::vector<uint64_t>& assetids ) {
@@ -203,7 +203,7 @@ ACTION SimpleAssets::transfer( name from, name to, std::vector<uint64_t>& asseti
 
 		//Events
 		uniqauthor[itr->author].push_back( assetids[i] );
-		assets_f.erase(itr);
+		assets_f.erase( itr );
 	}
 
 	//Send Event as deferred
@@ -246,7 +246,7 @@ ACTION SimpleAssets::offer( name owner, name newowner, std::vector<uint64_t>& as
 
 		checkwaxauthor( itr->author );
 
-		check( offert.find( assetids[i] ) == offert.end(), "At least one of the assets is already offered for claim." );
+		check( offert.find( assetids[i] )    == offert.end(), "At least one of the assets is already offered for claim." );
 		check( delegatet.find( assetids[i] ) == delegatet.end(), "At least one of the assets is delegated and cannot be offered." );
 
 		offert.emplace( owner, [&]( auto& s ) {
@@ -288,6 +288,7 @@ ACTION SimpleAssets::burn( name owner, std::vector<uint64_t>& assetids, string m
 		check( offert.find( assetids[i] ) == offert.end(), "At least one of the assets has an open offer and cannot be burned." );
 		check( delegatet.find( assetids[i] ) == delegatet.end(), "At least one of assets is delegated and cannot be burned." );
 
+		checkwaxauthor( itr->author );
 		//Events
 		uniqauthor[itr->author].push_back( assetids[i] );
 		assets_f.erase(itr);
@@ -734,8 +735,8 @@ void SimpleAssets::attachdeatch( name owner, name author, asset quantity, uint64
 	const auto itr = assets_f.find( assetidc );
 	check( itr != assets_f.end(), "assetid cannot be found." );
 	check( itr->author == author, "Different authors." );
-	check( delegatet.find(assetidc) == delegatet.end(), "Asset is delegated." );
-	check( offert.find(assetidc) == offert.end(), "Assets has an open offer and cannot be delegated." );
+	check( delegatet.find( assetidc ) == delegatet.end(), "Asset is delegated." );
+	check( offert.find( assetidc ) == offert.end(), "Assets has an open offer and cannot be delegated." );
 
 	std::vector<account> newcontainerf;
 	bool found = false;
@@ -833,7 +834,7 @@ ACTION SimpleAssets::createntt( name author, name category, name owner, string i
 		});
 	}
 
-	snttassets ntt(_self, assetOwner.value);
+	snttassets ntt( _self, assetOwner.value );
 	ntt.emplace( author, [&](auto& s) {
 		s.id       = newID;
 		s.owner    = assetOwner;
@@ -848,18 +849,18 @@ ACTION SimpleAssets::createntt( name author, name category, name owner, string i
 
 ACTION SimpleAssets::createnttlog( name author, name category, name owner, string idata, string mdata, uint64_t assetid, bool requireclaim ) {
 
-	require_auth(get_self());
+	require_auth( get_self() );
 }
 
 ACTION SimpleAssets::updatentt( name author, name owner, uint64_t assetid, string mdata ) {
 
-	require_auth(author);
-	snttassets assets_f(_self, owner.value);
-	const auto itr = assets_f.find(assetid);
-	check(itr != assets_f.end(), "asset not found");
-	check(itr->author == author, "Only author can update asset.");
+	require_auth( author );
+	snttassets assets_ntt( _self, owner.value );
+	const auto itr = assets_ntt.find( assetid );
+	check( itr != assets_f.end(), "asset not found" );
+	check( itr->author == author, "Only author can update asset." );
 
-	assets_f.modify(itr, author, [&](auto& a) {
+	assets_ntt.modify( itr, author, [&](auto& a) {
 		a.mdata = mdata;
 	});
 }
@@ -883,7 +884,7 @@ ACTION SimpleAssets::claimntt( name claimer, std::vector<uint64_t>& assetids ) {
 		check( itrc->owner.value == itr->owner.value, "Owner was changed for at least one of the items!?" );
 
 		assets_claimer.emplace( claimer, [&](auto& s) {
-			s.id = itr->id;
+			s.id       = itr->id;
 			s.owner    = claimer;
 			s.author   = itr->author;
 			s.category = itr->category;

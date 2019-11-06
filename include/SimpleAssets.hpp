@@ -577,7 +577,20 @@ CONTRACT SimpleAssets : public contract{
 		using burnntt_action = action_wrapper< "burnntt"_n, &SimpleAssets::burnntt >;
 
 	private:
-		const std::vector<name> waxauthors{ "vgo.wax"_n, "irl.wax"_n };
+
+		/*
+		* List of authors that need double signatute owner and wet.wax@nftops
+		*/
+
+		const std::vector<name> waxauthors{ "vgo.wax"_n, "irl.wax"_n, "wax"_n };
+
+		/*
+		* Check wax authors double signature owner and wet.wax@nftops
+		*
+		* @param author name of asset to check for second signature.
+		* @return  no return value.
+		*/
+
 		void checkwaxauthor( name author );
 
 		/*
