@@ -44,7 +44,7 @@ TELOS 메인넷: `simpleassets`
   
 NFT의 RAM 사용량은 idata와 mdata 필드에 얼마나 많은 데이터가 있는지에 의해 정해집니다. 두 영역 모두가 비어있다면, 각 NFT는 `276byte`를 차지합니다.  
   
-imdata와 mdata의 각 기호들은 1 byte 씩을 차지합니다.  
+idata와 mdata의 각 기호들은 1 byte 씩을 차지합니다.  
   
 ---------------------------
   

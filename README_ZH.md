@@ -43,7 +43,7 @@ TELOS 主网: **`simpleassets`**
 NFT的RAM使用量取决于idata和mdata字段中存储的数据量。
 如果它们都为空，则每个NFT占用276个字节。
 
-imdata和mdata中的每个符号都是+1字节。
+idata和mdata中的每个符号都是+1字节。
 
 ----
 ## 目录
