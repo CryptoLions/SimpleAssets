@@ -67,6 +67,25 @@ TERM
 This Contract expires at the conclusion of code execution.
 by CryptoLions [ https://cryptolions.io ]
 
+<h1 class="contract"> changeauthor </h1>
+
+---
+spec_version: 0.0.2
+title: Change author of assets
+summary: Change author of assets
+icon: https://cryptolions.io/assets/images/sa-icons-256/regauthor.png#c6a539be8e7dfd1a4c466ba9cabfd13571cd77d5c988c652d2e8f87096f3548e
+---	
+
+Input parameters:
+`author`         - asset's author, who will able to change author name asset's;
+`newauthor`      - asset's new author name;
+`owner`          - assets owner;
+`assetids`       - array of assetid's
+
+TERM
+This Contract expires at the conclusion of code execution.
+by CryptoLions [ https://cryptolions.io ]
+
 <h1 class="contract"> create </h1>
 
 ---
@@ -242,8 +261,8 @@ Input parameters:
 `assetids`  - array of assetid's to delegate;
 `period`    - time in seconds that the asset will be lent. Lender cannot undelegate until 
 			  the period expires, however the receiver can transfer back at any time;
+`redelegate`- allow more redelegate or not;
 `memo`      - memo for delegate action;
-`autoreturn`- automatic return for delegated action;
 
 TERM
 This Contract expires at the conclusion of code execution.
@@ -262,7 +281,6 @@ Executing action by real owner will return asset immediately, and the entry in t
 
 Input parameters:
 `owner`    - real asset owner account;
-`from`     - current account owner (borrower);
 `assetids` - array of assetid's to undelegate;
 
 TERM

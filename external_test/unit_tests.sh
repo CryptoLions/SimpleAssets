@@ -1,5 +1,5 @@
 #sudo apt-get install bc
-#./unit_tests.sh alexnag12345 alexnag1tran PW5KUxSPhXY1YSH9risb7CVpTXzwH7DEVK84wQBugoy1uqBjo5Twm
+#./unit_tests.sh simpleasset5 alexnag1tran PW5KUxSPhXY1YSH9risb7CVpTXzwH7DEVK84wQBugoy1uqBjo5Twm
 
 echo "Test account where deployed SimpleAsset: " $1
 echo "Account second to test transfer: " $2
@@ -292,6 +292,7 @@ function READ_ONE_ASSET
 	sleep $WAIT_TIME
 	size=$(./cleos.sh get table $ACC $SCOPE sassets | jq -r '.rows | length')
 	asset_ids=$(./cleos.sh get table $ACC $SCOPE sassets | jq -r '.rows[].id')
+	asset_author=$(./cleos.sh get table $ACC $SCOPE sassets | jq -r '.rows[].author')
 
 	if (( size > 1 ))
 	  then
@@ -1142,7 +1143,50 @@ function TEST_CREATENTT_CLAIMNTT_BURNNTT
 	CLEAN_NTTASSETS_TABLE ${ACC_TO}
 }
 
+function PUSH_CHANGEAUTHOR
+{
+	sleep $WAIT_TIME
+	echo "changeauthor action"
+
+	output=$(./cleos.sh push action ${ACC} changeauthor '{ "author":"'${ACC}'", "newauthor":"'${ACC_TO}'", "owner":"'${ACC}'" ,"assetids":['${result_asset_id}'],"memo":"mdata"}' -p $ACC@active 2>&1)
+
+	if [[ $output =~ "${ACC} <= ${ACC}" ]]
+	then
+	   echo "Success"
+	else
+	   echo "Error"
+	   echo "Output: " $output
+	   exit 1
+	fi
+}
+
+function TEST_CHANGEAUTHOR
+{
+	echo "----------------------------------- TEST_CHANGEAUTHOR ----------------------------------------------------------------"
+	CLEAN_ASSETS_TABLE
+
+	PUSH_CREATE_ASSET
+
+	READ_ONE_ASSET
+
+	PUSH_CHANGEAUTHOR
+
+	READ_ONE_ASSET
+
+	if [ "$asset_author" = "$ACC_TO" ]
+	then
+		echo "Success. changeauthor ACTION test was successfully passed"
+	else
+		echo "asset_author: " $asset_author
+		echo "Error. Author was not changed"
+		exit 1
+	fi
+}
+
 unlock_wallet
+
+# 2019-11-01 This test created after adding changeauthor action
+TEST_CHANGEAUTHOR
 
 # 2019-10-02 This test created after adding createntt claimntt burnntt actions
 TEST_CREATENTT_CLAIMNTT_BURNNTT

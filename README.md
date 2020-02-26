@@ -110,8 +110,8 @@ https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp
  canceloffer		(owner, [assetid1,..,assetidn])  
  claim			(claimer, [assetid1,..,assetidn])  
   
- delegate		(owner, to, [assetid1,..,assetidn], period, memo)  
- undelegate		(owner, from, [assetid1,..,assetidn])  
+ delegate		(owner, to, [assetid1,..,assetidn], period, redelegate, memo)  
+ undelegate		(owner, [assetid1,..,assetidn])  
  delegatemore		(owner, assetid, period)  
  
  attach			(owner, assetidc, [assetid1,..,assetidn])
@@ -214,13 +214,14 @@ authors {
 ## Delegates  
 ```
 delegates{  
-	uint64_t	assetid;	// asset id offered for claim;  
-	name		owner;		// asset owner;  
-	name		delegatedto;	// who can claim this asset;  
-	uint64_t	cdate;		// offer create date;  
-	uint64_t	period;		// Time in seconds that the asset will be lent. Lender cannot undelegate until 
-					// the period expires, however the receiver can transfer back at any time.
-	string		memo;		// memo from action parameters. Max 64 length.
+	uint64_t	assetid;		// asset id offered for claim;  
+	name		owner;			// asset owner;  
+	name		delegatedto;		// who can claim this asset;  
+	uint64_t	cdate;			// offer create date;  
+	uint64_t	period;			// Time in seconds that the asset will be lent. Lender cannot undelegate until 
+						// the period expires, however the receiver can transfer back at any time.
+	bool 		redelegate;		// redelegate is allow more redelegate for to account or not.
+	string		memo;			// memo from action parameters. Max 64 length.
 
 }  
 ```
@@ -516,6 +517,16 @@ saRes1.send();
 
 -----------------
 # Change Logs
+
+## Change Log v1.4.0
+- re-delegate assets. (lender of assets can allow them to be re-lent)
+- New parameter `bool redelegate` added in delegate action, which allows asset re-delegation.
+- New field `bool redelegate` added in table `delegates` => require migration in case of self- deployed contract !!!
+- In `undelegate` action parameter `from` was removed. (identity of borrower is available in the delegates table) 
+- Fixed transfer of empty assets array
+- Error messages improved for clarity
+- Code refactoring
+
 
 ## Change Log v1.3.0
 - Upgrade work with latest Contract Development Toolkit (CDT v1.6.3).  

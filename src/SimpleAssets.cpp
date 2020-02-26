@@ -7,6 +7,41 @@ ACTION SimpleAssets::updatever( string version ) {
 	configs.set( tokenconfigs{ "simpleassets"_n, version }, _self );
 }
 
+ACTION SimpleAssets::changeauthor( name author, name newauthor, name owner, vector<uint64_t>& assetids, string memo ) {
+
+	require_auth( author );
+	require_recipient( author );
+	check_empty_vector( assetids );
+
+	sassets assets_f( _self, owner.value );
+	offers offert( _self, _self.value );
+	delegates delegatet( _self, _self.value );
+
+	map< name, map< uint64_t, name > > uniqauthor;
+
+	for ( auto i = 0; i < assetids.size(); ++i ) {
+
+		const auto itr = assets_f.require_find( assetids[i], string("asset id: " + to_string(assetids[i]) +" was not found").c_str() );
+
+		check( offert.find( assetids[i] )    == offert.end(),    "At least one of the assets is already offered for claim. Asset id:" + to_string( assetids[i] ) );
+		check( delegatet.find( assetids[i] ) == delegatet.end(), "At least one of the assets is delegated and cannot be offered. Asset id: " + to_string( assetids[i] ) );
+		check( itr->author == author, "Only author can update asset." );
+		check( !( itr->container.size()  != 0 ), "Asset has items in non-fungible container" );
+		check( !( itr->containerf.size() != 0 ), "Asset has items in funible container"      );
+
+		assets_f.modify( itr, author, [&]( auto& a ) {
+			a.author = newauthor;
+		});
+		uniqauthor[itr->author][assetids[i]] = itr->owner;
+	}
+
+	// Send Event as deferred
+	for ( auto uniqauthorIt = uniqauthor.begin(); uniqauthorIt != uniqauthor.end(); ++uniqauthorIt ) {
+		name keyauthor = move( uniqauthorIt->first );
+		sendEvent( keyauthor, author, "saechauthor"_n, make_tuple( author, newauthor, owner, uniqauthor[keyauthor], memo ) );
+	}
+}
+
 ACTION SimpleAssets::regauthor( name author, string data, string stemplate, string imgpriority ) {
 
 	require_auth( author );
@@ -32,8 +67,8 @@ ACTION SimpleAssets::authorupdate( name author, string data, string stemplate, s
 	require_auth( author );
 	require_recipient( author );
 	authors author_( _self, _self.value );
-	auto itr = author_.find( author.value );
-	check( itr != author_.end(), "author not registered" );
+
+	auto itr = author_.require_find( author.value, string("author " + author.to_string() + " not registered").c_str() );
 
 	if ( data.empty() && stemplate.empty() ) {
 		itr = author_.erase( itr );
@@ -79,7 +114,7 @@ ACTION SimpleAssets::create( name author, name category, name owner, string idat
 	});
 
 	//Events
-	sendEvent( author, author, "saecreate"_n, std::make_tuple( owner, newID ) );
+	sendEvent( author, author, "saecreate"_n, make_tuple( owner, newID ) );
 	SEND_INLINE_ACTION( *this, createlog, { {_self, "active"_n} }, { author, category, owner, idata, mdata, newID, requireclaim } );
 }
 
@@ -88,23 +123,28 @@ ACTION SimpleAssets::createlog( name author, name category, name owner, string i
 	require_auth(get_self());
 }
 
-ACTION SimpleAssets::claim( name claimer, std::vector<uint64_t>& assetids ) {
+ACTION SimpleAssets::claim( name claimer, vector<uint64_t>& assetids ) {
 
 	require_auth( claimer );
 	require_recipient( claimer );
+
+	check_empty_vector( assetids );
+	
 	offers offert( _self, _self.value );
 	sassets assets_t( _self, claimer.value );
 
-	std::map< name, std::map< uint64_t, name > > uniqauthor;
+	map< name, map< uint64_t, name > > uniqauthor;
 	for ( auto i = 0; i < assetids.size(); ++i ) {
-		auto itrc = offert.find( assetids[i] );
-		check( itrc != offert.end(), "Cannot find at least one of the assets you're attempting to claim." );
-		check( claimer == itrc->offeredto, "At least one of the assets has not been offerred to you." );
+
+		auto itrc = offert.require_find( assetids[i], string("Cannot find offer for asset id:  " + to_string(assetids[i]) + " that you're attempting to claim.").c_str() );
+
+		check( claimer == itrc->offeredto, "Asset id: " + to_string(assetids[i]) +  " has not been offerred to you. It offered to " + itrc->offeredto.to_string() );
 
 		sassets assets_f( _self, itrc->owner.value );
-		auto itr = assets_f.find( assetids[i] );
-		check( itr != assets_f.end(), "Cannot find at least one of the assets you're attempting to claim." );
-		check( itrc->owner.value == itr->owner.value, "Owner was changed for at least one of the items!?" );
+
+		auto itr = assets_f.require_find(assetids[i], string("Cannot find asset id: " + to_string(assetids[i]) + " that you're attempting to claim at scope: " + itrc->owner.to_string()).c_str());
+
+		check( itrc->owner.value == itr->owner.value, "Owner was changed for asset id:" + to_string(assetids[i]) + " .Owner at offers:" + itrc->owner.to_string() + " . Owner at assets: " + itr->owner.to_string() );
 
 		assets_t.emplace( claimer, [&]( auto& s ) {
 			s.id         = itr->id;
@@ -125,17 +165,23 @@ ACTION SimpleAssets::claim( name claimer, std::vector<uint64_t>& assetids ) {
 	}
 
 	for ( auto uniqauthorIt = uniqauthor.begin(); uniqauthorIt != uniqauthor.end(); ++uniqauthorIt ) {
-		name keyauthor = std::move( uniqauthorIt->first );
-		sendEvent( keyauthor, claimer, "saeclaim"_n, std::make_tuple( claimer, uniqauthor[keyauthor] ) );
+		name keyauthor = move( uniqauthorIt->first );
+		sendEvent( keyauthor, claimer, "saeclaim"_n, make_tuple( claimer, uniqauthor[keyauthor] ) );
 	}
 }
 
-ACTION SimpleAssets::transfer( name from, name to, std::vector<uint64_t>& assetids, string memo ) {
+void SimpleAssets::check_empty_vector( vector<uint64_t>& vector_ids, string vector_name ) {
+
+	check( !(vector_ids.size() == 0), "Please add values to parameter: " + move(vector_name) );
+}
+
+ACTION SimpleAssets::transfer( name from, name to, vector<uint64_t>& assetids, string memo ) {
 
 	check( from != to, "cannot transfer to yourself" );
 	check( is_account( to ), "TO account does not exist" );
 	check( memo.size() <= 256, "memo has more than 256 bytes" );
-
+	check_empty_vector( assetids );
+	
 	require_recipient( from );
 	require_recipient( to );
 
@@ -149,7 +195,7 @@ ACTION SimpleAssets::transfer( name from, name to, std::vector<uint64_t>& asseti
 
 	bool isDelegeting = false;
 
-	std::map< name, std::vector<uint64_t> > uniqauthor;
+	map< name, vector<uint64_t> > uniqauthor;
 
 	for ( auto i = 0; i < assetids.size(); ++i ) {
 		auto itrd = delegatet.find( assetids[i] );
@@ -162,7 +208,7 @@ ACTION SimpleAssets::transfer( name from, name to, std::vector<uint64_t>& asseti
 				}
 			}
 			else {
-				check( false, "At least one of the assets cannot be transferred because it is delegated" );
+				check( false, "Asset id: " + to_string(assetids[i]) + " cannot be transferred because it is delegated to " + itrd->delegatedto.to_string() );
 			}
 		}
 
@@ -173,10 +219,10 @@ ACTION SimpleAssets::transfer( name from, name to, std::vector<uint64_t>& asseti
 			require_auth( from );
 		}
 
-		auto itr = assets_f.find( assetids[i] );
-		check( itr != assets_f.end(), "At least one of the assets cannot be found (check ids?)" );
-		check( from.value == itr->owner.value, "At least one of the assets is not yours to transfer." );
-		check( offert.find( assetids[i] ) == offert.end(), "At least one of the assets has been offered for a claim and cannot be transferred. Cancel offer?" );
+		const auto itr = assets_f.require_find( assetids[i], string("Asset id: " + to_string(assetids[i]) + " cannot be found (check ids?)").c_str() );
+
+		check( from.value == itr->owner.value, "Asset id: " + to_string(assetids[i]) + " is not yours to transfer. Owner: " + itr->owner.to_string() );
+		check( offert.find( assetids[i] ) == offert.end(), "Asset id: " + to_string(assetids[i]) + " offered for a claim and cannot be transferred. Cancel offer?" );
 
 		assets_t.emplace( rampayer, [&]( auto& s ) {
 			s.id         = itr->id;
@@ -197,8 +243,8 @@ ACTION SimpleAssets::transfer( name from, name to, std::vector<uint64_t>& asseti
 
 	//Send Event as deferred
 	for ( auto uniqauthorIt = uniqauthor.begin(); uniqauthorIt != uniqauthor.end(); ++uniqauthorIt ) {
-		name keyauthor = std::move( uniqauthorIt->first );
-		sendEvent( keyauthor, rampayer, "saetransfer"_n, std::make_tuple( from, to, uniqauthor[keyauthor], memo ) );
+		name keyauthor = move( uniqauthorIt->first );
+		sendEvent( keyauthor, rampayer, "saetransfer"_n, make_tuple( from, to, uniqauthor[keyauthor], memo ) );
 	}
 }
 
@@ -206,31 +252,33 @@ ACTION SimpleAssets::update( name author, name owner, uint64_t assetid, string m
 
 	require_auth( author );
 	sassets assets_f( _self, owner.value );
-	const auto itr = assets_f.find( assetid );
-	check( itr != assets_f.end(), "asset not found" );
-	check( itr->author == author, "Only author can update asset." );
+	const auto itr = assets_f.require_find( assetid, string("asset id: " + to_string(assetid) + " not found").c_str() );
+
+	check( itr->author == author, "Only for author allowed to update asset. Asset id: " + to_string(assetid) + " has author: " + itr->author.to_string() + " ,you entered author: " + author.to_string() );
 
 	assets_f.modify( itr, author, [&]( auto& a ) {
 		a.mdata = mdata;
 	});
 }
 
-ACTION SimpleAssets::offer( name owner, name newowner, std::vector<uint64_t>& assetids, string memo ) {
+ACTION SimpleAssets::offer( name owner, name newowner, vector<uint64_t>& assetids, string memo ) {
 
 	check( owner != newowner, "cannot offer to yourself" );
+	check_empty_vector( assetids );
+
 	require_auth( owner );
 	require_recipient( owner );
 	require_recipient( newowner );
-	check( is_account( newowner ), "newowner account does not exist" );
+	check( is_account( newowner ), "newowner account: " + newowner.to_string() + " does not exist" );
 
 	sassets assets_f( _self, owner.value );
 	offers offert( _self, _self.value );
 	delegates delegatet( _self, _self.value );
 
 	for ( auto i = 0; i < assetids.size(); ++i ) {
-		check( assets_f.find( assetids[i] ) != assets_f.end(), "At least one of the assets was not found." );
-		check( offert.find( assetids[i] ) == offert.end(), "At least one of the assets is already offered for claim." );
-		check( delegatet.find( assetids[i] ) == delegatet.end(), "At least one of the assets is delegated and cannot be offered." );
+		check( assets_f.find ( assetids[i] ) != assets_f.end(),  "Asset id: " + to_string(assetids[i]) + " was not found." );
+		check( offert.find   ( assetids[i] ) == offert.end(),    "Asset id: " + to_string(assetids[i]) + " is already offered for claim." );
+		check( delegatet.find( assetids[i] ) == delegatet.end(), "Asset id: " + to_string(assetids[i]) + " is delegated and cannot be offered." );
 
 		offert.emplace( owner, [&]( auto& s ) {
 			s.assetid   = assetids[i];
@@ -241,35 +289,41 @@ ACTION SimpleAssets::offer( name owner, name newowner, std::vector<uint64_t>& as
 	}
 }
 
-ACTION SimpleAssets::canceloffer( name owner, std::vector<uint64_t>& assetids ) {
+ACTION SimpleAssets::canceloffer( name owner, vector<uint64_t>& assetids ) {
+
+	check_empty_vector( assetids );
 
 	require_auth( owner );
 	require_recipient( owner );
 	offers offert( _self, _self.value );
 
 	for ( auto i = 0; i < assetids.size(); ++i ) {
-		auto itr = offert.find( assetids[i] );
-		check( itr != offert.end(), "The offer for at least one of the assets was not found." );
-		check( owner.value == itr->owner.value, "You're not the owner of at least one of the assets whose offers you're attempting to cancel." );
+
+		auto itr = offert.require_find( assetids[i], string("The offer for asset id: " + to_string(assetids[i]) + " was not found.").c_str() );
+
+		check( owner.value == itr->owner.value, "You're not the owner of asset id: " + to_string(assetids[i]) + "  whose offers you're attempting to cancel. Owner is " + itr->owner.to_string());
 		offert.erase( itr );
 	}
 }
 
-ACTION SimpleAssets::burn( name owner, std::vector<uint64_t>& assetids, string memo ) {
+ACTION SimpleAssets::burn( name owner, vector<uint64_t>& assetids, string memo ) {
+	
+	check_empty_vector( assetids );
 
 	require_auth( owner );
 	sassets assets_f( _self, owner.value );
 	offers offert( _self, _self.value );
 	delegates delegatet( _self, _self.value );
 
-	std::map< name, std::vector<uint64_t> > uniqauthor;
+	map< name, vector<uint64_t> > uniqauthor;
 
 	for ( auto i = 0; i < assetids.size(); ++i ) {
-		auto itr = assets_f.find( assetids[i] );
-		check( itr != assets_f.end(), "At least one of the assets was not found." );
-		check( owner.value == itr->owner.value, "At least one of the assets you're attempting to burn is not yours." );
-		check( offert.find( assetids[i] ) == offert.end(), "At least one of the assets has an open offer and cannot be burned." );
-		check( delegatet.find( assetids[i] ) == delegatet.end(), "At least one of assets is delegated and cannot be burned." );
+
+		auto itr = assets_f.require_find( assetids[i], string("Asset id: " + to_string(assetids[i]) + " was not found.").c_str() );
+
+		check( owner.value == itr->owner.value, "Asset id: " + to_string(assetids[i]) + " you're attempting to burn is not yours. Owner is " + itr->owner.to_string() + ", you entered owner " + owner.to_string());
+		check( offert.find( assetids[i] ) == offert.end(), "Asset id: " + to_string(assetids[i]) + " has an open offer and cannot be burned." );
+		check( delegatet.find( assetids[i] ) == delegatet.end(), "Asset id: " + to_string(assetids[i]) + " is delegated and cannot be burned." );
 
 		//Events
 		uniqauthor[itr->author].push_back( assetids[i] );
@@ -278,15 +332,18 @@ ACTION SimpleAssets::burn( name owner, std::vector<uint64_t>& assetids, string m
 
 	//Send Event as deferred
 	for ( auto uniqauthorIt = uniqauthor.begin(); uniqauthorIt != uniqauthor.end(); ++uniqauthorIt ) {
-		name keyauthor = std::move( uniqauthorIt->first );
-		sendEvent( keyauthor, owner, "saeburn"_n, std::make_tuple( owner, uniqauthor[keyauthor], memo ) );
+		name keyauthor = move( uniqauthorIt->first );
+		sendEvent( keyauthor, owner, "saeburn"_n, make_tuple( owner, uniqauthor[keyauthor], memo ) );
 	}
 }
 
-ACTION SimpleAssets::delegate( name owner, name to, std::vector<uint64_t>& assetids, uint64_t period, string memo ) {
+ACTION SimpleAssets::delegate( name owner, name to, vector<uint64_t>& assetids, uint64_t period, bool redelegate, string memo ) {
 
-	check(memo.size() <= 64, "Error. Size of memo cannot be bigger 64");
+	check( memo.size() <= 64, "Size of memo cannot be bigger 64" );
 	check( owner != to, "cannot delegate to yourself" );
+
+	check_empty_vector( assetids );
+
 	require_auth( owner );
 	require_recipient( owner );
 	check( is_account( to ), "TO account does not exist" );
@@ -296,18 +353,30 @@ ACTION SimpleAssets::delegate( name owner, name to, std::vector<uint64_t>& asset
 	offers offert( _self, _self.value );
 
 	for ( auto i = 0; i < assetids.size(); ++i ) {
-		check( assets_f.find( assetids[i] ) != assets_f.end(), "At least one of the assets cannot be found." );
-		check( delegatet.find( assetids[i] ) == delegatet.end(), "At least one of the assets is already delegated." );
-		check( offert.find( assetids[i] ) == offert.end(), "At least one of the assets has an open offer and cannot be delegated." );
+		check( assets_f.find( assetids[i] ) != assets_f.end(),  "Asset id: " + to_string( assetids[i] ) + " cannot be found at scope " + owner.to_string() );
+		check( offert.find( assetids[i] ) == offert.end(), "Asset id: " + to_string( assetids[i] ) + " has an open offer and cannot be delegated." );
 
-		delegatet.emplace( owner, [&]( auto& s ) {
-			s.assetid     = assetids[i];
-			s.owner       = owner;
-			s.delegatedto = to;
-			s.cdate       = current_time_point().sec_since_epoch();
-			s.period      = period;
-			s.memo        = memo;
-		});
+		if ( auto itr_delegated = delegatet.find( assetids[i] ); itr_delegated != delegatet.end() )
+		{
+			check( !( itr_delegated->redelegate == false ), "For asset id:" + to_string( assetids[i] ) + " .Terms of delegation forbid re-delegation." );
+			check( !( itr_delegated->owner == to ), "For asset id:" + to_string( assetids[i] ) + " .Not allowed re-delegate to original owner of asset" );
+
+			delegatet.modify(itr_delegated, owner, [&](auto& s) {
+				s.delegatedto = to;
+				s.redelegate  = redelegate;
+			});
+		}
+		else {
+			delegatet.emplace(owner, [&](auto& s) {
+				s.assetid		= assetids[i];
+				s.owner			= owner;
+				s.delegatedto	= to;
+				s.cdate			= current_time_point().sec_since_epoch();
+				s.period		= period;
+				s.redelegate	= redelegate;
+				s.memo			= memo;
+			});
+		}
 	}
 
 	transfer( owner, to, assetids, "Delegate memo: " + memo );
@@ -319,63 +388,75 @@ ACTION SimpleAssets::delegatemore( name owner, uint64_t assetidc, uint64_t perio
 	require_recipient( owner );
 
 	delegates delegatet( _self, _self.value );
-	const auto itrc = delegatet.find( assetidc );
-	check( itrc != delegatet.end(), "Assets assetidc is not delegated." );
-	check( owner == itrc->owner, "You are not the owner of this asset." );
+
+	const auto itrc = delegatet.require_find( assetidc, string("Assets id: " + to_string( assetidc ) + " is not delegated.").c_str() );
+
+	check( owner == itrc->owner, "You are not the owner of asset id: " + to_string(assetidc) + ". Owner is: " + itrc->owner.to_string() + " , you entered: " + owner.to_string() );
 
 	delegatet.modify( itrc, owner, [&]( auto& s ) {
 		s.period = itrc->period + period;
 	});
 }
 
-ACTION SimpleAssets::undelegate( name owner, name from, std::vector<uint64_t>& assetids ) {
-
+ACTION SimpleAssets::undelegate( name owner, vector<uint64_t>& assetids ) {
+	
 	require_auth( owner );
 	require_recipient( owner );
-	check( is_account( from ), "to account does not exist" );
+	check_empty_vector( assetids );
+
+	delegates delegatet( _self, _self.value );
+	const auto itrc = delegatet.require_find( assetids[0], string( "Asset id: " + to_string( assetids[0] ) + " is not delegated" ).c_str() );
+	name from = itrc->delegatedto;
 
 	sassets assets_f( _self, from.value );
-	delegates delegatet( _self, _self.value );
 
 	string assetidsmemo;
 	for ( auto i = 0; i < assetids.size(); ++i ) {
-		auto itr = assets_f.find( assetids[i] );
-		check( itr != assets_f.end(), "At least one of the assets cannot be found." );
-		auto itrc = delegatet.find( assetids[i] );
-		check( itrc != delegatet.end(), "At least one of the assets is not delegated." );
-		check( owner == itrc->owner, "You are not the owner of at least one of these assets." );
-		check( from == itrc->delegatedto, "FROM does not match DELEGATEDTO for at least one of the assets." );
-		check( itr->owner == itrc->delegatedto, "FROM does not match DELEGATEDTO for at least one of the assets." );
-		check( ( itrc->cdate + itrc->period ) < current_time_point().sec_since_epoch(), "Cannot undelegate until the PERIOD expires." );
+
+		const auto itrc = delegatet.require_find( assetids[i], string( "Asset id: " + to_string( assetids[i] ) + " is not delegated").c_str() );
+		check( owner == itrc->owner, "You are not the owner of asset id: " + to_string( assetids[i]) + ". Owner is: " + itrc->owner.to_string() + " , you entered: " + owner.to_string() );
+		check( !(from != itrc->delegatedto), "All delegated assets in assetids must be delegated to one account. For asset id: " + to_string( assetids[i] ) + " delegatedto = " + itrc->delegatedto.to_string() + " but it must be same with first asset which has delegatedto = " + from.to_string());
+
+		const auto itr = assets_f.require_find(assetids[i], string("Asset id: " + to_string(assetids[i]) + " cannot be found in scope " + from.to_string()).c_str());
+		check( itr->owner == itrc->delegatedto, "Owner does not match DELEGATEDTO for asset id: " + to_string( assetids[i] ) + " .Owner = " + itr->owner.to_string() + " but it must be " + itrc->delegatedto.to_string() + " for this asset");
+
+		check((itrc->cdate + itrc->period) < current_time_point().sec_since_epoch(), 
+			"Cannot undelegate until the PERIOD expires. " + timeToWait(abs((int)((uint64_t)(itrc->cdate + itrc->period) - (uint64_t)current_time_point().sec_since_epoch()))));
 
 		if ( i != 0 ) {
 			assetidsmemo += ", ";
 		}
 
-		assetidsmemo += std::to_string( assetids[i] );
+		assetidsmemo += to_string( assetids[i] );
 	}
 
 	transfer( from, owner, assetids, "undelegate assetid: " + assetidsmemo );
 }
 
 
-ACTION SimpleAssets::attach( name owner, uint64_t assetidc, std::vector<uint64_t>& assetids ) {
+ACTION SimpleAssets::attach( name owner, uint64_t assetidc, vector<uint64_t>& assetids ) {
+
+	check_empty_vector( assetids );
 
 	sassets assets_f( _self, owner.value );
 	delegates delegatet( _self, _self.value );
 	offers offert( _self, _self.value );
 	require_recipient( owner );
-	const auto ac_ = assets_f.find( assetidc );
-	check( ac_ != assets_f.end(), "Asset cannot be found." );
+
+	const auto ac_ = assets_f.require_find( assetidc, string("assetidc : " + to_string( assetidc ) + " cannot be found").c_str() );
+
 	require_auth( ac_->author );
 
 	for ( auto i = 0; i < assetids.size(); ++i ) {
-		auto itr = assets_f.find( assetids[i] );
-		check( itr != assets_f.end(), "At least one of the assets cannot be found." );
-		check( assetidc != assetids[i], "Cannot attcach to self." );
-		check( itr->author == ac_->author, "Different authors." );
-		check( delegatet.find( assetids[i] ) == delegatet.end(), "At least one of the assets is delegated." );
-		check( offert.find( assetids[i] ) == offert.end(), "At least one of the assets has an open offer and cannot be delegated." );
+
+		auto itr = assets_f.require_find( assetids[i], string("assetids asset id: " + to_string( assetidc ) + " cannot be found").c_str() );
+
+		check( assetidc != assetids[i], "Cannot attcach to self" );
+		check( itr->author == ac_->author, 
+			"Different authors. For asset id: " + to_string( assetids[i] ) + " author is " + itr->author.to_string() + " but for assetidc : " + to_string( assetidc )  + " author is " + ac_->author.to_string() );
+
+		check( delegatet.find( assetids[i] ) == delegatet.end(), "Asset id: " + to_string(assetids[i]) + " is delegated." );
+		check( offert.find( assetids[i] ) == offert.end(), "Asset id " + to_string(assetids[i]) + " has an open offer and cannot be delegated." );
 
 		assets_f.modify( ac_, ac_->author, [&]( auto& a ) {
 			a.container.push_back( *itr );
@@ -384,20 +465,22 @@ ACTION SimpleAssets::attach( name owner, uint64_t assetidc, std::vector<uint64_t
 	}
 }
 
-ACTION SimpleAssets::detach( name owner, uint64_t assetidc, std::vector<uint64_t>& assetids ) {
+ACTION SimpleAssets::detach( name owner, uint64_t assetidc, vector<uint64_t>& assetids ) {
+
+	check_empty_vector( assetids );
 
 	require_auth( owner );
 	require_recipient( owner );
 	sassets assets_f( _self, owner.value );
 
-	const auto ac_ = assets_f.find( assetidc );
-	check( ac_ != assets_f.end(), "Asset cannot be found." );
+	const auto ac_ = assets_f.require_find( assetidc, string("assetidc: "  + to_string(assetidc) +  " cannot be found").c_str() );
 
 	delegates delegatet( _self, _self.value );
-	check( delegatet.find( assetidc ) == delegatet.end(), "Cannot detach from delegated. assetidc is delegated." );
+	const auto itr = delegatet.find( assetidc );
+	check( itr == delegatet.end(), "Cannot detach from delegated. assetidc " + to_string(assetidc) + " is delegated." );
 
 	for ( auto i = 0; i < assetids.size(); ++i ) {
-		std::vector<sasset> newcontainer;
+		vector<sasset> newcontainer;
 
 		for ( auto j = 0; j < ac_->container.size(); ++j ) {
 			auto acc = ac_->container[j];
@@ -476,8 +559,7 @@ ACTION SimpleAssets::issuef( name to, name author, asset quantity, string memo )
 	check( memo.size() <= 256, "memo has more than 256 bytes" );
 
 	stats statstable( _self, author.value );
-	const auto existing = statstable.find( sym.code().raw() );
-	check( existing != statstable.end(), "token with symbol does not exist, create token before issue" );
+	const auto existing = statstable.require_find( sym.code().raw(), "token with symbol does not exist, create token before issue" );
 
 	require_auth( existing->issuer );
 	check( quantity.is_valid(), "invalid quantity" );
@@ -531,15 +613,14 @@ ACTION SimpleAssets::offerf( name owner, name newowner, name author, asset quant
 	require_auth( owner );
 	require_recipient( owner );
 	require_recipient( newowner );
-	check( is_account( newowner ), "newowner account does not exist" );
+	check( is_account( newowner ), "newowner account " + newowner.to_string() +" does not exist" );
 	check( owner != newowner, "cannot offer to yourself" );
 	const auto sym = quantity.symbol;
 	check( sym.is_valid(), "invalid symbol name" );
 	check( memo.size() <= 256, "memo has more than 256 bytes" );
 
 	stats statstable( _self, author.value );
-	const auto existing = statstable.find( sym.code().raw() );
-	check( existing != statstable.end(), "token with symbol does not exist" );
+	const auto existing = statstable.require_find( sym.code().raw(), "token with symbol does not exist" );
 	check( quantity.is_valid(), "invalid quantity" );
 	check( quantity.amount > 0, "must retire positive quantity" );
 	check( quantity.symbol == existing->supply.symbol, "symbol precision mismatch" );
@@ -572,32 +653,36 @@ ACTION SimpleAssets::offerf( name owner, name newowner, name author, asset quant
 	sub_balancef( owner, author, quantity );
 }
 
-ACTION SimpleAssets::cancelofferf( name owner, std::vector<uint64_t>& ftofferids ) {
+ACTION SimpleAssets::cancelofferf( name owner, vector<uint64_t>& ftofferids ) {
+
+	check_empty_vector( ftofferids, "ftofferids" );
 
 	require_auth( owner );
 	require_recipient( owner );
 	offerfs offert( _self, _self.value );
 
 	for ( auto i = 0; i < ftofferids.size(); ++i ) {
-		auto itr = offert.find( ftofferids[i] );
-		check( itr != offert.end(), "The offer for at least one of the FT was not found." );
-		check( owner.value == itr->owner.value, "You're not the owner of at least one of those FTs." );
+		const auto itr = offert.require_find( ftofferids[i], string("The offer id " + to_string( ftofferids[i] ) + " was not found").c_str() );
+
+		check( owner.value == itr->owner.value, "Owner was changed for asset id:" + to_string( ftofferids[i]) + " .Owner is" + itr->owner.to_string() + " , you entered  " + owner.to_string() );
+
 		add_balancef( owner, itr->author, itr->quantity, owner );
 		offert.erase( itr );
 	}
 }
 
-ACTION SimpleAssets::claimf( name claimer, std::vector<uint64_t>& ftofferids ) {
+ACTION SimpleAssets::claimf( name claimer, vector<uint64_t>& ftofferids ) {
+
+	check_empty_vector( ftofferids, "ftofferids" );
 
 	require_auth( claimer );
 	require_recipient( claimer );
 	offerfs offert( _self, _self.value );
-	std::map< name, std::vector< uint64_t > > uniqauthor;
+	map< name, vector< uint64_t > > uniqauthor;
 
 	for ( auto i = 0; i < ftofferids.size(); ++i ) {
-		auto itrc = offert.find( ftofferids[i] );
-		check( itrc != offert.end(), "Cannot find at least one of the FT you're attempting to claim." );
-		check( claimer == itrc->offeredto, "At least one of the FTs has not been offerred to you." );
+		auto itrc = offert.require_find( ftofferids[i], string("Cannot find offer for asset id: " + to_string(ftofferids[i]) + " attempting to claim.").c_str() );
+		check( claimer == itrc->offeredto, "Asset id: " + to_string(ftofferids[i])  + " has not been offerred to you. It offered to " + itrc->offeredto.to_string() );
 		add_balancef( claimer, itrc->author, itrc->quantity, claimer );
 		offert.erase( itrc );
 	}
@@ -610,8 +695,8 @@ ACTION SimpleAssets::burnf( name from, name author, asset quantity, string memo 
 	check( memo.size() <= 256, "memo has more than 256 bytes" );
 	stats statstable( _self, author.value );
 
-	const auto existing = statstable.find( sym.code().raw() );
-	check( existing != statstable.end(), "token with symbol does not exist" );
+	const auto existing = statstable.require_find( sym.code().raw(), "token with symbol does not exist" );
+
 	require_auth( existing->authorctrl && has_auth( existing->issuer ) ? existing->issuer : from );
 
 	check( quantity.is_valid(), "invalid quantity" );
@@ -646,8 +731,7 @@ ACTION SimpleAssets::closef( name owner, name author, const symbol& symbol ) {
 
 	require_auth( owner );
 	accounts acnts( _self, owner.value );
-	auto it = acnts.find( getFTIndex( author, symbol ) );
-	check( it != acnts.end(), "Balance row already deleted or never existed. Action won't have any effect." );
+	auto it = acnts.require_find( getFTIndex( author, symbol ), "Balance row already deleted or never existed. Action won't have any effect" );
 	check( it->balance.amount == 0, "Cannot close because the balance is not zero." );
 
 	offerfs offert( _self, _self.value );
@@ -682,9 +766,7 @@ uint64_t SimpleAssets::getid( bool defer ) {
 uint64_t SimpleAssets::getFTIndex( name author, symbol symbol ) {
 
 	stats statstable( _self, author.value );
-	const auto existing = statstable.find( symbol.code().raw() );
-	check( existing != statstable.end(), "token with symbol does not exist." );
-	return existing->id;
+	return statstable.require_find(symbol.code().raw(), "token with symbol does not exist")->id;
 }
 
 void SimpleAssets::attachdeatch( name owner, name author, asset quantity, uint64_t assetidc, bool attach ) {
@@ -700,7 +782,7 @@ void SimpleAssets::attachdeatch( name owner, name author, asset quantity, uint64
 	check( quantity.is_valid(), "invalid quantity" );
 	check( quantity.amount > 0, "must transfer positive quantity" );
 	check( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
-	check( st.issuer == author, "Different authors" );
+	check( st.issuer == author, "Different authors. For asset " + quantity.to_string() + " issuer is " + st.issuer.to_string() + " you entered author = " + author.to_string() );
 
 	if ( attach ) {
 		require_auth( author );	 //attach
@@ -709,13 +791,17 @@ void SimpleAssets::attachdeatch( name owner, name author, asset quantity, uint64
 		require_auth( owner );  //deatach
 	}
 
-	const auto itr = assets_f.find( assetidc );
-	check( itr != assets_f.end(), "assetid cannot be found." );
-	check( itr->author == author, "Different authors." );
-	check( delegatet.find(assetidc) == delegatet.end(), "Asset is delegated." );
-	check( offert.find(assetidc) == offert.end(), "Assets has an open offer and cannot be delegated." );
+	const auto itr = assets_f.require_find( assetidc, string("assetid " + to_string( assetidc ) + " cannot be found").c_str() );
 
-	std::vector<account> newcontainerf;
+	check( itr->author == author, "Different authors. For asset id: " + to_string( assetidc ) + " author is " + itr->author.to_string() + " you entered author = " + author.to_string() );
+
+	const auto itr_delegeted = delegatet.find( assetidc );
+	check( itr_delegeted == delegatet.end(), "Asset id: " + to_string( assetidc ) + " is delegated to " + itr_delegeted->delegatedto.to_string() );
+
+	const auto itr_offered = offert.find( assetidc );
+	check( itr_offered == offert.end(), "Asset id: " + to_string( assetidc ) + " has an open offer to " + itr_offered->offeredto.to_string() + "and cannot be delegated." );
+
+	vector<account> newcontainerf;
 	bool found = false;
 
 	for ( auto j = 0; j < itr->containerf.size(); j++ ) {
@@ -793,7 +879,7 @@ void SimpleAssets::add_balancef( name owner, name author, asset value, name ram_
 ACTION SimpleAssets::createntt( name author, name category, name owner, string idata, string mdata, bool requireclaim ) {
 
 	require_auth( author );
-	check( is_account( owner ), "owner account does not exist" );
+	check( is_account( owner ), "owner account " + owner.to_string() + " does not exist" );
 	require_recipient( owner );
 	const auto newID = getid();
 	name assetOwner = owner;
@@ -833,32 +919,37 @@ ACTION SimpleAssets::updatentt( name author, name owner, uint64_t assetid, strin
 
 	require_auth(author);
 	snttassets assets_f(_self, owner.value);
-	const auto itr = assets_f.find(assetid);
-	check(itr != assets_f.end(), "asset not found");
-	check(itr->author == author, "Only author can update asset.");
+
+	const auto itr = assets_f.require_find( assetid, string("asset id: " + to_string(assetid) + " not found").c_str() );
+
+	check( itr->author == author, "Only for author allowed to update asset. Asset id: " + to_string( assetid ) + " has author: " + itr->author.to_string() + " ,you entered author: " + author.to_string() );
 
 	assets_f.modify(itr, author, [&](auto& a) {
 		a.mdata = mdata;
 	});
 }
 
-ACTION SimpleAssets::claimntt( name claimer, std::vector<uint64_t>& assetids ) {
+ACTION SimpleAssets::claimntt( name claimer, vector<uint64_t>& assetids ) {
+
+	check_empty_vector( assetids );
 
 	require_auth( claimer );
 	require_recipient( claimer );
 	nttoffers nttoffert( _self, _self.value );
 	snttassets assets_claimer( _self, claimer.value );
 
-	std::map< name, std::map< uint64_t, name > > uniqauthor;
+	map< name, map< uint64_t, name > > uniqauthor;
 	for ( auto i = 0; i < assetids.size(); ++i ) {
-		auto itrc = nttoffert.find( assetids[i] );
-		check( !( itrc == nttoffert.end() ), "Cannot find at least one of the offers you're attempting to claim." );
-		check( claimer == itrc->offeredto, "At least one of the assets has not been offerred to you." );
+
+		auto itrc = nttoffert.require_find( assetids[i], string("Cannot find offer for asset id:  " + to_string( assetids[i] ) + " that you're attempting to claim.").c_str());
+
+		check( claimer == itrc->offeredto, "Asset id: " + to_string(assetids[i]) + " has not been offerred to you. It offered to " + itrc->offeredto.to_string() );
 
 		snttassets assets_owner( _self, itrc->owner.value );
-		auto itr = assets_owner.find( assetids[i] );
-		check( !(itr == assets_owner.end() ), "Cannot find at least one of the assets you're attempting to claim." );
-		check( itrc->owner.value == itr->owner.value, "Owner was changed for at least one of the items!?" );
+
+		auto itr = assets_owner.require_find( assetids[i], string("Cannot find asset id: " + to_string( assetids[i] ) + " that you're attempting to claim at scope: " + itrc->owner.to_string()).c_str() );
+
+		check( itrc->owner.value == itr->owner.value, "Owner was changed for asset id:" + to_string(assetids[i]) + " .Owner at offers:" + itrc->owner.to_string() + " . Owner at assets: " + itr->owner.to_string() );
 
 		assets_claimer.emplace( claimer, [&](auto& s) {
 			s.id = itr->id;
@@ -877,12 +968,12 @@ ACTION SimpleAssets::claimntt( name claimer, std::vector<uint64_t>& assetids ) {
 	}
 
 	//for ( auto uniqauthorIt = uniqauthor.begin(); uniqauthorIt != uniqauthor.end(); ++uniqauthorIt ) {
-	//	name keyauthor = std::move( uniqauthorIt->first );
-	//	sendEvent( keyauthor, claimer, "saeclaim"_n, std::make_tuple( claimer, uniqauthor[keyauthor] ) );
+	//	name keyauthor = move( uniqauthorIt->first );
+	//	sendEvent( keyauthor, claimer, "saeclaim"_n, make_tuple( claimer, uniqauthor[keyauthor] ) );
 	//}
 }
 
-ACTION SimpleAssets::burnntt( name owner, std::vector<uint64_t>& assetids, string memo ) {
+ACTION SimpleAssets::burnntt( name owner, vector<uint64_t>& assetids, string memo ) {
 
 	require_auth( owner );
 	require_recipient( owner );
@@ -891,13 +982,13 @@ ACTION SimpleAssets::burnntt( name owner, std::vector<uint64_t>& assetids, strin
 	nttoffers nttoffert( _self, _self.value );
 
 	for ( auto i = 0; i < assetids.size(); ++i ) {
-		auto itr_asset = assets_ntt.find( assetids[i] );
-		check( itr_asset != assets_ntt.end(), "At least one of the assets was not found." );
+
+		auto itr_asset = assets_ntt.require_find( assetids[i], string("Asset id: " + to_string(assetids[i]) + " was not found." ).c_str());
 
 		auto itroffer = nttoffert.find( assetids[i] );
 
 		if ( itroffer != nttoffert.end() ) {
-			check( owner.value == itroffer->owner.value, "You're not the owner of at least one of the assets whose offers you're attempting to cancel." );
+			check(owner.value == itroffer->owner.value, "You're not the owner of Asset id: " + to_string(assetids[i]) + " you're attempting to burn. Owner at offer is " + itroffer->owner.to_string() + ", you entered owner " + owner.to_string());
 			nttoffert.erase( itroffer );
 		}
 
@@ -906,14 +997,14 @@ ACTION SimpleAssets::burnntt( name owner, std::vector<uint64_t>& assetids, strin
 
 	//Send Event as deferred
 	//for ( auto uniqauthorIt = uniqauthor.begin(); uniqauthorIt != uniqauthor.end(); ++uniqauthorIt ) {
-	//	name keyauthor = std::move( uniqauthorIt->first );
-	//	sendEvent( keyauthor, owner, "saeburn"_n, std::make_tuple( owner, uniqauthor[keyauthor], memo ) );
+	//	name keyauthor = move( uniqauthorIt->first );
+	//	sendEvent( keyauthor, owner, "saeburn"_n, make_tuple( owner, uniqauthor[keyauthor], memo ) );
 	//}
 }
 
 template<typename... Args>
-void SimpleAssets::sendEvent( name author, name rampayer, name seaction, const std::tuple<Args...> &adata ) {
-
+void SimpleAssets::sendEvent( name author, name rampayer, name seaction, const tuple<Args...> &adata ) 
+{
 	transaction sevent{};
 	sevent.actions.emplace_back( permission_level{ _self, "active"_n }, author, seaction, adata );
 	sevent.delay_sec = 0;
@@ -921,14 +1012,24 @@ void SimpleAssets::sendEvent( name author, name rampayer, name seaction, const s
 }
 
 asset SimpleAssets::get_supply( name token_contract_account, name author, symbol_code sym_code ) {
+
 	stats statstable( token_contract_account, author.value );
 	return statstable.get( sym_code.raw() ).supply;
 }
 
 asset SimpleAssets::get_balance( name token_contract_account, name owner, name author, symbol_code sym_code ) {
+
 	stats statstable( token_contract_account, author.value );
 	accounts accountstable( token_contract_account, owner.value );
 	return accountstable.get( statstable.get( sym_code.raw() ).id ).balance;
+}
+
+std::string SimpleAssets::timeToWait( uint64_t time_in_seconds ){
+
+	uint64_t s, h, m = 0;
+	m = time_in_seconds / 60;
+	h = m / 60;
+	return "Time to wait " + std::to_string(int(h)) + " hours " + std::to_string(int(m % 60)) + " minutes " + std::to_string(int(time_in_seconds % 60)) + " seconds";
 }
 
 EOSIO_DISPATCH( SimpleAssets, ( create )( createlog )( transfer )( burn )( update )
@@ -938,7 +1039,7 @@ EOSIO_DISPATCH( SimpleAssets, ( create )( createlog )( transfer )( burn )( updat
 ( createf )( updatef )( issuef )( transferf )( burnf )
 ( offerf )( cancelofferf )( claimf )
 ( attachf )( detachf )( openf )( closef )
-( updatever )  ( createntt ) ( burnntt ) ( createnttlog ) ( claimntt ) ( updatentt ) )
+( updatever )  ( createntt ) ( burnntt ) ( createnttlog ) ( claimntt ) ( updatentt ) ( changeauthor ) )
 
 
 //============================================================================================================
