@@ -67,6 +67,25 @@ TERM
 This Contract expires at the conclusion of code execution.
 by CryptoLions [ https://cryptolions.io ]
 
+<h1 class="contract"> changeauthor </h1>
+
+---
+spec_version: 0.0.2
+title: Change author of assets
+summary: Change author of assets
+icon: @ICON_BASE_URL@/@REGAUTHOR_ICON_URI@
+---	
+
+Input parameters:
+`author`         - asset's author, who will able to change author name asset's;
+`newauthor`      - asset's new author name;
+`owner`          - assets owner;
+`assetids`       - array of assetid's
+
+TERM
+This Contract expires at the conclusion of code execution.
+by CryptoLions [ https://cryptolions.io ]
+
 <h1 class="contract"> create </h1>
 
 ---

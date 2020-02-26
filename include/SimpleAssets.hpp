@@ -30,7 +30,7 @@
 #include <eosio/transaction.hpp>
 
 using namespace eosio;
-using std::string;
+using namespace std;
 
 CONTRACT SimpleAssets : public contract{
 	public:
@@ -52,8 +52,8 @@ CONTRACT SimpleAssets : public contract{
 		* New Author registration.
 		*
 		* This action registers a new new author account. It is not mandatory.  Markets *may* choose to use
-                * information here to display information about the author, and to follow specifications expressed
-                * here for displaying asset fields.
+		* information here to display information about the author, and to follow specifications expressed
+		* here for displaying asset fields.
 		*
 		* @param author     is author's account who will create assets.
 		* @param data       is stringified JSON. Recommendations to include: game, company, logo, url, desc.
@@ -83,15 +83,26 @@ CONTRACT SimpleAssets : public contract{
 		* Authors info update.
 		*
 		* This action updates author's information and the asset display recommendations. This action replaces
-                * the fields data, stemplate, and imgpriority.
+		* the fields data, stemplate, and imgpriority.
 		* To remove author entry, call this action with null strings for data, stemplate, and imgpriority.
 		*
 		* (See regauthor action for parameter info.)
 		*
 		* @return no return value.
 		*/
-		ACTION authorupdate( name author, string data, string stemplate, string imgpriority );
+		ACTION authorupdate( name author, string data, string stemplate, string imgpriority);
 		using authorupdate_action = action_wrapper< "authorupdate"_n, &SimpleAssets::authorupdate >;
+
+		/*
+		* Change author.
+		*
+		* This action change author. This action replaces author name
+		*
+		* @return no return value.
+		*/
+
+		ACTION changeauthor( name author, name newauthor, name owner, vector<uint64_t>& assetids, string memo );
+		using changeauthor_action = action_wrapper< "changeauthor"_n, &SimpleAssets::changeauthor >;
 
 		/*
 		* Create a new asset.
@@ -104,9 +115,9 @@ CONTRACT SimpleAssets : public contract{
 		* @param idata is stringified JSON or sha256 string with immutable asset data.
 		* @param mdata is stringified JSON or sha256 string with mutable asset data. It can be changed only by author.
 		* @param requireclaim is true or false. If set to "false", the newly created asset will be transferred to the
-		*                 owner (but author's RAM will be used until the asset is transferred again). If set to
-                *                 "true", the author will remain to be the owner, but an offer will be created for the
-                *                 account specified in the owner field to claim the asset using the owner's RAM.
+		*                     owner (but author's RAM will be used until the asset is transferred again). If set to
+		*                     "true", the author will remain to be the owner, but an offer will be created for the
+		*                     account specified in the owner field to claim the asset using the owner's RAM.
 		* @return no return value.
 		*/
 		ACTION create( name author, name category, name owner, string idata, string mdata, bool requireclaim );
@@ -125,9 +136,9 @@ CONTRACT SimpleAssets : public contract{
 		* @param idata is stringified JSON or sha256 string with immutable asset data.
 		* @param mdata is stringified JSON or sha256 string with mutable asset data. It can be changed only by author.
 		* @param requireclaim is true or false. If set to "false", the newly created asset will be transferred to the
-		*                 owner (but author's RAM will be used until the asset is transferred again). If set to
-                *                 "true", the author will remain to be the owner, but an offer will be created for the
-                *                 account specified in the owner field to claim the asset using the owner's RAM.
+		*                     owner (but author's RAM will be used until the asset is transferred again). If set to
+		*                     "true", the author will remain to be the owner, but an offer will be created for the
+		*                     account specified in the owner field to claim the asset using the owner's RAM.
 		* @return no return value.
 		*/
 		ACTION createlog( name author, name category, name owner, string idata, string mdata, uint64_t assetid,
@@ -143,7 +154,7 @@ CONTRACT SimpleAssets : public contract{
 		* @param assetids is array of asset id's to claim.
 		* @return no return value.
 		*/
-		ACTION claim( name claimer, std::vector< uint64_t >& assetids );
+		ACTION claim( name claimer, vector< uint64_t >& assetids );
 		using claim_action = action_wrapper< "claim"_n, &SimpleAssets::claim >;
 
 		/*
@@ -159,7 +170,7 @@ CONTRACT SimpleAssets : public contract{
 		* @param memo is transfers comment.
 		* @return no return value.
 		*/
-		ACTION transfer( name from, name to, std::vector< uint64_t >& assetids, string memo );
+		ACTION transfer( name from, name to, vector< uint64_t >& assetids, string memo );
 		using transfer_action = action_wrapper< "transfer"_n, &SimpleAssets::transfer >;
 
 		/*
@@ -190,7 +201,7 @@ CONTRACT SimpleAssets : public contract{
 		* @param memo is memo for offer action.
 		* @return no return value.
 		*/
-		ACTION offer( name owner, name newowner, std::vector< uint64_t >& assetids, string memo );
+		ACTION offer( name owner, name newowner, vector< uint64_t >& assetids, string memo );
 		using offer_action = action_wrapper< "offer"_n, &SimpleAssets::offer >;
 
 		/*
@@ -202,29 +213,29 @@ CONTRACT SimpleAssets : public contract{
 		* @param assetids	- array of asset id's to cancel from offer.
 		* @return no return value.
 		*/
-		ACTION canceloffer( name owner, std::vector<uint64_t>& assetids );
+		ACTION canceloffer( name owner, vector<uint64_t>& assetids );
 		using canceloffer_action = action_wrapper< "canceloffer"_n, &SimpleAssets::canceloffer >;
 
 		/*
 		* Burn asset.
 		*
 		* This action wil ldestroy the assets specified in {{assetids}}. This action is only available for the asset
-                * owner. After executing, the asset will disappear forever, and RAM used for asset will be released. All
-                * attached fungible and non-fungible assets will be destroyed too.
+		* owner. After executing, the asset will disappear forever, and RAM used for asset will be released. All
+		* attached fungible and non-fungible assets will be destroyed too.
 		*
 		* @param owner is current asset owner account.
 		* @param assetids is array of asset id's to burn.
 		* @param memo is memo for burn action.
 		* @return no return value.
 		*/
-		ACTION burn( name owner, std::vector< uint64_t >& assetids, string memo );
+		ACTION burn( name owner, vector< uint64_t >& assetids, string memo );
 		using burn_action = action_wrapper< "burn"_n, &SimpleAssets::burn >;
 
 		/*
 		* Delegate assets.
 		*
 		* This action delegates asset to {{to}} account. This action changes the asset owner by calling the transfer
-                * action. It also adds a record in the delegates table to record the asset as borrowed.  This blocks
+		* action. It also adds a record in the delegates table to record the asset as borrowed.  This blocks
 		* the asset from all owner actions (transfers, offers, burning by borrower).
 		*
 		* @param owner is current asset owner account.
@@ -232,10 +243,11 @@ CONTRACT SimpleAssets : public contract{
 		* @param assetids is array of asset id's to delegate.
 		* @param period	is time in seconds that the asset will be lent for. The lender cannot undelegate until
 		*		 the period expires, however the receiver can transfer back at any time.
+		* @param redelegate is allow more redelegate for to account or not.
 		* @param memo is memo for delegate action.
 		* @return no return value.
 		*/
-		ACTION delegate( name owner, name to, std::vector< uint64_t >& assetids, uint64_t period, string memo );
+		ACTION delegate( name owner, name to, vector<uint64_t>& assetids, uint64_t period, bool redelegate, string memo );
 		using delegate_action = action_wrapper< "delegate"_n, &SimpleAssets::delegate >;
 
 		/*
@@ -245,11 +257,10 @@ CONTRACT SimpleAssets : public contract{
                 * immediately, and the entry in the delegates table recording the borrowing will be erased.
 		*
 		* @param owner is the account of real owner of the assets.
-		* @param from is current account owner (borrower).
 		* @param assetids is array of asset id's to undelegate.
 		* @return no return value.
 		*/
-		ACTION undelegate( name owner, name from, std::vector< uint64_t >& assetids );
+		ACTION undelegate( name owner, vector< uint64_t >& assetids );
 		using undelegate_action = action_wrapper< "undelegate"_n, &SimpleAssets::undelegate >;
 
 		/*
@@ -265,21 +276,21 @@ CONTRACT SimpleAssets : public contract{
 		* @param assetids is array of asset id's to attach.
 		* @return no return value.
 		*/
-		ACTION attach( name owner, uint64_t assetidc, std::vector< uint64_t >& assetids );
+		ACTION attach( name owner, uint64_t assetidc, vector< uint64_t >& assetids );
 		using attach_action = action_wrapper< "attach"_n, &SimpleAssets::attach >;
 
 		/*
 		* Detach non-fungible token.
 		*
 		* This action detaches NFTs from the specified NFT. Only the owner of the container asset is
-                * allowed to execute this action.
+		* allowed to execute this action.
 		*
 		* @param owner is owner of NFTs.
 		* @param assetidc is the id of the NFT from which we are detaching.
 		* @param assetids is the array of id's of the NFTS to be detached.
 		* @return no return value.
 		*/
-		ACTION detach( name owner, uint64_t assetidc, std::vector< uint64_t >& assetids );
+		ACTION detach( name owner, uint64_t assetidc, vector< uint64_t >& assetids );
 		using detach_t_action = action_wrapper< "detach"_n, &SimpleAssets::detach >;
 
 		/*
@@ -330,13 +341,13 @@ CONTRACT SimpleAssets : public contract{
 		* Creates fungible token.
 		*
 		* This action creates a fungible token with specified maximum supply. Maximum supply and author control
-                * cannot be modified after the token is created.
+		* cannot be modified after the token is created.
 		*
 		* @param author is fungible token author;
 		* @param maximum_supply is maximum token supply, example "10000000.0000 GOLD", "10000000 SEED",
-                * 	"100000000.00 WOOD". The amount must specify the exact precision.
+		* 	"100000000.00 WOOD". The amount must specify the exact precision.
 		* @param authorctrl is IMPORTANT! If true(1) allows token author (and not just owner) to burnf and transferf.
-                * 	Cannot be changed after creation!
+		* 	Cannot be changed after creation!
 		* @param data is stringified JSON (recommend including keys `img` and `name` for better displaying by markets).
 		* @return no return value.
 		*/
@@ -413,7 +424,7 @@ CONTRACT SimpleAssets : public contract{
 		* @param ftofferids is ID of the FT offer.
 		* @return no return value.
 		*/
-		ACTION cancelofferf( name owner, std::vector< uint64_t >& ftofferids );
+		ACTION cancelofferf( name owner, vector< uint64_t >& ftofferids );
 		using cancelofferf_action = action_wrapper< "cancelofferf"_n, &SimpleAssets::cancelofferf >;
 
 		/*
@@ -425,15 +436,15 @@ CONTRACT SimpleAssets : public contract{
 		* @param ftofferids is array of FT offer id's.
 		* @return no return value.
 		*/
-		ACTION claimf( name claimer, std::vector< uint64_t >& ftofferids );
+		ACTION claimf( name claimer, vector< uint64_t >& ftofferids );
 		using claimf_action = action_wrapper< "claimf"_n, &SimpleAssets::claimf >;
 
 		/*
 		* Burn fungible tokens
 		*
 		* This action burns a fungible token. This action is available for the token owner and author.
-                * After executing,accounts balance and supply in stats table for this token will reduce by the
-                * specified quantity.
+		* After executing,accounts balance and supply in stats table for this token will reduce by the
+		* specified quantity.
 		*
 		* @param from is account that burns the token.
 		* @param author is account of fungible token author.
@@ -545,7 +556,7 @@ CONTRACT SimpleAssets : public contract{
 		* @param assetids is array of NTT assetid's to claim.
 		* @return no return value.
 		*/
-		ACTION claimntt( name claimer, std::vector< uint64_t >& assetids );
+		ACTION claimntt( name claimer, vector< uint64_t >& assetids );
 		using claimntt_action = action_wrapper< "claimntt"_n, &SimpleAssets::claimntt >;		
 		
 		/*
@@ -573,7 +584,7 @@ CONTRACT SimpleAssets : public contract{
 		* @param memo is memo for burn action.
 		* @return no return value.
 		*/
-		ACTION burnntt( name owner, std::vector< uint64_t >& assetids, string memo );
+		ACTION burnntt( name owner, vector< uint64_t >& assetids, string memo );
 		using burnntt_action = action_wrapper< "burnntt"_n, &SimpleAssets::burnntt >;
 
 	private:
@@ -592,7 +603,6 @@ CONTRACT SimpleAssets : public contract{
 		*/
 
 		void checkwaxauthor( name author );
-
 		/*
 		* Get new asset id.
 		*
@@ -616,9 +626,11 @@ CONTRACT SimpleAssets : public contract{
 		void attachdeatch( name owner, name author, asset quantity, uint64_t assetidc, bool attach );
 		void sub_balancef( name owner, name author, asset value );
 		void add_balancef( name owner, name author, asset value, name ram_payer );
+		void check_empty_vector( vector< uint64_t >& vector_ids, string vector_name = "assetids" );
+		std::string timeToWait(uint64_t time_in_seconds);
 
 		template<typename... Args>
-		void sendEvent( name author, name rampayer, name seaction, const std::tuple<Args...> &tup );
+		void sendEvent( name author, name rampayer, name seaction, const tuple<Args...> &tup );
 
 		/*
 		* Authors table. Can be used by asset markets, asset explorers, or wallets for correct asset
@@ -684,8 +696,8 @@ CONTRACT SimpleAssets : public contract{
 			name                    category;
 			string                  idata; // immutable data
 			string                  mdata; // mutable data
-			std::vector<sasset>     container;
-			std::vector<account>    containerf;
+			vector<sasset>          container;
+			vector<account>         containerf;
 
 			auto primary_key() const {
 				return id;
@@ -809,6 +821,7 @@ CONTRACT SimpleAssets : public contract{
 			name			delegatedto;
 			uint64_t		cdate;
 			uint64_t		period;
+			bool			redelegate;
 			string			memo;
 
 			auto primary_key() const {
@@ -851,7 +864,7 @@ CONTRACT SimpleAssets : public contract{
 		*/
 		TABLE tokenconfigs {
 			name			standard;
-			std::string		version;
+			string			version;
 		};
 		typedef singleton< "tokenconfigs"_n, tokenconfigs > Configs;
 };

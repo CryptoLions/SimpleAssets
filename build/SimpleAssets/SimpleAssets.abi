@@ -170,6 +170,32 @@
             ]
         },
         {
+            "name": "changeauthor",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "newauthor",
+                    "type": "name"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "assetids",
+                    "type": "uint64[]"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
             "name": "claim",
             "base": "",
             "fields": [
@@ -428,6 +454,10 @@
                 {
                     "name": "period",
                     "type": "uint64"
+                },
+                {
+                    "name": "redelegate",
+                    "type": "bool"
                 },
                 {
                     "name": "memo",
@@ -714,6 +744,10 @@
                     "type": "uint64"
                 },
                 {
+                    "name": "redelegate",
+                    "type": "bool"
+                },
+                {
                     "name": "memo",
                     "type": "string"
                 }
@@ -894,10 +928,6 @@
                     "type": "name"
                 },
                 {
-                    "name": "from",
-                    "type": "name"
-                },
-                {
                     "name": "assetids",
                     "type": "uint64[]"
                 }
@@ -1016,6 +1046,11 @@
             "name": "cancelofferf",
             "type": "cancelofferf",
             "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Cancels offer of FTs\nsummary: Cancels offer of FTs \nicon: https://cryptolions.io/assets/images/sa-icons-256/cancelofferf.png#9c35f488e2c53464f430e0e31e5a4b3bd2e914fe3b6db126722166a8a408fa83\n---\n\nInput parameters:\n`owner`      - riginal owner of the FT\n`ftofferids` - id of the FT offer\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "changeauthor",
+            "type": "changeauthor",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Change author of assets\nsummary: Change author of assets\nicon: https://cryptolions.io/assets/images/sa-icons-256/regauthor.png#c6a539be8e7dfd1a4c466ba9cabfd13571cd77d5c988c652d2e8f87096f3548e\n---\t\n\nInput parameters:\n`author`         - asset's author, who will able to change author name asset's;\n`newauthor`      - asset's new author name;\n`owner`          - assets owner;\n`assetids`       - array of assetid's\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "claim",

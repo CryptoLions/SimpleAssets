@@ -1,5 +1,17 @@
 # SimpleAssets  
 
+
+## Scope:
+1. [Introduction](#introduction)
+2. [Contract actions](#contract-actions)
+3. [Data Structures](#data-structures)
+4. [EXAMPLES: how to use Simple Assets in smart contracts](#examples-how-to-use-simple-assets-in-smart-contracts)
+5. [ChangeLog](#change-logs)
+
+---------------------------  
+
+# Introduction
+
 A simple standard for digital assets on EOSIO blockchains: Non-Fungible Tokens (NFTs), Fungible Tokens (FTs), and Non-Transferable Tokens (NTTs).   
 by [CryptoLions](https://CryptoLions.io)  
 
@@ -46,12 +58,37 @@ The RAM usage for NFTs depends on how much data is stored in the idata and mdata
 Each symbol in imdata and mdata is +1 byte.
 
 ---------------------------
-## Scope:
-1. [Contract actions](#contract-actions)
-2. [Data Structures](#data-structures)
-3. [EXAMPLES: how to use Simple Assets in smart contracts](#examples-how-to-use-simple-assets-in-smart-contracts)
-4. [ChangeLog](#change-log-v130)
----------------------------  
+## Fungible Tokens (FTs)
+
+Dapps which need Fungible tokens should decide between using the standard eosio.token contract, and the Simple Assets contract.  Here are the differences:
+
+In Simple Assets,
+
+	* Scope is Author instead of Symbol
+	* Stat table includes also additional data about each FT (see [Currency Stats](#currency-stats-fungible-token) below)
+	* For transfers you need to use ```tranferf``` action from SA contract.
+	* If author sets ```authorcontrol``` flag, the author can transfers/burn/etc user's FTs independent of user's consent.
+	* The table which tracks FTs includes the author's account name, allowing different dapps to have FTs with the 
+	   same name.  (Example: https://bloks.io/contract?tab=Tables&table=accounts&account=simpleassets&scope=bohdanbohdan&limit=100)
+
+
+
+---------------------------
+## Non-Transferrable Tokens (NTTs)
+
+The two most likely use cases for NTTs are 
+
+	* licenses which can be granted to an account, but not transfered.
+	* prizes and awards given to a particular account.
+
+The reasons for using NTTs are:
+
+	* the NTTs appearing in third party asset explorers.
+	* some functionality is handled by Simple Assets.
+
+More on NTTs: https://medium.com/@cryptolions/introducing-non-transferable-tokens-ntts-2f1a532bf170
+
+---------------------------
 
 # Contract actions  
 A description of each parameter can be found here:  
@@ -73,8 +110,8 @@ https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp
  canceloffer		(owner, [assetid1,..,assetidn])  
  claim			(claimer, [assetid1,..,assetidn])  
   
- delegate		(owner, to, [assetid1,..,assetidn], period, memo)  
- undelegate		(owner, from, [assetid1,..,assetidn])  
+ delegate		(owner, to, [assetid1,..,assetidn], period, redelegate, memo)  
+ undelegate		(owner, [assetid1,..,assetidn])  
  delegatemore		(owner, assetid, period)  
  
  attach			(owner, assetidc, [assetid1,..,assetidn])
@@ -177,13 +214,14 @@ authors {
 ## Delegates  
 ```
 delegates{  
-	uint64_t	assetid;	// asset id offered for claim;  
-	name		owner;		// asset owner;  
-	name		delegatedto;	// who can claim this asset;  
-	uint64_t	cdate;		// offer create date;  
-	uint64_t	period;		// Time in seconds that the asset will be lent. Lender cannot undelegate until 
-					// the period expires, however the receiver can transfer back at any time.
-	string		memo;		// memo from action parameters. Max 64 length.
+	uint64_t	assetid;		// asset id offered for claim;  
+	name		owner;			// asset owner;  
+	name		delegatedto;		// who can claim this asset;  
+	uint64_t	cdate;			// offer create date;  
+	uint64_t	period;			// Time in seconds that the asset will be lent. Lender cannot undelegate until 
+						// the period expires, however the receiver can transfer back at any time.
+	bool 		redelegate;		// redelegate is allow more redelegate for to account or not.
+	string		memo;			// memo from action parameters. Max 64 length.
 
 }  
 ```
@@ -478,6 +516,18 @@ saRes1.send();
 
 
 -----------------
+# Change Logs
+
+## Change Log v1.4.0
+- re-delegate assets. (lender of assets can allow them to be re-lent)
+- New parameter `bool redelegate` added in delegate action, which allows asset re-delegation.
+- New field `bool redelegate` added in table `delegates` => require migration in case of self- deployed contract !!!
+- In `undelegate` action parameter `from` was removed. (identity of borrower is available in the delegates table) 
+- Fixed transfer of empty assets array
+- Error messages improved for clarity
+- Code refactoring
+
+
 ## Change Log v1.3.0
 - Upgrade work with latest Contract Development Toolkit (CDT v1.6.3).  
   (Resolves this compilation [issue](https://github.com/EOSIO/eosio.cdt/issues/527))  
