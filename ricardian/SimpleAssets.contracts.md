@@ -1,4 +1,4 @@
-<h1 class="contract"> regauthor </h1>
+<h1 class="contract"> authorreg </h1>
 
 ---
 spec_version: 0.0.2
@@ -11,16 +11,16 @@ Action is not mandatory.  Markets *may* choose to use information here to displa
 
 Input parameters:
 `author`      -	authors account who will create assets;
-`data`        - stringified json. Recommendations to include: game, company, logo, url, desc;
-`stemplate`   - stringified json with key:state values, where key is key from mdata or idata and 
+`dappinfo`    - stringified json. Recommendations to include: game, company, logo, url, desc;
+`fieldtypes`  - stringified json with key:state values, where key is key from mdata or idata and 
 				state indicates recommended way of displaying field: 
 				url, img, webgl, mp3, video, hide (ie. don't display), etc.
-`imgpriority` - json with assosiation category with type of image or video 
-				txt	    - default
-				url	    - show as clickable URL
-				img	    - link to img file
+`priorityimg` - json with assosiation category with type of image or video 
+				txt	- text (default)
+				url	- show as clickable URL
+				img	- link to img file
 				webgl	- link to webgl file
-				mp3	    - link to mp3 file
+				mp3	- link to mp3 file
 				video	- link to video file
 				hide	- do not show
 				imgb 	- image as string in binary format
@@ -42,20 +42,20 @@ summary: Authors info update
 icon: https://cryptolions.io/assets/images/sa-icons-256/authorupdate.png#0b11c9c4e41b6ba1b00bd907c671f7ddc9e2f9caf26580f0b2e7c73e02f36ff3
 ---
 
-Used to updated author information, and asset display recommendations created with the regauthor action. This action replaces the fields data and stemplate. To remove author entry, call this action with null strings for data and stemplate.
+Used to updated author information, and asset display recommendations created with the authorreg action. This action replaces the fields dappinfo and fieldtypes. To remove author entry, call this action with null strings for dappinfo and fieldtypes.
 
 Input parameters:
 `author`      - authors account who will create assets; 
-`data`        - stringified json. Recommendations to include: game, company, logo, url, desc;
-`stemplate`   - stringified json with key:state values, where key is key from mdata or idata and 
+`dappinfo`    - stringified json. Recommendations to include: game, company, logo, url, desc;
+`fieldtypes`  - stringified json with key:state values, where key is key from mdata or idata and 
 				state indicates recommended way of displaying field: 
 				url, img, webgl, mp3, video, hide (ie. don't display), etc.
-`imgpriority` - json with assosiation category with type of image or video 
-				txt	    - default
-				url	    - show as clickable URL
-				img	    - link to img file
+`priorityimg` - json with assosiation category with type of image or video 
+				txt	- text (default)
+				url	- show as clickable URL
+				img	- link to img file
 				webgl	- link to webgl file
-				mp3	    - link to mp3 file
+				mp3	- link to mp3 file
 				video	- link to video file
 				hide	- do not show
 				imgb 	- image as string in binary format
@@ -261,8 +261,8 @@ Input parameters:
 `assetids`  - array of assetid's to delegate;
 `period`    - time in seconds that the asset will be lent. Lender cannot undelegate until 
 			  the period expires, however the receiver can transfer back at any time;
-`redelegate`- allow more redelegate or not;
 `memo`      - memo for delegate action;
+`autoreturn`- automatic return for delegated action;
 
 TERM
 This Contract expires at the conclusion of code execution.
@@ -281,6 +281,7 @@ Executing action by real owner will return asset immediately, and the entry in t
 
 Input parameters:
 `owner`    - real asset owner account;
+`from`     - current account owner (borrower);
 `assetids` - array of assetid's to undelegate;
 
 TERM

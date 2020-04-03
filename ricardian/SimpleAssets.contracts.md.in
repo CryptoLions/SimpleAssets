@@ -1,4 +1,4 @@
-<h1 class="contract"> regauthor </h1>
+<h1 class="contract"> authorreg </h1>
 
 ---
 spec_version: 0.0.2
@@ -11,16 +11,16 @@ Action is not mandatory.  Markets *may* choose to use information here to displa
 
 Input parameters:
 `author`      -	authors account who will create assets;
-`data`        - stringified json. Recommendations to include: game, company, logo, url, desc;
-`stemplate`   - stringified json with key:state values, where key is key from mdata or idata and 
+`dappinfo`    - stringified json. Recommendations to include: game, company, logo, url, desc;
+`fieldtypes`  - stringified json with key:state values, where key is key from mdata or idata and 
 				state indicates recommended way of displaying field: 
 				url, img, webgl, mp3, video, hide (ie. don't display), etc.
-`imgpriority` - json with assosiation category with type of image or video 
-				txt	    - default
-				url	    - show as clickable URL
-				img	    - link to img file
+`priorityimg` - json with assosiation category with type of image or video 
+				txt	- text (default)
+				url	- show as clickable URL
+				img	- link to img file
 				webgl	- link to webgl file
-				mp3	    - link to mp3 file
+				mp3	- link to mp3 file
 				video	- link to video file
 				hide	- do not show
 				imgb 	- image as string in binary format
@@ -42,20 +42,20 @@ summary: Authors info update
 icon: @ICON_BASE_URL@/@AUTHORUPDATE_ICON_URI@
 ---
 
-Used to updated author information, and asset display recommendations created with the regauthor action. This action replaces the fields data and stemplate. To remove author entry, call this action with null strings for data and stemplate.
+Used to updated author information, and asset display recommendations created with the authorreg action. This action replaces the fields dappinfo and fieldtypes. To remove author entry, call this action with null strings for dappinfo and fieldtypes.
 
 Input parameters:
 `author`      - authors account who will create assets; 
-`data`        - stringified json. Recommendations to include: game, company, logo, url, desc;
-`stemplate`   - stringified json with key:state values, where key is key from mdata or idata and 
+`dappinfo`    - stringified json. Recommendations to include: game, company, logo, url, desc;
+`fieldtypes`  - stringified json with key:state values, where key is key from mdata or idata and 
 				state indicates recommended way of displaying field: 
 				url, img, webgl, mp3, video, hide (ie. don't display), etc.
-`imgpriority` - json with assosiation category with type of image or video 
-				txt	    - default
-				url	    - show as clickable URL
-				img	    - link to img file
+`priorityimg` - json with assosiation category with type of image or video 
+				txt	- text (default)
+				url	- show as clickable URL
+				img	- link to img file
 				webgl	- link to webgl file
-				mp3	    - link to mp3 file
+				mp3	- link to mp3 file
 				video	- link to video file
 				hide	- do not show
 				imgb 	- image as string in binary format
