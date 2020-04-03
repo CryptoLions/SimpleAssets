@@ -178,15 +178,6 @@ void SimpleAssets::check_empty_vector( vector<uint64_t>& vector_ids, string vect
 	check( !(vector_ids.size() == 0), "Please add values to parameter: " + move(vector_name) );
 }
 
-void SimpleAssets::checkwaxauthor( name author ) {
-
-	for ( auto i = 0; i < waxauthors.size(); ++i ) {
-		if ( author == waxauthors[i] ) {
-			internal_use_do_not_use::require_auth2( "wet.wax"_n.value, "nftops"_n.value );
-		}
-	}
-}
-
 ACTION SimpleAssets::transfer( name from, name to, vector<uint64_t>& assetids, string memo ) {
 
 	check( from != to, "cannot transfer to yourself" );
@@ -235,8 +226,6 @@ ACTION SimpleAssets::transfer( name from, name to, vector<uint64_t>& assetids, s
 
 		check( from.value == itr->owner.value, "Asset id: " + to_string(assetids[i]) + " is not yours to transfer. Owner: " + itr->owner.to_string() );
 		check( offert.find( assetids[i] ) == offert.end(), "Asset id: " + to_string(assetids[i]) + " offered for a claim and cannot be transferred. Cancel offer?" );
-
-		checkwaxauthor( itr->author );
 
 		assets_t.emplace( rampayer, [&]( auto& s ) {
 			s.id         = itr->id;
@@ -292,7 +281,6 @@ ACTION SimpleAssets::offer( name owner, name newowner, vector<uint64_t>& assetid
 	for ( auto i = 0; i < assetids.size(); ++i ) {
 		const auto itr = assets_f.find ( assetids[i] );
 		check( itr != assets_f.end(),  "Asset id: " + to_string( assetids[i] ) + " was not found." );
-		checkwaxauthor( itr->author );
 		check( offert.find   ( assetids[i] ) == offert.end(),    "Asset id: " + to_string(assetids[i]) + " is already offered for claim." );
 		check( delegatet.find( assetids[i] ) == delegatet.end(), "Asset id: " + to_string(assetids[i]) + " is delegated and cannot be offered." );
 
@@ -341,7 +329,6 @@ ACTION SimpleAssets::burn( name owner, vector<uint64_t>& assetids, string memo )
 		check( offert.find( assetids[i] ) == offert.end(), "Asset id: " + to_string(assetids[i]) + " has an open offer and cannot be burned." );
 		check( delegatet.find( assetids[i] ) == delegatet.end(), "Asset id: " + to_string(assetids[i]) + " is delegated and cannot be burned." );
 
-		checkwaxauthor( itr->author );
 		//Events
 		uniqauthor[itr->author].push_back( assetids[i] );
 		assets_f.erase(itr);
