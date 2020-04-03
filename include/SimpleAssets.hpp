@@ -51,46 +51,60 @@ CONTRACT SimpleAssets : public contract{
 		/*
 		* New Author registration.
 		*
-		* This action registers a new new author account. It is not mandatory.  Markets *may* choose to use
-		* information here to display information about the author, and to follow specifications expressed
-		* here for displaying asset fields.
+		* This action registers a new new author account. It is not mandatory.  Third party asset explorers
+		* and marketplaces *may* choose to use to use this data.
+		* 
+		* See README.md for examples & more information!
 		*
 		* @param author     is author's account who will create assets.
-		* @param data       is stringified JSON. Recommendations to include: game, company, logo, url, desc.
-		* @param stemplate  is stringified JSON with key:state values, where key is key from mdata or idata and
-		*		    state indicates recommended way of displaying field:
-		* txt		- default
-		* url		- show as clickable URL
-		* img		- link to img file
-		* webgl		- link to webgl file
-		* mp3		- link to mp3 file
-		* video		- link to video file
-		* hide		- do not show
-		* imgb 		- image as string in binary format
-		* webglb	- webgl binary
-		* mp3b 		- mp3 binary
-		* videob 	- video binary
 		*
-		* @param imgpriority is JSON which assosiates an NFT category with the field name from idata or mdata
-		* that specifies the main image field for that category of NFTs.
+		* @param dappinfo   is stringified JSON. Recommendations to include: 
+		* 	name	 		- name of the application
+		* 	company 		- name of the company
+		* 	logo 			- url to image 
+		* 	url 			- url to the game's websites
+		* 	info			- short description of application
+		* 	defaultfee 		- 100x the % fee you'd like to collect from marketplaces.  (for 2%, 200)
+		*
+		* @param fieldtypes is stringified JSON with key:state values, where key is key from mdata or idata and
+		* state indicates recommended way of displaying the field. Recommended values:
+		* 	txt			- text (default)
+		* 	url			- show as clickable URL
+		* 	img			- link to img file
+		* 	webgl		- link to webgl file
+		* 	mp3			- link to mp3 file
+		* 	video		- link to video file
+		* 	hide		- do not show
+		* 	imgb 		- image as string in binary format
+		* 	webglb		- webgl binary
+		* 	mp3b 		- mp3 binary
+		* 	videob 		- video binary
+		*	timestamp	- unix timestamp in seconds
+		*	ipfs		- ipfs link
+		*
+		* @param priorityimg is JSON which assosiates an NFT category with the field name from idata or mdata
+		* that specifies the main image field for that category of NFTs.  This is probably a rare use case and
+		* can be left blank.  If you wanted a category of NFTs to have a main image field other than img, 
+		* you'd use "CATEGORY":"otherfieldname".  Most likely use case is if you wanted webgls or some other format
+		* to be the main image.
 		*
 		* @return no return value
 		*/
-		ACTION regauthor( name author, string data, string stemplate, string imgpriority );
-		using regauthor_action = action_wrapper< "regauthor"_n, &SimpleAssets::regauthor >;
+		ACTION authorreg( name author, string dappinfo, string fieldtypes, string priorityimg );
+		using authorreg_action = action_wrapper< "authorreg"_n, &SimpleAssets::authorreg >;
 
 		/*
 		* Authors info update.
 		*
 		* This action updates author's information and the asset display recommendations. This action replaces
-		* the fields data, stemplate, and imgpriority.
-		* To remove author entry, call this action with null strings for data, stemplate, and imgpriority.
+		* the fields dappinfo, fieldtypes, and priorityimg.
+		* To remove author entry, call this action with null strings for dappinfo, fieldtypes, and priorityimg.
 		*
-		* (See regauthor action for parameter info.)
+		* (See authorreg action for parameter info.)
 		*
 		* @return no return value.
 		*/
-		ACTION authorupdate( name author, string data, string stemplate, string imgpriority);
+		ACTION authorupdate( name author, string dappinfo, string fieldtypes, string priorityimg );
 		using authorupdate_action = action_wrapper< "authorupdate"_n, &SimpleAssets::authorupdate >;
 
 		/*
@@ -588,7 +602,9 @@ CONTRACT SimpleAssets : public contract{
 		using burnntt_action = action_wrapper< "burnntt"_n, &SimpleAssets::burnntt >;
 
 	private:
-
+		const uint8_t  FEE_PRECISION = 2;
+		const uint16_t FEE_PRECISION_AMOUNT = 100;
+		
 		/*
 		* List of authors that need double signatute owner and wet.wax@nftops
 		*/
@@ -639,9 +655,9 @@ CONTRACT SimpleAssets : public contract{
 		*/
 		TABLE sauthor {
 			name			author;
-			string			data;
-			string			stemplate;
-			string			imgpriority;
+			string			dappinfo;
+			string			fieldtypes;
+			string			priorityimg;
 
 			auto primary_key() const {
 				return author.value;

@@ -42,19 +42,21 @@ ACTION SimpleAssets::changeauthor( name author, name newauthor, name owner, vect
 	}
 }
 
-ACTION SimpleAssets::regauthor( name author, string data, string stemplate, string imgpriority ) {
+ACTION SimpleAssets::authorreg( name author, string dappinfo, string fieldtypes, string priorityimg ) {
 
 	require_auth( author );
 	require_recipient( author );
-	check( data.size() > 3, "Data field is too short. Please tell us about yourselves." );
+
+	check( dappinfo.size() > 3, "Data field is too short. Please tell us about yourselves." );
+
 	authors author_( _self, _self.value );
 
 	if ( author_.find( author.value ) == author_.end() ) {
 		author_.emplace( author, [&]( auto& s ) {
 			s.author      = author;
-			s.data        = data;
-			s.stemplate   = stemplate;
-			s.imgpriority = imgpriority;
+			s.dappinfo    = dappinfo;
+			s.fieldtypes  = fieldtypes;
+			s.priorityimg = priorityimg;
 		});
 	}
 	else {
@@ -62,22 +64,23 @@ ACTION SimpleAssets::regauthor( name author, string data, string stemplate, stri
 	}
 }
 
-ACTION SimpleAssets::authorupdate( name author, string data, string stemplate, string imgpriority ) {
+ACTION SimpleAssets::authorupdate( name author, string dappinfo, string fieldtypes, string priorityimg ) {
 
 	require_auth( author );
 	require_recipient( author );
+
 	authors author_( _self, _self.value );
 
 	auto itr = author_.require_find( author.value, string("author " + author.to_string() + " not registered").c_str() );
 
-	if ( data.empty() && stemplate.empty() ) {
+	if ( dappinfo.empty() && fieldtypes.empty() ) {
 		itr = author_.erase( itr );
 	}
 	else {
 		author_.modify( itr, author, [&]( auto& s ) {
-			s.data        = data;
-			s.stemplate   = stemplate;
-			s.imgpriority = imgpriority;
+			s.dappinfo    = dappinfo;
+			s.fieldtypes  = fieldtypes;
+			s.priorityimg = priorityimg;
 		});
 	}
 }
@@ -1048,7 +1051,7 @@ std::string SimpleAssets::timeToWait( uint64_t time_in_seconds ){
 
 EOSIO_DISPATCH( SimpleAssets, ( create )( createlog )( transfer )( burn )( update )
 ( offer )( canceloffer )( claim )
-( regauthor )( authorupdate )
+( authorreg )( authorupdate )
 ( delegate )( undelegate )( delegatemore )( attach )( detach )
 ( createf )( updatef )( issuef )( transferf )( burnf )
 ( offerf )( cancelofferf )( claimf )

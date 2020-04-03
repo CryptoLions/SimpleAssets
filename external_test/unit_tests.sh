@@ -732,35 +732,35 @@ function TEST_AUTHORUPDATE
 
 	sleep $WAIT_TIME
 	echo "authorupdate"
-	datatest="data_test_test"
-	stemplate="stemplate_test_test"
+	dappinfotest="data_test_test"
+	fieldtypes="fieldtypes_test_test"
 
-	./cleos.sh push action $ACC authorupdate '{"author":"'${ACC}'", "data":"'${datatest}'", "stemplate":"'${stemplate}'"}' -p $ACC
-
-	sleep $WAIT_TIME
-	datatest_item=$(./cleos.sh get table $ACC $SCOPE authors -l 1000 | jq -r '.rows[] | select(.data | contains("'${datatest}'")) | .data')
+	./cleos.sh push action $ACC authorupdate '{"author":"'${ACC}'", "dappinfo":"'${dappinfotest}'", "fieldtypes":"'${fieldtypes}'"}' -p $ACC
 
 	sleep $WAIT_TIME
-	stemplate_item=$(./cleos.sh get table $ACC $SCOPE authors -l 1000 | jq -r '.rows[] | select(.stemplate| contains("'${stemplate}'")) | .stemplate')
+	dappinfotest_item=$(./cleos.sh get table $ACC $SCOPE authors -l 1000 | jq -r '.rows[] | select(.dappinfo | contains("'${dappinfo}'")) | .dappinfo')
 
-	if [ "$datatest_item" = "" ]
+	sleep $WAIT_TIME
+	fieldtypes_item=$(./cleos.sh get table $ACC $SCOPE authors -l 1000 | jq -r '.rows[] | select(.fieldtypes | contains("'${fieldtypes}'")) | .fieldtypes')
+
+	if [ "$dappinfotest_item" = "" ]
 	then
-		echo $datatest_item
-		echo $stemplate_item
-		echo "Error. authors.data field was not updated during authorupdate."
+		echo $dappinfotest_item
+		echo $fieldtypes_item
+		echo "Error. authors.dappinfo field was not updated during authorupdate."
 		exit 1;
 	else
-		echo "Data was successfully updated during authorupdate."
+		echo "dappinfo was successfully updated during authorupdate."
 	fi
 
-	if [ "$stemplate_item" = "" ]
+	if [ "$fieldtypes_item" = "" ]
 	then
-		echo $datatest_item
-		echo $stemplate_item
-		echo "Error. authors.stemplate field was not updated during authorupdate."
+		echo $dappinfotest_item
+		echo $fieldtypes_item
+		echo "Error. authors.fieldtypes field was not updated during authorupdate."
 		exit 1;
 	else
-		echo "Stemplate was successfully updated during authorupdate."
+		echo "fieldtypes was successfully updated during authorupdate."
 	fi
 }
 

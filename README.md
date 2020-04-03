@@ -1,12 +1,13 @@
 # SimpleAssets  
-
+*document version 1.4.1*
 
 ## Scope:
 1. [Introduction](#introduction)
 2. [Contract actions](#contract-actions)
 3. [Data Structures](#data-structures)
 4. [EXAMPLES: how to use Simple Assets in smart contracts](#examples-how-to-use-simple-assets-in-smart-contracts)
-5. [ChangeLog](#change-logs)
+5. [AuthorReg](AuthorReg)
+6. [ChangeLog](#change-logs)
 
 ---------------------------  
 
@@ -46,7 +47,7 @@ We are in the process of creating a DAC which will curate updates to Simple Asse
   
 Related: understanding [ownership authority](https://medium.com/@cryptolions/digital-assets-we-need-to-think-about-ownership-authority-a2b0465c17f6).  
   
-To post information about your NFTs to third-party marketplaces, use the ```regauthor``` action.  
+To post information about your NFTs to third-party marketplaces, use the ```authorreg``` action.  
   
 Alternatively, dapps can Deploy their own copy of Simple Assets and make modifications to have greater control of functionality.  Before deploying, Simple Assets should be modified to prevent anyone from making assets.  
 
@@ -64,13 +65,12 @@ Dapps which need Fungible tokens should decide between using the standard eosio.
 
 In Simple Assets,
 
-	* Scope is Author instead of Symbol
-	* Stat table includes also additional data about each FT (see [Currency Stats](#currency-stats-fungible-token) below)
-	* For transfers you need to use ```tranferf``` action from SA contract.
-	* If author sets ```authorcontrol``` flag, the author can transfers/burn/etc user's FTs independent of user's consent.
-	* The table which tracks FTs includes the author's account name, allowing different dapps to have FTs with the 
+* Scope is Author instead of Symbol
+* Stat table includes also additional data about each FT (see [Currency Stats](#currency-stats-fungible-token) below)
+* For transfers you need to use ```tranferf``` action from SA contract.
+* If author sets ```authorcontrol``` flag, the author can transfers/burn/etc user's FTs independent of user's consent.
+* The table which tracks FTs includes the author's account name, allowing different dapps to have FTs with the 
 	   same name.  (Example: https://bloks.io/contract?tab=Tables&table=accounts&account=simpleassets&scope=bohdanbohdan&limit=100)
-
 
 
 ---------------------------
@@ -78,13 +78,13 @@ In Simple Assets,
 
 The two most likely use cases for NTTs are 
 
-	* licenses which can be granted to an account, but not transfered.
-	* prizes and awards given to a particular account.
+* licenses which can be granted to an account, but not transfered.
+* prizes and awards given to a particular account.
 
 The reasons for using NTTs are:
 
-	* the NTTs appearing in third party asset explorers.
-	* some functionality is handled by Simple Assets.
+* the NTTs appearing in third party asset explorers.
+* some functionality is handled by Simple Assets.
 
 More on NTTs: https://medium.com/@cryptolions/introducing-non-transferable-tokens-ntts-2f1a532bf170
 
@@ -95,7 +95,7 @@ A description of each parameter can be found here:
 https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp  
 
 ```
- regauthor		(name author, data, stemplate, string imgpriority)  
+ authorreg		(name author, data, stemplate, string imgpriority)  
  authorupdate		(author, data, stemplate, string imgpriority)  
 
 
@@ -159,10 +159,10 @@ sasset {
 	account[]	containerf;	// FTs attached to this asset
 }  
 ```
-// To help third party asset explorers, we recommend including the following fields in `idata` or `mdata`:
-// `name` (text)
-// `img` (url to image file)
-// and maybe `desc` (text description)
+To help third party asset explorers, we recommend including the following fields in `idata` or `mdata`: 
+`name` (text) 
+`img` (url to image file) 
+
 
 ## Offers  
 ```
@@ -514,9 +514,72 @@ action saRes1 = action(
 saRes1.send();
 ```
 
+-----------------
+# AuthorReg
+
+## authorreg action
+Authors can register in the authorreg table to communicate with third party asset explorers, wallets, and marketplaces.
+
+```
+ACTION authorreg( name author, string dappinfo, string fieldtypes, string priorityimg );
+```
+
+@param **author**     is author's account who will create assets.
+
+@param **dappinfo**   is stringified JSON. Recommendations to include: 
+	name	 		- name of the application
+	company 		- name of the company
+	logo 			- url to image 
+	url 			- url to the game's websites
+	info			- short description of application
+ 	defaultfee 		- 100x the % fee you'd like to collect from marketplaces.  (for 2%, 200)
+
+@param **fieldtypes** is stringified JSON with key:state values, where key is key from mdata or idata and
+state indicates recommended way of displaying the field. Recommended values:
+	txt		- text (default)
+	url		- show as clickable URL
+	img		- link to img file
+	webgl		- link to webgl file
+	mp3		- link to mp3 file
+	video		- link to video file
+	hide		- do not show
+	imgb 		- image as string in binary format
+	webglb		- webgl binary
+	mp3b 		- mp3 binary
+	videob 		- video binary
+	timestamp	- unix timestamp in seconds
+	ipfs		- ipfs link
+
+@param **priorityimg** is JSON which assosiates an NFT category with the field name from idata or mdata
+that specifies the main image field for that category of NFTs.  This is probably a rare use case and
+can be left blank.  If you wanted a category of NFTs to have a main image field other than img, 
+you'd use "CATEGORY":"otherfieldname".  Most likely use case is if you wanted webgls or some other format
+to be the main image.
+
+## Cleos examples of authorreg and authorupdate
+
+
+### authorreg
+```
+./cleos.sh.jungle push action simpleassets authorreg '["ilovekolobok", "{\"name\": \"Kolobok Breeding Game\", \"company\": \"CryptoLions\", \"info\": \"Breed your Kolobok\", \"logo\": \"https://imgs.cryptolions.io/logo_256.png\", \"url\": \"https://kolobok.io\", \"defaultfee\":200}", "{\"bdate\":\"timestamp\"},{\"cd\":\"timestamp\"},{\"img\":\"img\"},{\"st\":\"hide\"},{\"url\":\"url\"}", "{\"kolobok\":\"img\"},{\"*\":\"img\"}" ]' -p ilovekolobok
+```
+
+### authorupdate
+```
+./cleos.sh.jungle push action simpleassets authorupdate '["ilovekolobok", "{\"name\": \"Kolobok Breeding Game\", \"company\": \"CryptoLions\", \"info\": \"Breed your Kolobok\", \"logo\": \"https://imgs.cryptolions.io/logo_256.png\", \"url\": \"https://kolobok.io\", \"defaultfee\":200}", "{\"bdate\":\"timestamp\"},{\"cd\":\"timestamp\"},{\"img\":\"img\"},{\"st\":\"hide\"},{\"url\":\"url\"}", "{\"kolobok\":\"img\"},{\"*\":\"img\"}" ]' -p ilovekolobok
+```
 
 -----------------
 # Change Logs
+
+## Change Log v1.4.1
+
+- Renamed fields and actions in Author Registration for better larity
+        regauthor -> authorreg  
+        data -> dappinfo  
+        stemplate -> fieldtypes  
+        imgpriority -> priorityimg  
+- Added Author Registration documentation to readme
 
 ## Change Log v1.4.0
 - re-delegate assets. (lender of assets can allow them to be re-lent)
