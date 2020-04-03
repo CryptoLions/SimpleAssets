@@ -575,10 +575,10 @@ to be the main image.
 ## Change Log v1.4.1
 
 - Renamed fields and actions in Author Registration for better larity
-	regauthor -> authorreg
-	data -> dappinfo
-	stemplate -> fieldtypes
-	imgpriority -> priorityimg
+        regauthor -> authorreg  
+        data -> dappinfo  
+        stemplate -> fieldtypes  
+        imgpriority -> priorityimg  
 - Added Author Registration documentation to readme
 
 ## Change Log v1.4.0
