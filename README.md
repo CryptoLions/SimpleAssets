@@ -56,7 +56,7 @@ Alternatively, dapps can Deploy their own copy of Simple Assets and make modific
 
 The RAM usage for NFTs depends on how much data is stored in the idata and mdata fields.  If they both empty, each NFT takes up `276 bytes`.
 
-Each symbol in imdata and mdata is +1 byte.
+Each symbol in idata and mdata is +1 byte.
 
 ---------------------------
 ## Fungible Tokens (FTs)
