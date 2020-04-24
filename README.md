@@ -35,10 +35,11 @@ Use Simple Assets by making calls to the Simple Assets contract.  It's like a Da
 
 Jungle Testnet: **simpleassets**  
 
-EOS Mainnet: **simpleassets**  
-WAX Mainnet: **simpleassets**  
-MEETONE Mainnet: **smplassets.m**  
-TELOS Mainnet: **simpleassets**  
+EOS: **simpleassets**  
+WAX: **simpleassets**  
+MEETONE: **smplassets.m**  
+TELOS: **simpleassets**  
+PROTON: **simpleassets**
 
   
 Simple Assets is a separate contract which other Dapps can call to manage their digital assets.  This serves as an additional guarantee to users of the Dapp that the ownership of assets is managed by a reputable outside authority, and that once created, the Dapp can only manage the asset's mdata.  All the ownership-related functionality exists outside the game.    
@@ -56,7 +57,7 @@ Alternatively, dapps can Deploy their own copy of Simple Assets and make modific
 
 The RAM usage for NFTs depends on how much data is stored in the idata and mdata fields.  If they both empty, each NFT takes up `276 bytes`.
 
-Each symbol in imdata and mdata is +1 byte.
+Each symbol in idata and mdata is +1 byte.
 
 ---------------------------
 ## Fungible Tokens (FTs)
@@ -67,7 +68,7 @@ In Simple Assets,
 
 * Scope is Author instead of Symbol
 * Stat table includes also additional data about each FT (see [Currency Stats](#currency-stats-fungible-token) below)
-* For transfers you need to use ```tranferf``` action from SA contract.
+* For transfers you need to use ```transferf``` action from SA contract.
 * If author sets ```authorcontrol``` flag, the author can transfers/burn/etc user's FTs independent of user's consent.
 * The table which tracks FTs includes the author's account name, allowing different dapps to have FTs with the 
 	   same name.  (Example: https://bloks.io/contract?tab=Tables&table=accounts&account=simpleassets&scope=bohdanbohdan&limit=100)

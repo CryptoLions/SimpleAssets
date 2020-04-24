@@ -11,6 +11,7 @@ Telegram: [https://t.me/simpleassets](https://t.me/simpleassets)
 EOS 메인넷 계정: **simpleassets**  
 MEETONE 메인넷 계정: **smplassets.m**  
 TELOS 메인넷 계정: **simpleassets**  
+PROTON: **simpleassets**
 
 소개 & 데모: [https://medium.com/@cryptolions/introducing-simple-assets-b4e17caafaa4](https://medium.com/@cryptolions/introducing-simple-assets-b4e17caafaa4)  
 
@@ -27,7 +28,8 @@ TELOS 메인넷 계정: **simpleassets**
 정글 테스트넷: `simpleassets`  
 EOS 메인넷: `simpleassets`  
 MEETONE 메인넷: `smplassets.m`  
-TELOS 메인넷: `simpleassets`  
+TELOS 메인넷: `simpleassets` 
+PROTON: `simpleassets`
   
 심플에셋은 다른 Dapp들이 자신의 디지털 자산을 관리하기 위해 호출할 수 있는 별개의 컨트랙트입니다. 이는 자산의 소유권이 신뢰할 수 있는 외부 권한자에 의해 관리될 수 있도록, 그리고 생성과 동시에 해당 Dapp이 자산의 mdata만을 관리할 수 있도록 하는 추가적인 보장책을 해당 Dapp 사용자들에게 제공합니다. 소유권과 관련한 모든 기능들은 외부에 존재하게 됩니다.  
   
@@ -44,7 +46,7 @@ TELOS 메인넷: `simpleassets`
   
 NFT의 RAM 사용량은 idata와 mdata 필드에 얼마나 많은 데이터가 있는지에 의해 정해집니다. 두 영역 모두가 비어있다면, 각 NFT는 `276byte`를 차지합니다.  
   
-imdata와 mdata의 각 기호들은 1 byte 씩을 차지합니다.  
+idata와 mdata의 각 기호들은 1 byte 씩을 차지합니다.  
   
 ---------------------------
   

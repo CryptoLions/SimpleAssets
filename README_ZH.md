@@ -8,9 +8,9 @@
 
 2.[合约操作](#合约操作)
 
-3.[数据结构](数据结构)
+3.[数据结构](#数据结构)
 
-4.[示例：如何在智能合约中使用简单资产](#示例：如何在智能合约中使用简单资产)
+4.[示例: 如何在智能合约中使用简单资产](#示例如何在智能合约中使用简单资产)
 
 5.[更新日志](#更新日志)
 
@@ -20,8 +20,10 @@
 
 一款EOSIO区块链上的数字资产标准，适用于不可替代代币（Non-Fungible Tokens，NFTs）、可替代代币(Fungible Tokens，FTs) 和 不可转让代币（Non-Transferable Tokens，NTTs），由[CryptoLions](https://CryptoLions.io)开发创建。    
   
-web: [http://simpleassets.io](http://simpleassets.io/)    
+web: [http://simpleassets.io](http://simpleassets.io/)
+
 Git: [https://github.com/CryptoLions/SimpleAssets](https://github.com/CryptoLions/SimpleAssets)
+
 Telegram: [https://t.me/simpleassets](https://t.me/simpleassets)  
 
 简介和演示：https://medium.com/\@cryptolions/introducing-simple-assets-b4e17caafaa4  
@@ -40,6 +42,7 @@ EOS 主网: **`simpleassets`**
 WAX 主网： **`simpleassets`**  
 MEETONE 主网: **`smplassets.m`**  
 TELOS 主网: **`simpleassets`**   
+PROTON: **`simpleassets`**
 
 简单资产（Simple Assets）是一个独立的合约，其他Dapps可以直接调用它来管理自己的数字资产。这为Dapp用户提供了额外的保证，即资产的所有权由信誉良好的外部机构管理，并且一旦创建，Dapp只能管理资产的mdata部分。 所有与所有权相关的功能都存在于游戏之外。
 
@@ -49,15 +52,15 @@ TELOS 主网: **`simpleassets`**
 
 运用regauthor操作发送自己的NFTs信息至第三方商城。
 
-或者，dapps可以自行部署简单资产（Simple Assets）副本并进行修改以更好地控制其功能。 部署前，应修改简单资产（Simple Assets）以防止任何人创建资产。
+或者，dapps可以自行部署简单资产（Simple Assets）副本并进行修改以更好地控制其功能。部署前，应修改简单资产（Simple Assets）以防止任何人创建资产。
 
 ---
 
 ## RAM使用情况
 
-NFT的RAM使用量取决于idata和mdata字段中存储的数据量。 如果它们都为空，则每个NFT占用276个字节。
+NFT的RAM使用量取决于idata和mdata字段中存储的数据量。如果它们都为空，则每个NFT占用276个字节。
 
-imdata和mdata中的每个符号都是+1字节。
+idata和mdata中的每个符号都是+1字节。
 
 ---
 
@@ -70,7 +73,7 @@ imdata和mdata中的每个符号都是+1字节。
 ```
 * Scope is Author instead of Symbol
 * Stat table includes also additional data about each FT (see [Currency Stats](#currency-stats-fungible-token) below)
-* For transfers you need to use ```tranferf``` action from SA contract.
+* For transfers you need to use ```transferf``` action from SA contract.
 * If author sets ```authorcontrol``` flag, the author can transfers/burn/etc user's FTs independent of user's consent.
 * The table which tracks FTs includes the author's account name, allowing different dapps to have FTs with the 
    same name.  (Example: https://bloks.io/contract?tab=Tables&table=accounts&account=simpleassets&scope=bohdanbohdan&limit=100)
@@ -305,7 +308,7 @@ nttoffers {
 ```
 
 ---
-# 示例：如何在智能合约中使用简单资产
+# 示例:如何在智能合约中使用简单资产
 
 ## 创建资产并转移到所有者帐户ownerowner22：
 ```
@@ -545,7 +548,7 @@ saRes1.send();
 * 不可转让代币（NTTs）-新tables: snttassets 和 nttoffers
 * 新 NTT 操作: createntt, createnttlog, claimntt, updatentt, burnntt
 * 委托更多修复操作（感谢 cc32d9）
-ricardian 合约更新
+* ricardian 合约更新
 * 为NTT添加外部逻辑测试
 
 ---
@@ -589,7 +592,7 @@ ricardian 合约更新
 ## 更新日志v0.4.0
 
 **轻松找到可替代代币的信息（可替换代币有创建者范围）：**
-*FT的`account`表中的新字段`author`（更容易找到可替代代币信息）
+* FT的`account`表中的新字段`author`（更容易找到可替代代币信息）
 
 **更多可替代代币信息**
 
@@ -651,47 +654,30 @@ memo );
 ## 更新日志v0.2.0
 **使用eosio.token合约添加了可替代代币（Fungible Token）表和逻辑，但有一些更改**
 * 新的操作和逻辑：`createf`，`issuef`，`transfer`，`burnf`，`openf`，`closef`
-
 * 添加了新表 `stat(supply, max_supply, issuer, id) `和`accounts (id, balance)`
-
 * 统计表的范围（关于可替代代币的信息）已更改为创建者
-
 * `accountstable`的主索引是在`create f`操作上创建的 uniq id 并存储在 stats 表中。
-
 * 添加`createf`与 parameter 可替代代币操作`authorctrl` 至`stats`表。如果为true（1）允许代币创建者（而不仅仅是所有者）使用burnf和transferf。创建后无法更改！
-
 * 李嘉图合约已更新
-
 * 以下有更多用法示例
 
 ---
 ## 更新日志v0.1.1
 **杂项**
 * sdelagate 表结构重命名为 sdelegate（typo）
-
 * 创建操作参数重命名：requireClaim - > requireclaim
-
 * assetID操作参数在所有要声明的操作中重命名
 
 **借入资产**
 * sdelegate表 - 添加了新字段：untildate
-
 * 委托操作添加参数untildate。如果参数输入正确（零或将来），操作会进行简单检查。
-
 * undelegate在不公开之前不会工作（这保证了资产贷款的最低期限）。
-
 * 如果被委托，允许转移资产（返还）早于截至时间（借款人可以提前返还）
 
 **批量处理**
-
 * 声明操作（claim action）：assetid参数已更改为assetsids数组。添加了多个声明逻辑
-
 * 报价操作（offer action）：assetid参数已更改为assetsids数组。添加了多个提供逻辑
-
 * 取消报价操作（canceloffer action）：assetid参数已更改为assetsids数组。添加了多个取消逻辑
-
 * 传输操作（transfer action）：assetid参数已更改为assetsids数组。添加了多个资产转移逻辑。
-
 * 烧录操作（burn action）：assetid参数已更改为assetsids数组。添加了多个刻录逻辑。
-
 * 委托/非委托操作（delegate / undelegated action）：assetid参数已更改为assetsids数组。添加了多个委托/取消授权逻辑。
