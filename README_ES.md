@@ -6,7 +6,7 @@
 2. [Acciones de contratos](#contract-actions)
 3. [Estructuras de datos](#data-structures)
 4. [EJEMPLOS: cómo usar Simple Assets en contratos inteligentes](#examples-how-to-use-simple-assets-in-smart-contracts)
-5. [RegistroAutor](AuthorReg)
+5. [RegistroAutor](#authorreg)
 6. [RegistroCambios](#change-logs)
 
 ---------------------------  
