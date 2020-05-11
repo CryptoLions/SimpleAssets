@@ -8,10 +8,6 @@ Web: [http://simpleassets.io](http://simpleassets.io)
 Git: [https://github.com/CryptoLions/SimpleAssets](https://github.com/CryptoLions/SimpleAssets)  
 Telegram: [https://t.me/simpleassets](https://t.me/simpleassets)  
 
-EOS 메인넷 계정: **simpleassets**  
-MEETONE 메인넷 계정: **smplassets.m**  
-TELOS 메인넷 계정: **simpleassets**  
-PROTON: **simpleassets**
 
 소개 & 데모: [https://medium.com/@cryptolions/introducing-simple-assets-b4e17caafaa4](https://medium.com/@cryptolions/introducing-simple-assets-b4e17caafaa4)  
 
@@ -64,6 +60,9 @@ idata와 mdata의 각 기호들은 1 byte 씩을 차지합니다.
 [https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp](https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp)
 
 ```
+authorreg		( name author, string dappinfo, string fieldtypes, string priorityimg )
+authorupdate		( name author, string dappinfo, string fieldtypes, string priorityimg )
+
 # -- For Non-Fungible Tokens ---
 
 create			(author, category, owner, idata, mdata, requireсlaim)

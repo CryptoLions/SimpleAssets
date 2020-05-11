@@ -103,8 +103,8 @@ idata和mdata中的每个符号都是+1字节。
 可在此处找到每个参数的说明：https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp
 
 ```
-regauthor       (name author, data, stemplate, string imgpriority)
-authorupdate        (author, data, stemplate, string imgpriority)
+authorreg		( name author, string dappinfo, string fieldtypes, string priorityimg )
+authorupdate		( name author, string dappinfo, string fieldtypes, string priorityimg )
 
 \# -- For Non-Fungible Tokens （NTFs） ---
 

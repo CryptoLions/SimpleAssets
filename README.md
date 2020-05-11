@@ -18,6 +18,8 @@ by [CryptoLions](https://CryptoLions.io)
 
 中文翻译: https://github.com/CryptoLions/SimpleAssets/blob/master/README_ZH.md  
 한국어 번역: https://github.com/CryptoLions/SimpleAssets/blob/master/README_KR.md  
+Español: https://github.com/CryptoLions/SimpleAssets/blob/master/README_ES.md  
+
   
 web: http://simpleassets.io  
 Git: https://github.com/CryptoLions/SimpleAssets    
@@ -96,8 +98,8 @@ A description of each parameter can be found here:
 https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp  
 
 ```
- authorreg		(name author, data, stemplate, string imgpriority)  
- authorupdate		(author, data, stemplate, string imgpriority)  
+authorreg		( name author, string dappinfo, string fieldtypes, string priorityimg )
+authorupdate		( name author, string dappinfo, string fieldtypes, string priorityimg )
 
 
  # -- For Non-Fungible Tokens (NFTs)---

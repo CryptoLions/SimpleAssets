@@ -95,8 +95,8 @@ Aquí se puede encontrar una descripción de cada parámetro:
 https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp 
 
 ```
- authorreg		(name author, data, stemplate, string imgpriority)  
- authorupdate		(author, data, stemplate, string imgpriority)  
+authorreg		( name author, string dappinfo, string fieldtypes, string priorityimg )
+authorupdate		( name author, string dappinfo, string fieldtypes, string priorityimg ) 
 
 
  # -- Para Tokens No Fungibles (NFTs)---
