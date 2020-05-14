@@ -51,14 +51,14 @@ CONTRACT SimpleAssets : public contract{
 		/*
 		* New Author registration.
 		*
-		* This action registers a new new author account. It is not mandatory.  Third party asset explorers
-		* and marketplaces *may* choose to use to use this data.
+		* This action registers a new author account. It is not mandatory.  The information posted helps third party 
+		* asset explorers, wallets, and marketplaces better interact with an author's assets.
 		* 
-		* See README.md for examples & more information!
+		* See README.md for examples.
 		*
-		* @param author     is author's account who will create assets.
+		* @param author     is author's account which will create assets.
 		*
-		* @param dappinfo   is stringified JSON. Recommendations to include: 
+		* @param dappinfo   is stringified JSON. Recommended fields: 
 		* 	name	 		- name of the application
 		* 	company 		- name of the company
 		* 	logo 			- url to image 
@@ -66,27 +66,54 @@ CONTRACT SimpleAssets : public contract{
 		* 	info			- short description of application
 		* 	defaultfee 		- 100x the % fee you'd like to collect from marketplaces.  (for 2%, 200)
 		*
-		* @param fieldtypes is stringified JSON with key:state values, where key is key from mdata or idata and
-		* state indicates recommended way of displaying the field. Recommended values:
-		* 	txt			- text (default)
-		* 	url			- show as clickable URL
-		* 	img			- link to img file
-		* 	webgl		- link to webgl file
-		* 	mp3			- link to mp3 file
-		* 	video		- link to video file
-		* 	hide		- do not show
-		* 	imgb 		- image as string in binary format
-		* 	webglb		- webgl binary
-		* 	mp3b 		- mp3 binary
-		* 	videob 		- video binary
-		*	timestamp	- unix timestamp in seconds
-		*	ipfs		- ipfs link
+		* @param fieldtypes is for correctly displaying a digital asset.  It is a stringified JSON with key:value pairs, 
+		* where key is the field name from mdata or idata and value indicates recommended way of displaying the field. 
 		*
-		* @param priorityimg is JSON which assosiates an NFT category with the field name from idata or mdata
-		* that specifies the main image field for that category of NFTs.  This is probably a rare use case and
-		* can be left blank.  If you wanted a category of NFTs to have a main image field other than img, 
-		* you'd use "CATEGORY":"otherfieldname".  Most likely use case is if you wanted webgls or some other format
-		* to be the main image.
+		*
+		* Recommended values for state:
+		*
+		* 	txt			- text (default)
+		*	number			- number (will display as text)
+		*	double			- a double (mathematical data dype - will display as text)
+		*	timestamp		- unix timestamp in seconds
+		* 	hide			- do not show
+		* 	url				- show as clickable URL - format should be [urltext](urllink)
+		*
+		* 	img				- link to img file
+		*
+		* 	imgb/<mime type suffix>		- image as string in base64 format Example: "imgb/gif"
+		*
+		* 	video/<mime type suffix>	- link to a video file. Example:  "video/mp4"
+		*	audio/<mime type suffix> 	- link to an audio file. Example:  "audio/mp3"
+		*
+		* 	videob/<mime type suffix> 	- video in the NFT data base64 Example:	"videob/mp4"
+		*	audiob/<mime type suffix>	- audio in the NFT data base64 Example:	"audiob/mp4"
+		*
+		*	json 			- Linke to external json file or api. (to display this as a formatted json.)
+		* 	md_link			- "more data".  Link to external json file/api.  Json fields will be treated as 
+		*					  Simple Assets fields (mdata or idata).  Authors can specify their display preferences 
+		*					  for any of them by using regauthor.
+		*	md_sa			- "more data". 	The id of a row in the Simple Asset moredata table.  This is an on-chain
+		*					  resource which asset authors can use to avoid repeition of data and save RAM. (in development)
+		*	
+		*	ipfs/<full mime type>	- ipfs link  For example: ipfs/image/jpg
+		*
+		*	iframe			- link to html which can include javascript, css, webgl, etc.
+		*	iframeb			- the string data for html which will render in an iframe
+		*
+		*
+		* NOTE: Please contact us with requests for new data types.  We are especially interested in CSS animations.
+		*
+		*
+		* @param priorityimg is used when you want the main image of some NFTs to be something other than the 
+		* img type listed above, or if you want different NFT categories to have different types of main images
+		* (for example, within one dapp, one category of NFTs may use on-chain binaries as their main image, while
+		* another category of NFT may use links to webgl files).  These are rare use cases.  Most authors, can leave 
+		* it blank: "".
+		*
+		* priorityimg is a JSON which assosiates an NFT category with a field name from idata or mdata.  The 
+		* associated field will be used as the main image field for that category of NFT.
+		*
 		*
 		* @return no return value
 		*/
