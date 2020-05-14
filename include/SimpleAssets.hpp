@@ -72,7 +72,9 @@ CONTRACT SimpleAssets : public contract{
 		*
 		* Recommended values for state:
 		*
-		* 	txt				- text (default)
+		* 	txt			- text (default)
+		*	number			- number (will display as text)
+		*	double			- a double (mathematical data dype - will display as text)
 		*	timestamp		- unix timestamp in seconds
 		* 	hide			- do not show
 		* 	url				- show as clickable URL - format should be [urltext](urllink)
