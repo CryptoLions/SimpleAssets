@@ -178,7 +178,7 @@ void SimpleAssets::check_empty_vector( vector<uint64_t>& vector_ids, string vect
 	check( !(vector_ids.size() == 0), "Please add values to parameter: " + move(vector_name) );
 }
 
-bool SimpleAssets::getPayer(name author, name originalPayer) {
+name SimpleAssets::getPayer(name author, name originalPayer) {
     return (author == "gpk.topps"_n ? get_self() : originalPayer);
 }
 
