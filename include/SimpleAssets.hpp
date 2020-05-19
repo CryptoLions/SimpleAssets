@@ -638,6 +638,8 @@ CONTRACT SimpleAssets : public contract{
 
 		const std::vector<name> waxauthors{ "vgo.wax"_n, "irl.wax"_n, "wax"_n };
 
+		name getPayer(name author, name originalPayer);
+
 		/*
 		* Check wax authors double signature owner and wet.wax@nftops
 		*

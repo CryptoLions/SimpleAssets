@@ -149,7 +149,7 @@ ACTION SimpleAssets::claim( name claimer, vector<uint64_t>& assetids ) {
 
 		check( itrc->owner.value == itr->owner.value, "Owner was changed for asset id:" + to_string(assetids[i]) + " .Owner at offers:" + itrc->owner.to_string() + " . Owner at assets: " + itr->owner.to_string() );
 
-		assets_t.emplace( claimer, [&]( auto& s ) {
+		assets_t.emplace( this->getPayer(itr->author, claimer), [&]( auto& s ) {
 			s.id         = itr->id;
 			s.owner      = claimer;
 			s.author     = itr->author;
@@ -176,6 +176,10 @@ ACTION SimpleAssets::claim( name claimer, vector<uint64_t>& assetids ) {
 void SimpleAssets::check_empty_vector( vector<uint64_t>& vector_ids, string vector_name ) {
 
 	check( !(vector_ids.size() == 0), "Please add values to parameter: " + move(vector_name) );
+}
+
+name SimpleAssets::getPayer(name author, name originalPayer) {
+    return (author == "gpk.topps"_n ? get_self() : originalPayer);
 }
 
 void SimpleAssets::checkwaxauthor( name author ) {
@@ -238,7 +242,7 @@ ACTION SimpleAssets::transfer( name from, name to, vector<uint64_t>& assetids, s
 
 		checkwaxauthor( itr->author );
 
-		assets_t.emplace( rampayer, [&]( auto& s ) {
+		assets_t.emplace( this->getPayer(itr->author, rampayer), [&]( auto& s ) {
 			s.id         = itr->id;
 			s.owner      = to;
 			s.author     = itr->author;
