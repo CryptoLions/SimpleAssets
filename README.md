@@ -220,7 +220,7 @@ delegates{
 	uint64_t	assetid;		// asset id offered for claim;  
 	name		owner;			// asset owner;  
 	name		delegatedto;		// who can claim this asset;  
-	uint64_t	cdate;			// offer create date;  
+	uint64_t	cdate;			// offer create date;   
 	uint64_t	period;			// Time in seconds that the asset will be lent. Lender cannot undelegate until 
 						// the period expires, however the receiver can transfer back at any time.
 	bool 		redelegate;		// redelegate is allow more redelegate for to account or not.
@@ -530,34 +530,22 @@ ACTION authorreg( name author, string dappinfo, string fieldtypes, string priori
 @param **author**     is author's account who will create assets.
 
 @param **dappinfo**   is stringified JSON. Recommendations to include: 
-	name	 		- name of the application
-	company 		- name of the company
-	logo 			- url to image 
-	url 			- url to the game's websites
-	info			- short description of application
- 	defaultfee 		- 100x the % fee you'd like to collect from marketplaces.  (for 2%, 200)
+	name	 		- name of the application  
+	company 		- name of the company   
+	logo 			- url to image    
+	url 			- url to the game's websites    
+	info			- short description of application   
+ 	defaultfee 		- 100x the % fee you'd like to collect from marketplaces.  (for 2%, 200)    
 
-@param **fieldtypes** is stringified JSON with key:state values, where key is key from mdata or idata and
-state indicates recommended way of displaying the field. Recommended values:
-	txt		- text (default)
-	url		- show as clickable URL
-	img		- link to img file
-	webgl		- link to webgl file
-	mp3		- link to mp3 file
-	video		- link to video file
-	hide		- do not show
-	imgb 		- image as string in binary format
-	webglb		- webgl binary
-	mp3b 		- mp3 binary
-	videob 		- video binary
-	timestamp	- unix timestamp in seconds
-	ipfs		- ipfs link
+@param **fieldtypes** is stringified JSON with key:state values, where key is key from mdata or idata and 
+state indicates recommended way of displaying the field. For the latest recommended values, please see [https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp](https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp).  
 
 @param **priorityimg** is JSON which assosiates an NFT category with the field name from idata or mdata
 that specifies the main image field for that category of NFTs.  This is probably a rare use case and
 can be left blank.  If you wanted a category of NFTs to have a main image field other than img, 
 you'd use "CATEGORY":"otherfieldname".  Most likely use case is if you wanted webgls or some other format
 to be the main image.
+
 
 ## Cleos examples of authorreg and authorupdate
 
