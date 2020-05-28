@@ -2,12 +2,14 @@
 *document version 1.4.1*
 
 ## Scope:
-1. [Introduction](#introduction)
-2. [Contract actions](#contract-actions)
-3. [Data Structures](#data-structures)
-4. [EXAMPLES: how to use Simple Assets in smart contracts](#examples-how-to-use-simple-assets-in-smart-contracts)
-5. [AuthorReg](#authorreg)
-6. [ChangeLog](#change-logs)
+1. [Introduction](#introduction)   
+	- [Resources](#resources)   
+	- [Token Types](#token-types)   
+2. [Contract actions](#contract-actions)   
+3. [Data Structures](#data-structures)   
+4. [EXAMPLES: how to use Simple Assets in smart contracts](#examples-how-to-use-simple-assets-in-smart-contracts)   
+5. [AuthorReg](#authorreg)   
+6. [ChangeLog](#change-logs)   
 
 ---------------------------  
 
@@ -19,15 +21,6 @@ by [CryptoLions](https://CryptoLions.io)
 中文翻译: https://github.com/CryptoLions/SimpleAssets/blob/master/README_ZH.md  
 한국어 번역: https://github.com/CryptoLions/SimpleAssets/blob/master/README_KR.md  
 Español: https://github.com/CryptoLions/SimpleAssets/blob/master/README_ES.md  
-
-  
-web: http://simpleassets.io  
-Git: https://github.com/CryptoLions/SimpleAssets    
-Telegram: https://t.me/simpleassets  
-  
-Intro & Demos:  https://medium.com/@cryptolions/introducing-simple-assets-b4e17caafaa4  
-
-Events Receiver Example for authors: https://github.com/CryptoLions/SimpleAssets-EventReceiverExample   
 
 **WARNING** The minimum dependency on eosio.cdt is now v1.6.3.  
 
@@ -46,23 +39,54 @@ PROTON: **simpleassets**
   
 Simple Assets is a separate contract which other Dapps can call to manage their digital assets.  This serves as an additional guarantee to users of the Dapp that the ownership of assets is managed by a reputable outside authority, and that once created, the Dapp can only manage the asset's mdata.  All the ownership-related functionality exists outside the game.    
   
-We are in the process of creating a DAC which will curate updates to Simple Assets after deployment to the EOSIO mainnet.   
-  
 Related: understanding [ownership authority](https://medium.com/@cryptolions/digital-assets-we-need-to-think-about-ownership-authority-a2b0465c17f6).  
   
 To post information about your NFTs to third-party marketplaces, use the ```authorreg``` action.  
   
-Alternatively, dapps can Deploy their own copy of Simple Assets and make modifications to have greater control of functionality.  Before deploying, Simple Assets should be modified to prevent anyone from making assets.  
+Alternatively, dapps can Deploy their own copy of Simple Assets and make modifications to have greater control of functionality, however this may compromise compatibility with wallets and other EOSIO infrastructure.  Before deploying, Simple Assets should be modified to prevent anyone from making assets.  
+
+---------------------------  
+
+## Resources
+
+web: http://simpleassets.io  
+Git: https://github.com/CryptoLions/SimpleAssets    
+Telegram: https://t.me/simpleassets  
+  
+Intro & Demos:  https://medium.com/@cryptolions/introducing-simple-assets-b4e17caafaa4  
+
+**(important for developers)** A detailed description of each action parameter can be found here:  
+https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp  
+
+Events Receiver Example for authors: https://github.com/CryptoLions/SimpleAssets-EventReceiverExample    
+
 
 ---------------------------
-## RAM usage
+## Token Types
 
-The RAM usage for NFTs depends on how much data is stored in the idata and mdata fields.  If they both empty, each NFT takes up `276 bytes`.
+
+### Non-Fungible Tokens (FTs)
+
+NFTs are the most common type of digital assets.  They are used to express unique tokens.  
+
+#### NFT Structure
+
+Simple Asset NFTs are divided into **mdata** (data which the author can update at any time, regardless of ownership), and **idata** (data which is set upon the NFT's creation and can never be updated).
+
+Both are stringified JSONs.  For example: `{\"key1\":\"some-string\", \"key2\":5}`
+
+**Category** is an optional field that lets you group your NFTs for convenience.  Category names must be less than or equal to 12 characters (a-z, 1-5).
+
+**Offer/Claim** versus **Transfer** - If you transfer an NFT, the sender pays for RAM.  As an alternative, you can simply offer the NFT, and the user claiming will pay for their RAM.  *(Note: we are working toward a feature that allows NFT authors to reserve a lot of RAM which will spare users for paying for transfers.)*
+
+#### RAM usage
+
+RAM usage for NFTs depends on how much data is stored in the idata and mdata fields.  If they both empty, each NFT takes up `276 bytes`.
 
 Each symbol in idata and mdata is +1 byte.
 
----------------------------
-## Fungible Tokens (FTs)
+
+### Fungible Tokens (FTs)
 
 Dapps which need Fungible tokens should decide between using the standard eosio.token contract, and the Simple Assets contract.  Here are the differences:
 
@@ -75,9 +99,10 @@ In Simple Assets,
 * The table which tracks FTs includes the author's account name, allowing different dapps to have FTs with the 
 	   same name.  (Example: https://bloks.io/contract?tab=Tables&table=accounts&account=simpleassets&scope=bohdanbohdan&limit=100)
 
+*(Note: Fungible Tokens also have **offer/claim** functionality as an alternative to **transfers**.  For FTs, the only time the sender would pay for RAM would be if the receiver never before held those FTs.  It uses approximately 300 bytes to create the FT table.)*
 
----------------------------
-## Non-Transferrable Tokens (NTTs)
+
+### Non-Transferrable Tokens (NTTs)
 
 The two most likely use cases for NTTs are 
 
