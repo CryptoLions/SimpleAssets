@@ -441,18 +441,20 @@ name author = get_self();
 name from = "lioninjungle"_n;
 name to = "ohtigertiger"_n;
 
+uint64_t assetid = 100000000000187;
+
 std::vector<uint64_t> assetids;
 assetids.push_back(assetid);
 
 string memo = "Transfer one asset";
 
-action saUpdate = action(
-	permission_level{author, "active"_n},
+action saTransfer = action(
+	permission_level{from, "active"_n},
 	SIMPLEASSETSCONTRACT,
 	"transfer"_n,
 	std::make_tuple(from, to, assetids, memo)
 );
-saUpdate.send();
+saTransfer.send();
 ```
 
 ## Transfer two Asset to same receiver with same memo  
@@ -463,19 +465,45 @@ name author = get_self();
 name from = "lioninjungle"_n;
 name to = "ohtigertiger"_n;
 
+uint64_t assetid1 = 100000000000187;
+uint64_t assetid2 = 100000000000188;
+
 std::vector<uint64_t> assetids;
 assetids.push_back(assetid1);
 assetids.push_back(assetid2);
 
 string memo = "Transfer two asset"
 
-action saUpdate = action(
-	permission_level{author, "active"_n},
+action saTransfer = action(
+	permission_level{from, "active"_n},
 	SIMPLEASSETSCONTRACT,
 	"transfer"_n,
 	std::make_tuple(from, to, assetids, memo)
 );
-saUpdate.send();
+saTransfer.send();
+```
+
+## Burn Assets
+```c++
+name SIMPLEASSETSCONTRACT = "simpleassets"_n;
+
+name owner = "lioninjungle"_n;
+uint64_t assetid1 = 100000000000187;
+uint64_t assetid2 = 100000000000188;
+
+std::vector<uint64_t> assetids;
+assetids.push_back(assetid1);
+assetids.push_back(assetid2);
+
+string memo = "Transfer two asset"
+
+action saBurn = action(
+	permission_level{owner, "active"_n},
+	SIMPLEASSETSCONTRACT,
+	"transfer"_n,
+	std::make_tuple(owner, assetids, memo)
+);
+saBurn.send();
 ```
 
 ## issuef (fungible) issue created token
@@ -513,7 +541,7 @@ name author = get_self();
 
 std::string memo = "best WOOD";
 action saRes1 = action(
-	permission_level{author, "active"_n},
+	permission_level{from, "active"_n},
 	SIMPLEASSETSCONTRACT,
 	"transferf"_n,
 	std::make_tuple(from, to, author, wood, memo)
