@@ -558,7 +558,7 @@
                     "type": "uint64"
                 },
                 {
-                    "name": "spare1",
+                    "name": "mdid",
                     "type": "uint64"
                 },
                 {
@@ -585,6 +585,66 @@
                 },
                 {
                     "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "mdadd",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "data",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "mdaddlog",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "data",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "mdremove",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "mdupdate",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "data",
                     "type": "string"
                 }
             ]
@@ -749,6 +809,24 @@
                 },
                 {
                     "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "smoredata",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "data",
                     "type": "string"
                 }
             ]
@@ -1128,6 +1206,26 @@
             "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Issue a fungible token\nsummary: This action issues a fungible token\nicon: https://cryptolions.io/assets/images/sa-icons-256/issuef.png#a40d77b2162d646cd3ce0488dfeab1cdfae8801fcc1d0c6ef1f16f2547b16551\n---\n\nInput parameters:\n`to`       - account receiver;\n`author`   - fungible token author;\n`quantity` - amount to issue, example \"1000.00 WOOD\";\n`memo`     - transfers memo;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
         },
         {
+            "name": "mdadd",
+            "type": "mdadd",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Create new more date\nsummary: Create new more date\nicon: https://cryptolions.io/assets/images/sa-icons-256/update.png#305b640fe614876c6e6f5fed5ac21f8157c80f7bee39f3db26228986c1fc5e0e\n---\n\nInput parameters:\n`author`  - authors account;\n`data`   - stringified json with mutable assets data;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "mdaddlog",
+            "type": "mdaddlog",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Internal action used for creating log\nsummary: Internal action used for creating log\nicon: https://cryptolions.io/assets/images/sa-icons-256/update.png#305b640fe614876c6e6f5fed5ac21f8157c80f7bee39f3db26228986c1fc5e0e\n---\n\nInput parameters:\n`id` - is id of more data;\n`author` - authors account;\n`data` - stringified json with mutable assets data;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "mdremove",
+            "type": "mdremove",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Update existing more data\nsummary: Update existing more data\nicon: https://cryptolions.io/assets/images/sa-icons-256/update.png#305b640fe614876c6e6f5fed5ac21f8157c80f7bee39f3db26228986c1fc5e0e\n---\n\nInput parameters:\n`id` - is id of more data;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "mdupdate",
+            "type": "mdupdate",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Update existing more data\nsummary: Update existing more data\nicon: https://cryptolions.io/assets/images/sa-icons-256/update.png#305b640fe614876c6e6f5fed5ac21f8157c80f7bee39f3db26228986c1fc5e0e\n---\n\nInput parameters:\n`id` - is id of more data;\n`author` - authors account;\n`data` - stringified json with mutable assets data;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
             "name": "offer",
             "type": "offer",
             "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Offer asset for claim\nsummary: Offer asset for claim\nicon: https://cryptolions.io/assets/images/sa-icons-256/offer.png#4aea6612c87df6cde081689f861b55ddba2c277cc553f4faeb65a4cb26656c66\n---\n\nThis is an alternative to the transfer action. Offer can be used by an asset owner to transfer the asset without using their RAM. After an offer is made, the account specified in {{newowner}} is able to make a claim, and take control of the asset using their RAM. Offer action is not available if an asste is delegated (borrowed). \n\nInput parameters:\n`owner`    - current asset owner account;\n`newowner` - new asset owner, who will able to claim;\n`assetids` - array of assetid's to offer;\n`memo`     - memo for offer action\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
@@ -1203,6 +1301,13 @@
         {
             "name": "global",
             "type": "global",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "moredata",
+            "type": "smoredata",
             "index_type": "i64",
             "key_names": [],
             "key_types": []

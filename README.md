@@ -1,5 +1,5 @@
 # SimpleAssets  
-*document version 1.4.1*
+*document version 24 June 2020*
 
 ## Scope:
 1. [Introduction](#introduction)   
@@ -148,6 +148,11 @@ authorupdate		( name author, string dappinfo, string fieldtypes, string priority
  attachf		(owner, author, quantity, assetidc)
  detachf		(owner, author, quantity, assetidc)
  
+ mdadd			(author, data)
+ mdupdate		(id, author, data) 
+ mdremove		(id)
+ mdaddlog		(id, author, data)
+
  # -- For Fungible Tokens (FTs) ---
  
  createf		(author, maximum_supply, authorctrl, data)
@@ -180,9 +185,14 @@ sasset {
 	name		owner;  	// asset owner (mutable - by owner!!!);  
 	name		author;		// asset author (game contract, immutable);  
 	name		category;	// asset category, chosen by author, immutable;  
-	string		idata;		// immutable assets data. Can be stringified JSON or just sha256 string;  
+	string		idata;		// immutable assets data. Can be stringified JSON (recommended) 
+					// or just sha256 string;  
 	string		mdata;		// mutable assets data, added on creation or asset update by author. Can be  
-					// stringified JSON or just sha256 string;  
+					// stringified JSON (recommended) or just sha256 string;  
+					// using a format other than stringified JSON will not interfere with 
+					// simple asset functionality, but will harm compatibility with third party
+					// explorers attempting to diplay the asset
+
 	sasset[]	container;	// other NFTs attached to this asset
 	account[]	containerf;	// FTs attached to this asset
 }  
@@ -294,9 +304,13 @@ snttassets {
 	name		owner;  	// asset owner (mutable - by owner!!!);  
 	name		author;		// asset author (game contract, immutable);  
 	name		category;	// asset category, chosen by author, immutable;  
-	string		idata;		// immutable assets data. Can be stringified JSON or just sha256 string;  
+	string		idata;		// immutable assets data. Can be stringified JSON (recommended) 
+					// or just sha256 string;  
 	string		mdata;		// mutable assets data, added on creation or asset update by author. Can be  
-					// stringified JSON or just sha256 string;  
+					// stringified JSON (recommended) or just sha256 string;  
+					// using a format other than stringified JSON will not interfere with 
+					// simple asset functionality, but will harm compatibility with third party
+					// explorers attempting to diplay the asset
 }  
 ```
   
@@ -310,7 +324,17 @@ nttoffers {
 	uint64_t	cdate;		// offer creation date
 }
 ```    
-  
+
+
+## More Data 
+```c++
+moredata{
+	uint64_t		id;	// id of the more data 
+	name			author;	// author of the more data 
+	string			data;	// more data. recommended format: strigified JSON
+}
+```
+
 # EXAMPLES: how to use Simple Assets in smart contracts
 
 ## Creating Asset and transfer to owner account ownerowner22:
@@ -615,6 +639,12 @@ to be the main image.
 
 -----------------
 # Change Logs
+
+## Change Log v1.5.0
+
+- Added possibility to include SimpleAssets.hpp into other projects.  This helps developers to easily integrate Simple Assets into other contracts.
+- Added developers function sa_getnextid to easily get id of newly created assets.
+- Added more data functionality (actions mdremove, mdupdate, mdaddlog, mdadd). This offers a Simple Asset table which can store extra or repeating information for NFTs, and keep RAM usage to a minimum.
 
 ## Change Log v1.4.1
 
