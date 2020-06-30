@@ -1,6 +1,6 @@
 /*
  * @file
- * @author  (C) 2019 by CryptoLions [ https://CryptoLions.io ]
+ * @author  (C) 2020 by CryptoLions [ https://CryptoLions.io ]
  * @version 1.1.0
  *
  * @section LICENSE
@@ -628,17 +628,119 @@ CONTRACT SimpleAssets : public contract{
 		ACTION burnntt( name owner, vector< uint64_t >& assetids, string memo );
 		using burnntt_action = action_wrapper< "burnntt"_n, &SimpleAssets::burnntt >;
 
+		/*
+		* Add "more data" item.
+		*
+		* This action adds a "more data" record.  More data is an optional, on-chain way
+		* of storing additional data about NFTs
+		*
+		* @param author is a name of data author
+		* @param data is stringify json
+		* @return no return value.
+		*/
+		ACTION mdadd( name author, string data );
+		using mdadd_action = action_wrapper< "mdadd"_n, &SimpleAssets::mdadd >;
+
+		/*
+		* Create a new more data log entry. This is an internal action to provide id 
+		*
+		* This action can only be called by SimpleAsset contract. It creates an entry
+		* in transaction trace, so that that third party explorers can retrieve new ID and other
+		* information.
+		*
+		* @param id is id of more data
+		* @param author	is the more data author. This account is allowed to update the more data.
+		* @param data is stringified JSON string with more data. It can be changed only by author.
+		* @return no return value.
+		*/
+		ACTION mdaddlog( uint64_t id, name author, string data );
+		using mdaddlog_action = action_wrapper< "mdaddlog"_n, &SimpleAssets::mdaddlog >;
+
+		/*
+		* Update "more data" item.
+		*
+		* This action updates "more data" record by id
+		*
+		* @param id is id of more data
+		* @param author is author of data
+		* @param data is stringify json
+		* @return no return value.
+		*/
+		ACTION mdupdate( uint64_t id, name author, string data );
+		using mdupdate_action = action_wrapper< "mdupdate"_n, &SimpleAssets::mdupdate >;
+
+		/*
+		* Remove "more data" item.
+		*
+		* This action removes a "more data" record by id
+		*
+		* @param id is id of more data
+		* @return no return value.
+		*/
+		ACTION mdremove( uint64_t id );
+		using mdremove_action = action_wrapper< "mdremove"_n, &SimpleAssets::mdremove >;
+
+	public:
+		enum id_type { asset_id = 0, deferred_id = 1, offer_id = 2, md_id = 3 };
+
+		/*
+		* Validate id 
+		*
+		* Validate is id inside of allowed range ( asset_id = 0, deferred_id = 1, offer_id = 2, md_id = 3 )
+		*
+		* @param type is id number must be ( asset_id = 0, deferred_id = 1, offer_id = 2, md_id = 3 )
+		* @return id .
+		*/
+
+		static void checkid( uint64_t type ) {
+
+			check( false, "Wrong id_type. Value must be asset_id = 0, deferred_id = 1, offer_id = 2, md_id = 3. You entered: " + to_string( type ) );
+		}
+
+		/*
+		* Get next id
+		*
+		* sa_getnextid action to get next id, return id for a new asset or new fungible token or more data or deferred transaction id.
+		*
+		* @param sa_contract_name is Simple Assets contract name
+		* @param type is id number must be ( asset_id = 0, deferred_id = 1, offer_id = 2, md_id = 3 )
+		* @return id 
+		*/
+
+		static uint64_t sa_getnextid( name sa_contract_name, id_type type ) {
+
+			conf config( sa_contract_name, sa_contract_name.value );
+
+			global cstate = config.exists() ? config.get() : global{};
+
+			uint64_t result = 0;
+
+			switch ( type ) {
+			case asset_id:
+				result = cstate.lnftid + 1;
+				break;
+			case offer_id:
+			case deferred_id:
+				result = cstate.defid + 1;
+				break;
+			case md_id:
+				result = cstate.mdid + 1;
+				break;
+			default:
+				checkid( type );
+			}
+
+			return result;
+		}
+
 	private:
-		const uint8_t  FEE_PRECISION = 2;
-		const uint16_t FEE_PRECISION_AMOUNT = 100;
-		
 		/*
 		* List of authors that need double signatute owner and wet.wax@nftops
 		*/
 
 		const std::vector<name> waxauthors{ "vgo.wax"_n, "irl.wax"_n, "wax"_n };
 
-		name getPayer(name author, name originalPayer);
+		name getPayer( name author, name originalPayer );
 
 		/*
 		* Check wax authors double signature owner and wet.wax@nftops
@@ -648,15 +750,16 @@ CONTRACT SimpleAssets : public contract{
 		*/
 
 		void checkwaxauthor( name author );
+
 		/*
 		* Get new asset id.
 		*
 		* This function return new asset id.
 		*
-		* @param defer is flag for type of transaction true for defered;
+		* @param type is flag for type of transaction;
 		* @return new asset id
 		*/
-		uint64_t getid( bool defer = false );
+		uint64_t getid( id_type type );
 
 		/*
 		* Get fungible token index.
@@ -672,11 +775,12 @@ CONTRACT SimpleAssets : public contract{
 		void sub_balancef( name owner, name author, asset value );
 		void add_balancef( name owner, name author, asset value, name ram_payer );
 		void check_empty_vector( vector< uint64_t >& vector_ids, string vector_name = "assetids" );
-		std::string timeToWait(uint64_t time_in_seconds);
+		std::string timeToWait( uint64_t time_in_seconds );
 
 		template<typename... Args>
 		void sendEvent( name author, name rampayer, name seaction, const tuple<Args...> &tup );
 
+		public:
 		/*
 		* Authors table. Can be used by asset markets, asset explorers, or wallets for correct asset
 		* data presentation.
@@ -858,7 +962,7 @@ CONTRACT SimpleAssets : public contract{
 			> nttoffers;
 
 		/*
-		* Delegates table keeps records about borrowed assets.Scope: self
+		* Delegates table keeps records about borrowed assets. Scope: self
 		*/
 		TABLE sdelegate {
 			uint64_t		assetid;
@@ -885,20 +989,39 @@ CONTRACT SimpleAssets : public contract{
 		> delegates;
 
 		/*
+		* More data table where assets can store additional info to save RAM. Scope: self
+		*/
+		TABLE smoredata{
+			uint64_t		id;
+			name			author;
+			string			data;
+
+			auto primary_key() const {
+				return id;
+			}
+
+			uint64_t by_author() const {
+				return author.value;
+			}
+		};
+		typedef eosio::multi_index< "moredata"_n, smoredata	,
+			eosio::indexed_by< "author"_n, eosio::const_mem_fun< smoredata, uint64_t, &smoredata::by_author > >
+		> moredata;
+
+		/*
 		* global singelton table, used for assetid building. Scope: self
 		*/
 		TABLE global {
 			global() {}
 			uint64_t lnftid = 100000000000000;
 			uint64_t defid = 1000000;
-			uint64_t spare1 = 0;
+			uint64_t mdid = 100000000;
 			uint64_t spare2 = 0;
 
-			EOSLIB_SERIALIZE( global, ( lnftid )( defid )( spare1 )( spare2 ) )
+			EOSLIB_SERIALIZE( global, ( lnftid )( defid )( mdid )( spare2 ) )
 		};
 
 		typedef eosio::singleton< "global"_n, global > conf; /// singleton
-		global _cstate; /// global state
 
 		/*
 		* Helps external contracts parse actions and tables correctly (Usefull for decentralized exchanges,
@@ -912,4 +1035,8 @@ CONTRACT SimpleAssets : public contract{
 			string			version;
 		};
 		typedef singleton< "tokenconfigs"_n, tokenconfigs > Configs;
+
+		private:
+		moredata moredatat = { _self, _self.value };
+		global _cstate; /// global state
 };

@@ -1,13 +1,15 @@
 # SimpleAssets  
-*document version 1.4.1*
+*document version 24 June 2020*
 
 ## Scope:
-1. [Introduction](#introduction)
-2. [Contract actions](#contract-actions)
-3. [Data Structures](#data-structures)
-4. [EXAMPLES: how to use Simple Assets in smart contracts](#examples-how-to-use-simple-assets-in-smart-contracts)
-5. [AuthorReg](#authorreg)
-6. [ChangeLog](#change-logs)
+1. [Introduction](#introduction)   
+	- [Resources](#resources)   
+	- [Token Types](#token-types)   
+2. [Contract actions](#contract-actions)   
+3. [Data Structures](#data-structures)   
+4. [EXAMPLES: how to use Simple Assets in smart contracts](#examples-how-to-use-simple-assets-in-smart-contracts)   
+5. [AuthorReg](#authorreg)   
+6. [ChangeLog](#change-logs)   
 
 ---------------------------  
 
@@ -19,15 +21,6 @@ by [CryptoLions](https://CryptoLions.io)
 中文翻译: https://github.com/CryptoLions/SimpleAssets/blob/master/README_ZH.md  
 한국어 번역: https://github.com/CryptoLions/SimpleAssets/blob/master/README_KR.md  
 Español: https://github.com/CryptoLions/SimpleAssets/blob/master/README_ES.md  
-
-  
-web: http://simpleassets.io  
-Git: https://github.com/CryptoLions/SimpleAssets    
-Telegram: https://t.me/simpleassets  
-  
-Intro & Demos:  https://medium.com/@cryptolions/introducing-simple-assets-b4e17caafaa4  
-
-Events Receiver Example for authors: https://github.com/CryptoLions/SimpleAssets-EventReceiverExample   
 
 **WARNING** The minimum dependency on eosio.cdt is now v1.6.3.  
 
@@ -46,23 +39,54 @@ PROTON: **simpleassets**
   
 Simple Assets is a separate contract which other Dapps can call to manage their digital assets.  This serves as an additional guarantee to users of the Dapp that the ownership of assets is managed by a reputable outside authority, and that once created, the Dapp can only manage the asset's mdata.  All the ownership-related functionality exists outside the game.    
   
-We are in the process of creating a DAC which will curate updates to Simple Assets after deployment to the EOSIO mainnet.   
-  
 Related: understanding [ownership authority](https://medium.com/@cryptolions/digital-assets-we-need-to-think-about-ownership-authority-a2b0465c17f6).  
   
 To post information about your NFTs to third-party marketplaces, use the ```authorreg``` action.  
   
-Alternatively, dapps can Deploy their own copy of Simple Assets and make modifications to have greater control of functionality.  Before deploying, Simple Assets should be modified to prevent anyone from making assets.  
+Alternatively, dapps can Deploy their own copy of Simple Assets and make modifications to have greater control of functionality, however this may compromise compatibility with wallets and other EOSIO infrastructure.  Before deploying, Simple Assets should be modified to prevent anyone from making assets.  
+
+---------------------------  
+
+## Resources
+
+web: http://simpleassets.io  
+Git: https://github.com/CryptoLions/SimpleAssets    
+Telegram: https://t.me/simpleassets  
+  
+Intro & Demos:  https://medium.com/@cryptolions/introducing-simple-assets-b4e17caafaa4  
+
+**(important for developers)** A detailed description of each action parameter can be found here:  
+https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp  
+
+Events Receiver Example for authors: https://github.com/CryptoLions/SimpleAssets-EventReceiverExample    
+
 
 ---------------------------
-## RAM usage
+## Token Types
 
-The RAM usage for NFTs depends on how much data is stored in the idata and mdata fields.  If they both empty, each NFT takes up `276 bytes`.
+
+### Non-Fungible Tokens (FTs)
+
+NFTs are the most common type of digital assets.  They are used to express unique tokens.  
+
+#### NFT Structure
+
+Simple Asset NFTs are divided into **mdata** (data which the author can update at any time, regardless of ownership), and **idata** (data which is set upon the NFT's creation and can never be updated).
+
+Both are stringified JSONs.  For example: `{\"key1\":\"some-string\", \"key2\":5}`
+
+**Category** is an optional field that lets you group your NFTs for convenience.  Category names must be less than or equal to 12 characters (a-z, 1-5).
+
+**Offer/Claim** versus **Transfer** - If you transfer an NFT, the sender pays for RAM.  As an alternative, you can simply offer the NFT, and the user claiming will pay for their RAM.  *(Note: we are working toward a feature that allows NFT authors to reserve a lot of RAM which will spare users for paying for transfers.)*
+
+#### RAM usage
+
+RAM usage for NFTs depends on how much data is stored in the idata and mdata fields.  If they both empty, each NFT takes up `276 bytes`.
 
 Each symbol in idata and mdata is +1 byte.
 
----------------------------
-## Fungible Tokens (FTs)
+
+### Fungible Tokens (FTs)
 
 Dapps which need Fungible tokens should decide between using the standard eosio.token contract, and the Simple Assets contract.  Here are the differences:
 
@@ -75,9 +99,10 @@ In Simple Assets,
 * The table which tracks FTs includes the author's account name, allowing different dapps to have FTs with the 
 	   same name.  (Example: https://bloks.io/contract?tab=Tables&table=accounts&account=simpleassets&scope=bohdanbohdan&limit=100)
 
+*(Note: Fungible Tokens also have **offer/claim** functionality as an alternative to **transfers**.  For FTs, the only time the sender would pay for RAM would be if the receiver never before held those FTs.  It uses approximately 300 bytes to create the FT table.)*
 
----------------------------
-## Non-Transferrable Tokens (NTTs)
+
+### Non-Transferrable Tokens (NTTs)
 
 The two most likely use cases for NTTs are 
 
@@ -97,7 +122,7 @@ More on NTTs: https://medium.com/@cryptolions/introducing-non-transferable-token
 A description of each parameter can be found here:  
 https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp  
 
-```
+```bash
 authorreg		( name author, string dappinfo, string fieldtypes, string priorityimg )
 authorupdate		( name author, string dappinfo, string fieldtypes, string priorityimg )
 
@@ -123,6 +148,11 @@ authorupdate		( name author, string dappinfo, string fieldtypes, string priority
  attachf		(owner, author, quantity, assetidc)
  detachf		(owner, author, quantity, assetidc)
  
+ mdadd			(author, data)
+ mdupdate		(id, author, data) 
+ mdremove		(id)
+ mdaddlog		(id, author, data)
+
  # -- For Fungible Tokens (FTs) ---
  
  createf		(author, maximum_supply, authorctrl, data)
@@ -149,15 +179,20 @@ authorupdate		( name author, string dappinfo, string fieldtypes, string priority
 
 # Data Structures  
 ## Assets  
-```
+```c++
 sasset {  
 	uint64_t	id; 		// asset id used for transfer and search;  
 	name		owner;  	// asset owner (mutable - by owner!!!);  
 	name		author;		// asset author (game contract, immutable);  
 	name		category;	// asset category, chosen by author, immutable;  
-	string		idata;		// immutable assets data. Can be stringified JSON or just sha256 string;  
+	string		idata;		// immutable assets data. Can be stringified JSON (recommended) 
+					// or just sha256 string;  
 	string		mdata;		// mutable assets data, added on creation or asset update by author. Can be  
-					// stringified JSON or just sha256 string;  
+					// stringified JSON (recommended) or just sha256 string;  
+					// using a format other than stringified JSON will not interfere with 
+					// simple asset functionality, but will harm compatibility with third party
+					// explorers attempting to diplay the asset
+
 	sasset[]	container;	// other NFTs attached to this asset
 	account[]	containerf;	// FTs attached to this asset
 }  
@@ -168,7 +203,7 @@ To help third party asset explorers, we recommend including the following fields
 
 
 ## Offers  
-```
+```c++
 offers {  
 	uint64_t	assetid;	// asset id offered for claim ; 
 	name		owner;		// asset owner;  
@@ -178,7 +213,7 @@ offers {
 ```
 
 ## Authors  
-```
+```c++
 authors {  
 	name	author;			// assets author, who will be able to create and update assets;  
 
@@ -215,12 +250,12 @@ authors {
 ```
 
 ## Delegates  
-```
+```c++
 delegates{  
 	uint64_t	assetid;		// asset id offered for claim;  
 	name		owner;			// asset owner;  
 	name		delegatedto;		// who can claim this asset;  
-	uint64_t	cdate;			// offer create date;  
+	uint64_t	cdate;			// offer create date;   
 	uint64_t	period;			// Time in seconds that the asset will be lent. Lender cannot undelegate until 
 						// the period expires, however the receiver can transfer back at any time.
 	bool 		redelegate;		// redelegate is allow more redelegate for to account or not.
@@ -230,7 +265,7 @@ delegates{
 ```
 
 ## Currency Stats (Fungible Token)
-```
+```c++
 stat {  
 	asset		supply;		// Tokens supply 
 	asset		max_supply;	// Max token supply
@@ -242,7 +277,7 @@ stat {
 ```
 
 ## Account (Fungible Token)  
-```
+```c++
 accounts {  
 	uint64_t	id;		// token id, from stat table
 	name		author;		// token author
@@ -250,7 +285,7 @@ accounts {
 }  
 ```
 
-```
+```c++
 offerfs {
 	uint64_t	id;		// id of the offer for claim (increments automatically) 
 	name		author;		// ft author
@@ -263,19 +298,23 @@ offerfs {
   
 
 ## NTT  
-```
+```c++
 snttassets {  
 	uint64_t	id; 		// NTT id used for claim or burn;  
 	name		owner;  	// asset owner (mutable - by owner!!!);  
 	name		author;		// asset author (game contract, immutable);  
 	name		category;	// asset category, chosen by author, immutable;  
-	string		idata;		// immutable assets data. Can be stringified JSON or just sha256 string;  
+	string		idata;		// immutable assets data. Can be stringified JSON (recommended) 
+					// or just sha256 string;  
 	string		mdata;		// mutable assets data, added on creation or asset update by author. Can be  
-					// stringified JSON or just sha256 string;  
+					// stringified JSON (recommended) or just sha256 string;  
+					// using a format other than stringified JSON will not interfere with 
+					// simple asset functionality, but will harm compatibility with third party
+					// explorers attempting to diplay the asset
 }  
 ```
   
-```
+```c++
 nttoffers {
 	uint64_t	id;		// id of the offer for claim (increments automatically) 
 	name		author;		// ft author
@@ -285,11 +324,21 @@ nttoffers {
 	uint64_t	cdate;		// offer creation date
 }
 ```    
-  
+
+
+## More Data 
+```c++
+moredata{
+	uint64_t		id;	// id of the more data 
+	name			author;	// author of the more data 
+	string			data;	// more data. recommended format: strigified JSON
+}
+```
+
 # EXAMPLES: how to use Simple Assets in smart contracts
 
 ## Creating Asset and transfer to owner account ownerowner22:
-```
+```c++
 name SIMPLEASSETSCONTRACT = "simpleassets"_n;
 
 name author = get_self();
@@ -308,7 +357,7 @@ createAsset.send();
 ```
 
 ## Creating Asset with requireclaim option for ownerowner22:
-```
+```c++
 name SIMPLEASSETSCONTRACT = "simpleassets"_n;
 
 name author = get_self();
@@ -330,7 +379,7 @@ createAsset.send();
 ## Search asset and get assets info
 1. Please add in your hpp file info about assets structure 
 
-```
+```c++
 TABLE account {
 	uint64_t	id;
 	name		author;
@@ -368,7 +417,7 @@ typedef eosio::multi_index< "sassets"_n, sasset,
 ```
 
 2. Searching and using info
-```
+```c++
 name SIMPLEASSETSCONTRACT = "simpleassets"_n;
 name author = get_self();
 name owner = "lioninjungle"_n;
@@ -389,7 +438,7 @@ check(mdata["cd"] < now(), "Not ready yet for usage");
 ```
 
 ## Update Asset
-```
+```c++
 name SIMPLEASSETSCONTRACT = "simpleassets"_n;
 
 auto mdata = json::parse(idxp->mdata);
@@ -409,34 +458,39 @@ saUpdate.send();
 ```
 
 ## Transfer one Asset
-```
+```c++
 name SIMPLEASSETSCONTRACT = "simpleassets"_n;
 
 name author = get_self();
 name from = "lioninjungle"_n;
 name to = "ohtigertiger"_n;
+
+uint64_t assetid = 100000000000187;
 
 std::vector<uint64_t> assetids;
 assetids.push_back(assetid);
 
 string memo = "Transfer one asset";
 
-action saUpdate = action(
-	permission_level{author, "active"_n},
+action saTransfer = action(
+	permission_level{from, "active"_n},
 	SIMPLEASSETSCONTRACT,
 	"transfer"_n,
 	std::make_tuple(from, to, assetids, memo)
 );
-saUpdate.send();
+saTransfer.send();
 ```
 
 ## Transfer two Asset to same receiver with same memo  
-```
+```c++
 name SIMPLEASSETSCONTRACT = "simpleassets"_n;
 
 name author = get_self();
 name from = "lioninjungle"_n;
 name to = "ohtigertiger"_n;
+
+uint64_t assetid1 = 100000000000187;
+uint64_t assetid2 = 100000000000188;
 
 std::vector<uint64_t> assetids;
 assetids.push_back(assetid1);
@@ -444,17 +498,40 @@ assetids.push_back(assetid2);
 
 string memo = "Transfer two asset"
 
-action saUpdate = action(
-	permission_level{author, "active"_n},
+action saTransfer = action(
+	permission_level{from, "active"_n},
 	SIMPLEASSETSCONTRACT,
 	"transfer"_n,
 	std::make_tuple(from, to, assetids, memo)
 );
-saUpdate.send();
+saTransfer.send();
+```
+
+## Burn Assets
+```c++
+name SIMPLEASSETSCONTRACT = "simpleassets"_n;
+
+name owner = "lioninjungle"_n;
+uint64_t assetid1 = 100000000000187;
+uint64_t assetid2 = 100000000000188;
+
+std::vector<uint64_t> assetids;
+assetids.push_back(assetid1);
+assetids.push_back(assetid2);
+
+string memo = "Transfer two asset"
+
+action saBurn = action(
+	permission_level{owner, "active"_n},
+	SIMPLEASSETSCONTRACT,
+	"transfer"_n,
+	std::make_tuple(owner, assetids, memo)
+);
+saBurn.send();
 ```
 
 ## issuef (fungible) issue created token
-```
+```c++
 name SIMPLEASSETSCONTRACT = "simpleassets"_n;
 
 asset wood;
@@ -475,7 +552,7 @@ saRes1.send();
 ```
 
 ## transferf (fungible) by author if authorctrl is enabled
-```
+```c++
 name SIMPLEASSETSCONTRACT = "simpleassets"_n;
 
 asset wood;
@@ -488,7 +565,7 @@ name author = get_self();
 
 std::string memo = "best WOOD";
 action saRes1 = action(
-	permission_level{author, "active"_n},
+	permission_level{from, "active"_n},
 	SIMPLEASSETSCONTRACT,
 	"transferf"_n,
 	std::make_tuple(from, to, author, wood, memo)
@@ -497,7 +574,7 @@ saRes1.send();
 ```
 
 ## burnf (fungible) by author if authorctrl is enabled
-```
+```c++
 name SIMPLEASSETSCONTRACT = "simpleassets"_n;
 
 asset wood;
@@ -523,35 +600,22 @@ saRes1.send();
 ## authorreg action
 Authors can register in the authorreg table to communicate with third party asset explorers, wallets, and marketplaces.
 
-```
+```c++
 ACTION authorreg( name author, string dappinfo, string fieldtypes, string priorityimg );
 ```
 
 @param **author**     is author's account who will create assets.
 
 @param **dappinfo**   is stringified JSON. Recommendations to include: 
-	name	 		- name of the application
-	company 		- name of the company
-	logo 			- url to image 
-	url 			- url to the game's websites
-	info			- short description of application
- 	defaultfee 		- 100x the % fee you'd like to collect from marketplaces.  (for 2%, 200)
+	name	 		- name of the application  
+	company 		- name of the company   
+	logo 			- url to image    
+	url 			- url to the game's websites    
+	info			- short description of application   
+ 	defaultfee 		- 100x the % fee you'd like to collect from marketplaces.  (for 2%, 200)    
 
-@param **fieldtypes** is stringified JSON with key:state values, where key is key from mdata or idata and
-state indicates recommended way of displaying the field. Recommended values:
-	txt		- text (default)
-	url		- show as clickable URL
-	img		- link to img file
-	webgl		- link to webgl file
-	mp3		- link to mp3 file
-	video		- link to video file
-	hide		- do not show
-	imgb 		- image as string in binary format
-	webglb		- webgl binary
-	mp3b 		- mp3 binary
-	videob 		- video binary
-	timestamp	- unix timestamp in seconds
-	ipfs		- ipfs link
+@param **fieldtypes** is stringified JSON with key:state values, where key is key from mdata or idata and 
+state indicates recommended way of displaying the field. For the latest recommended values, please see [https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp](https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp).  
 
 @param **priorityimg** is JSON which assosiates an NFT category with the field name from idata or mdata
 that specifies the main image field for that category of NFTs.  This is probably a rare use case and
@@ -559,21 +623,28 @@ can be left blank.  If you wanted a category of NFTs to have a main image field 
 you'd use "CATEGORY":"otherfieldname".  Most likely use case is if you wanted webgls or some other format
 to be the main image.
 
+
 ## Cleos examples of authorreg and authorupdate
 
 
 ### authorreg
-```
+```bash
 ./cleos.sh.jungle push action simpleassets authorreg '["ilovekolobok", "{\"name\": \"Kolobok Breeding Game\", \"company\": \"CryptoLions\", \"info\": \"Breed your Kolobok\", \"logo\": \"https://imgs.cryptolions.io/logo_256.png\", \"url\": \"https://kolobok.io\", \"defaultfee\":200}", "{\"bdate\":\"timestamp\"},{\"cd\":\"timestamp\"},{\"img\":\"img\"},{\"st\":\"hide\"},{\"url\":\"url\"}", "{\"kolobok\":\"img\"},{\"*\":\"img\"}" ]' -p ilovekolobok
 ```
 
 ### authorupdate
-```
+```bash
 ./cleos.sh.jungle push action simpleassets authorupdate '["ilovekolobok", "{\"name\": \"Kolobok Breeding Game\", \"company\": \"CryptoLions\", \"info\": \"Breed your Kolobok\", \"logo\": \"https://imgs.cryptolions.io/logo_256.png\", \"url\": \"https://kolobok.io\", \"defaultfee\":200}", "{\"bdate\":\"timestamp\"},{\"cd\":\"timestamp\"},{\"img\":\"img\"},{\"st\":\"hide\"},{\"url\":\"url\"}", "{\"kolobok\":\"img\"},{\"*\":\"img\"}" ]' -p ilovekolobok
 ```
 
 -----------------
 # Change Logs
+
+## Change Log v1.5.0
+
+- Added possibility to include SimpleAssets.hpp into other projects.  This helps developers to easily integrate Simple Assets into other contracts.
+- Added developers function sa_getnextid to easily get id of newly created assets.
+- Added more data functionality (actions mdremove, mdupdate, mdaddlog, mdadd). This offers a Simple Asset table which can store extra or repeating information for NFTs, and keep RAM usage to a minimum.
 
 ## Change Log v1.4.1
 

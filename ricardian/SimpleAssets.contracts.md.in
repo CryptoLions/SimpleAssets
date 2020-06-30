@@ -662,3 +662,72 @@ TERM
 This Contract expires at the conclusion of code execution.
 by CryptoLions [ https://cryptolions.io ]
 
+<h1 class="contract"> mdadd </h1>
+
+---
+spec_version: 0.0.2
+title: Create new more date
+summary: Create new more date
+icon: https://cryptolions.io/assets/images/sa-icons-256/update.png#305b640fe614876c6e6f5fed5ac21f8157c80f7bee39f3db26228986c1fc5e0e
+---
+
+Input parameters:
+`author`  - authors account;
+`data`   - stringified json with mutable assets data;
+
+TERM
+This Contract expires at the conclusion of code execution.
+by CryptoLions [ https://cryptolions.io ]
+
+<h1 class="contract"> mdaddlog </h1>
+
+---
+spec_version: 0.0.2
+title: Internal action used for creating log
+summary: Internal action used for creating log
+icon: https://cryptolions.io/assets/images/sa-icons-256/update.png#305b640fe614876c6e6f5fed5ac21f8157c80f7bee39f3db26228986c1fc5e0e
+---
+
+Input parameters:
+`id` - is id of more data;
+`author` - authors account;
+`data` - stringified json with mutable assets data;
+
+TERM
+This Contract expires at the conclusion of code execution.
+by CryptoLions [ https://cryptolions.io ]
+
+<h1 class="contract"> mdupdate </h1>
+
+---
+spec_version: 0.0.2
+title: Update existing more data
+summary: Update existing more data
+icon: https://cryptolions.io/assets/images/sa-icons-256/update.png#305b640fe614876c6e6f5fed5ac21f8157c80f7bee39f3db26228986c1fc5e0e
+---
+
+Input parameters:
+`id` - is id of more data;
+`author` - authors account;
+`data` - stringified json with mutable assets data;
+
+TERM
+This Contract expires at the conclusion of code execution.
+by CryptoLions [ https://cryptolions.io ]
+
+<h1 class="contract"> mdremove </h1>
+
+---
+spec_version: 0.0.2
+title: Update existing more data
+summary: Update existing more data
+icon: https://cryptolions.io/assets/images/sa-icons-256/update.png#305b640fe614876c6e6f5fed5ac21f8157c80f7bee39f3db26228986c1fc5e0e
+---
+
+Input parameters:
+`id` - is id of more data;
+
+TERM
+This Contract expires at the conclusion of code execution.
+by CryptoLions [ https://cryptolions.io ]
+

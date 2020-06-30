@@ -90,7 +90,7 @@ ACTION SimpleAssets::create( name author, name category, name owner, string idat
 	require_auth( author );
 	check( is_account( owner ), "owner account does not exist" );
 	require_recipient( owner );
-	const auto newID = getid();
+	const auto newID = getid( asset_id );
 	name assetOwner = owner;
 	check( !( author.value == owner.value && requireclaim == 1 ), "Can't requireclaim if author == owner." );
 
@@ -554,7 +554,7 @@ ACTION SimpleAssets::createf( name author, asset maximum_supply, bool authorctrl
 		s.supply.symbol = maximum_supply.symbol;
 		s.max_supply    = maximum_supply;
 		s.issuer        = author;
-		s.id            = getid();
+		s.id            = getid( asset_id );
 		s.authorctrl    = authorctrl;
 		s.data          = data;
 	});
@@ -664,7 +664,7 @@ ACTION SimpleAssets::offerf( name owner, name newowner, name author, asset quant
 	}
 
 	offert.emplace( owner, [&]( auto& s ) {
-		s.id        = getid( true );
+		s.id        = getid( offer_id );
 		s.author    = author;
 		s.quantity  = quantity;
 		s.offeredto = newowner;
@@ -764,24 +764,33 @@ ACTION SimpleAssets::closef( name owner, name author, const symbol& symbol ) {
 	acnts.erase( it );
 }
 
-uint64_t SimpleAssets::getid( bool defer ) {
+uint64_t SimpleAssets::getid( id_type type ) {
 
-	// getid private action Increment, save and return id for a new asset or new fungible token.
-	conf config( _self, _self.value );
+	conf config(get_self(), get_self().value);
+
 	_cstate = config.exists() ? config.get() : global{};
 
-	uint64_t resid;
-	if ( defer ) {
-		_cstate.defid++;
-		resid = _cstate.defid;
-	}
-	else {
-		_cstate.lnftid++;
-		resid = _cstate.lnftid;
+	uint64_t result = 0;
+	
+	switch ( type ) {
+	case asset_id:
+		result = ++_cstate.lnftid;
+		break;
+	case offer_id:
+	case deferred_id:
+		result = ++_cstate.defid;
+		break;
+	case md_id:
+		if ( _cstate.mdid < 100000000 )
+			_cstate.mdid = 100000000;
+		result = ++_cstate.mdid;
+		break;
+	default:
+		checkid( type );
 	}
 
 	config.set( _cstate, _self );
-	return resid;
+	return result;
 }
 
 uint64_t SimpleAssets::getFTIndex( name author, symbol symbol ) {
@@ -902,7 +911,7 @@ ACTION SimpleAssets::createntt( name author, name category, name owner, string i
 	require_auth( author );
 	check( is_account( owner ), "owner account " + owner.to_string() + " does not exist" );
 	require_recipient( owner );
-	const auto newID = getid();
+	const auto newID = getid( asset_id );
 	name assetOwner = owner;
 	check( !( author.value == owner.value && requireclaim == 1 ), "Can't requireclaim if author == owner." );
 
@@ -970,7 +979,7 @@ ACTION SimpleAssets::claimntt( name claimer, vector<uint64_t>& assetids ) {
 
 		auto itr = assets_owner.require_find( assetids[i], string("Cannot find asset id: " + to_string( assetids[i] ) + " that you're attempting to claim at scope: " + itrc->owner.to_string()).c_str() );
 
-		check( itrc->owner.value == itr->owner.value, "Owner was changed for asset id:" + to_string(assetids[i]) + " .Owner at offers:" + itrc->owner.to_string() + " . Owner at assets: " + itr->owner.to_string() );
+		check( itrc->owner.value == itr->owner.value, "Owner was changed for asset id:" + to_string( assetids[i] ) + " .Owner at offers:" + itrc->owner.to_string() + " . Owner at assets: " + itr->owner.to_string() );
 
 		assets_claimer.emplace( claimer, [&](auto& s) {
 			s.id       = itr->id;
@@ -1023,13 +1032,56 @@ ACTION SimpleAssets::burnntt( name owner, vector<uint64_t>& assetids, string mem
 	//}
 }
 
+ACTION SimpleAssets::mdadd( name author, string data ) {
+	require_auth( author );
+	require_recipient( author );
+
+	const auto newID = getid( md_id );
+
+	moredatat.emplace( author, [&](auto& s) {
+		s.id     = newID;
+		s.author = author;
+		s.data   = data;
+	});
+
+	SEND_INLINE_ACTION(*this, mdaddlog, { {_self, "active"_n} }, { newID, author, data });
+}
+
+ACTION SimpleAssets::mdupdate( uint64_t id, name author, string data ) {
+	require_auth( author );
+	require_recipient( author );
+
+	auto itr = moredatat.require_find( id, string( "More data item with id: " + to_string( id ) + " was not found" ).c_str() );
+
+	check( itr->author == author, "Only author " + itr->author.to_string() + " can update more data. You entered author " + author.to_string() );
+
+	moredatat.modify( itr, author, [&](auto& s) {
+		s.author = author;
+		s.data   = data;
+	});
+}
+
+ACTION SimpleAssets::mdremove( uint64_t id ) {
+
+	auto itr = moredatat.require_find( id, string( "More data item with id: " + to_string( id ) + " was not found." ).c_str() );
+
+	require_auth( itr->author );
+	require_recipient( itr->author );
+
+	moredatat.erase( itr );
+}
+
+ACTION SimpleAssets::mdaddlog( uint64_t id, name author, string data ) { 
+	require_auth(get_self());
+}
+
 template<typename... Args>
 void SimpleAssets::sendEvent( name author, name rampayer, name seaction, const tuple<Args...> &adata ) 
 {
 	transaction sevent{};
 	sevent.actions.emplace_back( permission_level{ _self, "active"_n }, author, seaction, adata );
 	sevent.delay_sec = 0;
-	sevent.send( getid(true), rampayer );
+	sevent.send( getid( deferred_id ), rampayer );
 }
 
 asset SimpleAssets::get_supply( name token_contract_account, name author, symbol_code sym_code ) {
@@ -1060,7 +1112,8 @@ EOSIO_DISPATCH( SimpleAssets, ( create )( createlog )( transfer )( burn )( updat
 ( createf )( updatef )( issuef )( transferf )( burnf )
 ( offerf )( cancelofferf )( claimf )
 ( attachf )( detachf )( openf )( closef )
-( updatever )  ( createntt ) ( burnntt ) ( createnttlog ) ( claimntt ) ( updatentt ) ( changeauthor ) )
+( updatever )( createntt )( burnntt )( createnttlog )( claimntt )( updatentt )( changeauthor ) 
+( mdadd )( mdupdate )( mdremove )( mdaddlog ) )
 
 
 //============================================================================================================

@@ -127,6 +127,11 @@ detach (owner, assetidc, [assetid1,..,assetidn])
 attachf (owner, author, quantity, assetidc)
 detachf (owner, author, quantity, assetidc)
 
+mdadd (author, data)
+mdupdate (id, author, data) 
+mdremove (id)
+mdaddlog (id, author, data)
+
 \# -- For Fungible Tokens (FTs)---
 
 createf (author, maximum_supply, authorctrl, data)
@@ -306,7 +311,14 @@ nttoffers {
     uint64_t    cdate;      // offer 的创建日期
 }
 ```
-
+## More Data 
+```
+moredata{
+	uint64_t		id;		// id of the more data 
+	name			author;	// author of the more data 
+	string			data;	// more data
+}
+```
 ---
 # 示例:如何在智能合约中使用简单资产
 

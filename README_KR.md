@@ -87,6 +87,11 @@ detach  		(owner, assetidc, [assetid1,..,assetidn])
 attachf  		(owner, author, quantity, assetidc)
 detachf  		(owner, author, quantity, assetidc)
 
+mdadd			(author, data)
+mdupdate		(id, author, data) 
+mdremove		(id)
+mdaddlog		(id, author, data)
+
 # -- For Fungible Tokens ---
 
 createf  		(author, maximum_supply, authorctrl, data)
@@ -102,6 +107,13 @@ claimf 			(claimer, [ftofferid1,...,ftofferidn])
 openf  			(owner, author, symbol, ram_payer)
 closef  		(owner, author, symbol)
 ```
+
+ # -- For Non-Transferable Tokens (NTTs) ---
+
+createntt		(author, category, owner, idata, mdata, requireсlaim)  
+updatentt		(author, owner, assetid, mdata)  
+burnntt		(owner, [assetid1,..,assetidn], memo)  
+claimntt		(claimer, [assetid1,..,assetidn]) 
 
 # 데이터  구조
 
@@ -191,6 +203,39 @@ sofferf {
 	asset		quantity;	// 수량
 	name		offeredto;	// 오퍼를 클레임할 수 있는 계정
 	uint64_t	cdate;		// 오퍼 생성일
+}
+```
+
+## NTT  
+```
+snttassets {  
+	uint64_t	id; 		// NTT id used for claim or burn;  
+	name		owner;  	// asset owner (mutable - by owner!!!);  
+	name		author;		// asset author (game contract, immutable);  
+	name		category;	// asset category, chosen by author, immutable;  
+	string		idata;		// immutable assets data. Can be stringified JSON or just sha256 string;  
+	string		mdata;		// mutable assets data, added on creation or asset update by author. Can be  
+					// stringified JSON or just sha256 string;  
+}  
+```
+  
+```
+nttoffers {
+	uint64_t	id;		// id of the offer for claim (increments automatically) 
+	name		author;		// ft author
+	name		owner;		// ft owner
+	asset		quantity;	// quantity
+	name		offeredto;	// account who can claim the offer
+	uint64_t	cdate;		// offer creation date
+}
+```    
+
+## More Data 
+```
+moredata{
+	uint64_t		id;		// id of the more data 
+	name			author;	// author of the more data 
+	string			data;	// more data
 }
 ```
 
