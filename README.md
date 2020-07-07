@@ -1,5 +1,5 @@
 # SimpleAssets  
-*document version 24 June 2020*
+*document version 7 July 2020*
 
 ## Scope:
 1. [Introduction](#introduction)   
@@ -35,6 +35,7 @@ WAX: **simpleassets**
 MEETONE: **smplassets.m**  
 TELOS: **simpleassets**  
 PROTON: **simpleassets**
+EUROPECHAIN: **simpleassets**
 
   
 Simple Assets is a separate contract which other Dapps can call to manage their digital assets.  This serves as an additional guarantee to users of the Dapp that the ownership of assets is managed by a reputable outside authority, and that once created, the Dapp can only manage the asset's mdata.  All the ownership-related functionality exists outside the game.    
@@ -639,6 +640,13 @@ to be the main image.
 
 -----------------
 # Change Logs
+
+## Change Log v1.5.1
+- Added burnlog, burnflog, burnnttlog added
+- Added restriction for burning asset with assets attached in container
+- Added restriction to attach to delegated assets
+- Code improvement
+- SAE notification temporary disabled
 
 ## Change Log v1.5.0
 

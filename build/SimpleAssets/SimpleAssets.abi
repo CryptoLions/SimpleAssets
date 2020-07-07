@@ -146,7 +146,65 @@
             ]
         },
         {
+            "name": "burnflog",
+            "base": "",
+            "fields": [
+                {
+                    "name": "from",
+                    "type": "name"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "burnlog",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "assetids",
+                    "type": "uint64[]"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
             "name": "burnntt",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "assetids",
+                    "type": "uint64[]"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "burnnttlog",
             "base": "",
             "fields": [
                 {
@@ -1116,9 +1174,24 @@
             "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Burns a fungible token\nsummary: Burns a fungible token\nicon: https://cryptolions.io/assets/images/sa-icons-256/burn.png#76954820d84563187e968b461a706ab089a9c00f5332df96a4e5bb2e69ed5e84\n---\n\nThis action is available for the token owner and author. After executing, accounts balance and supply in stats table for this token will reduce by the specified quantity\n\nInput parameters:\n`from`     - account who burns the token;\n`author`   - account of fungible token author;\n`quantity` - amount to burn, example \"1.00 WOOD\";\n`memo`     - memo for burnf action;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
         },
         {
+            "name": "burnflog",
+            "type": "burnflog",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: burnflog (internal)\nsummary: burnflog (internal) \nicon: https://cryptolions.io/assets/images/sa-icons-256/burn.png#76954820d84563187e968b461a706ab089a9c00f5332df96a4e5bb2e69ed5e84\n---"
+        },
+        {
+            "name": "burnlog",
+            "type": "burnlog",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: burnlog (internal)\nsummary: burnlog (internal) \nicon: https://cryptolions.io/assets/images/sa-icons-256/burn.png#76954820d84563187e968b461a706ab089a9c00f5332df96a4e5bb2e69ed5e84\n---"
+        },
+        {
             "name": "burnntt",
             "type": "burnntt",
             "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Burn non transferable asset\nsummary: Burn non transferable asset\nicon: https://cryptolions.io/assets/images/sa-icons-256/burn.png#76954820d84563187e968b461a706ab089a9c00f5332df96a4e5bb2e69ed5e84\n---\n\nThis action is only available for the asset owner. After executing, the asset will disappear forever, and RAM used for asset will be released.\n\nInput parameters:\n`owner`    - current asset owner account;\n`assetids` - array of assetid's to burn;\n`memo`     - memo for burn action;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "burnnttlog",
+            "type": "burnnttlog",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: burnnttlog (internal)\nsummary: burnnttlog (internal) \nicon: https://cryptolions.io/assets/images/sa-icons-256/burn.png#76954820d84563187e968b461a706ab089a9c00f5332df96a4e5bb2e69ed5e84\n---"
         },
         {
             "name": "canceloffer",
