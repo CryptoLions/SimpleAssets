@@ -187,6 +187,55 @@ CONTRACT SimpleAssets : public contract{
 		using createlog_action = action_wrapper< "createlog"_n, &SimpleAssets::createlog >;
 
 		/*
+		* Create a new log entry for burn action.
+		*
+		* This action is doeing nothing, and it can only be called by SimpleAsset contract. It creates an entry
+		* in transaction trace, so that that third party explorers can retrieve burn asset IDs and other
+		* information.
+		*
+		* @param owner is current asset owner.
+		* @param assetids is array of asset id's to burn.
+		* @param memo is burn comment.
+		* @return no return value.
+		*/
+
+		ACTION burnlog( name owner, vector<uint64_t>& assetids, string memo );
+		using burnlog_action = action_wrapper< "burnlog"_n, &SimpleAssets::burnlog >;
+
+		/*
+		* Create a new log entry for burnnttlog action.
+		*
+		* This action is doeing nothing, and it can only be called by SimpleAsset contract. It creates an entry
+		* in transaction trace, so that that third party explorers can retrieve burn asset IDs and other
+		* information.
+		*
+		* @param owner is current asset owner.
+		* @param assetids is array of asset id's to burnnttlog.
+		* @param memo is burnnttlog comment.
+		* @return no return value.
+		*/
+
+		ACTION burnnttlog( name owner, vector<uint64_t>& assetids, string memo );
+		using burnnttlog_action = action_wrapper< "burnnttlog"_n, &SimpleAssets::burnnttlog >;
+
+		/*
+		* Create a new log entry for burnflog action.
+		*
+		* This action is doeing nothing, and it can only be called by SimpleAsset contract. It creates an entry
+		* in transaction trace, so that that third party explorers can retrieve burn asset IDs and other
+		* information.
+		*
+		* @param from is account that burns the token.
+		* @param author is account of fungible token author.
+		* @param quantity is amount to burn, example "1.00 WOOD".
+		* @param memo is memo for burnf action.
+		* @return no return value.
+		*/
+
+		ACTION burnflog( name from, name author, asset quantity, string memo );
+		using burnflog_action = action_wrapper< "burnflog"_n, &SimpleAssets::burnflog >;
+
+		/*
 		* Claim asset.
 		*
 		* This action claims the specified assets (assuming they were offered to claimer by the asset owner).
@@ -548,7 +597,6 @@ CONTRACT SimpleAssets : public contract{
 		* @return asset
 		*/
 		static asset get_balance( name token_contract_account, name owner, name author, symbol_code sym_code );
-
 
 		/*
 		* This action create a new Non transferable token (NTT).
@@ -1037,6 +1085,12 @@ CONTRACT SimpleAssets : public contract{
 		typedef singleton< "tokenconfigs"_n, tokenconfigs > Configs;
 
 		private:
-		moredata moredatat = { _self, _self.value };
+		moredata moredatat	= { _self, _self.value };
+		offers offert		= { _self, _self.value };
+		offerfs offerft		= { _self, _self.value };
+		delegates delegatet	= { _self, _self.value };
+		authors authort		= { _self, _self.value };
+		nttoffers nttoffert	= { _self, _self.value };
+
 		global _cstate; /// global state
 };

@@ -640,6 +640,13 @@ to be the main image.
 -----------------
 # Change Logs
 
+## Change Log v1.5.1
+- Added burnlog, burnflog, burnnttlog added
+- Added restriction for burning asset with assets attached in container
+- Added restriction to attach to delegated assets
+- Code improvement
+- SAE notification temporary disabled
+
 ## Change Log v1.5.0
 
 - Added possibility to include SimpleAssets.hpp into other projects.  This helps developers to easily integrate Simple Assets into other contracts.

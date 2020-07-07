@@ -576,6 +576,33 @@ summary: createlog (internal)
 icon: https://cryptolions.io/assets/images/sa-icons-256/claimf.png#80086207646470fa9cbaf4638ba0dedec96ea0e84d5059b567adc9e4b8543c30
 ---
 
+<h1 class="contract"> burnlog </h1>
+
+---
+spec_version: 0.0.2
+title: burnlog (internal)
+summary: burnlog (internal) 
+icon: https://cryptolions.io/assets/images/sa-icons-256/burn.png#76954820d84563187e968b461a706ab089a9c00f5332df96a4e5bb2e69ed5e84
+---
+
+<h1 class="contract"> burnflog </h1>
+
+---
+spec_version: 0.0.2
+title: burnflog (internal)
+summary: burnflog (internal) 
+icon: https://cryptolions.io/assets/images/sa-icons-256/burn.png#76954820d84563187e968b461a706ab089a9c00f5332df96a4e5bb2e69ed5e84
+---
+
+<h1 class="contract"> burnnttlog </h1>
+
+---
+spec_version: 0.0.2
+title: burnnttlog (internal)
+summary: burnnttlog (internal) 
+icon: https://cryptolions.io/assets/images/sa-icons-256/burn.png#76954820d84563187e968b461a706ab089a9c00f5332df96a4e5bb2e69ed5e84
+---
+
 <h1 class="contract"> createntt </h1>
 
 ---
