@@ -1,7 +1,7 @@
 /*
  * @file
  * @author  (C) 2020 by CryptoLions [ https://CryptoLions.io ]
- * @version 1.1.0
+ * @version 1.5.2
  *
  * @section LICENSE
  *
@@ -727,6 +727,87 @@ CONTRACT SimpleAssets : public contract{
 		*/
 		ACTION mdremove( uint64_t id );
 		using mdremove_action = action_wrapper< "mdremove"_n, &SimpleAssets::mdremove >;
+
+		/*
+		* Action for notification after transfering one or more assets.
+		*
+		* This action will notify author with help of require_recepient 
+		* after transfers one or more assets.
+		*
+		* @param author is author of the asset.
+		* @param from is account who sends the asset.
+		* @param to is account of receiver.
+		* @param assetids is array of assetid's to transfer.
+		* @param memo is transfers comment.
+		* @return no return value.
+		*/
+		ACTION saetransfer( name author, name from, name to, vector<uint64_t>& assetids, string memo );
+		using saetransfer_action = action_wrapper< "saetransfer"_n, &SimpleAssets::saetransfer >;
+
+		/*
+		* Action for notification after burning asset.
+		*
+		* This action will notify author with help of require_recepient
+		* after burn one or more assets.
+		*
+		* @param author is author of the asset.
+		* @param owner is current asset owner account.
+		* @param assetids is array of asset id's to burn.
+		* @param memo is memo for burn action.
+		* @return no return value.
+		*/
+		ACTION saeburn( name author, name owner, vector<uint64_t>& assetids, string memo );
+		using saeburn_action = action_wrapper< "saeburn"_n, &SimpleAssets::saeburn >;
+
+		/*
+		* Action for notification after changing author of asset.
+		*
+		* This action will notify author with help of require_recepient
+		* after chaning of one or more assets author.
+		*
+		* @param author is author of the asset.
+		* @param newauthor is new author of the asset.
+		* @param owner is current asset owner account.
+		* @param assetids is array of asset id's to change author.
+		* @param memo is memo for change author action.
+		* @return no return value.
+		*/
+		ACTION saechauthor( name author, name newauthor, name owner, map< uint64_t, name >& assetids, string memo );
+		using saechauthor_action = action_wrapper< "saechauthor"_n, &SimpleAssets::saechauthor >;
+
+		/*
+		* Action for notification after creating a new asset.
+		*
+		* This action will notify author with help of require_recepient
+		* after creating a new asset.
+		*
+		* @param author	is the asset's author. This account is allowed to update the asset's mdata.
+		* @param category is asset category.
+		* @param owner is asset owner.
+		* @param idata is stringified JSON or sha256 string with immutable asset data.
+		* @param mdata is stringified JSON or sha256 string with mutable asset data. It can be changed only by author.
+		* @param assetid is new asset id.
+		* @param requireclaim is true or false. If set to "false", the newly created asset will be transferred to the
+		*                     owner (but author's RAM will be used until the asset is transferred again). If set to
+		*                     "true", the author will remain to be the owner, but an offer will be created for the
+		*                     account specified in the owner field to claim the asset using the owner's RAM.
+		* @return no return value.
+		*/
+		ACTION saecreate( name author, name category, name owner, string idata, string mdata, uint64_t assetid, bool requireclaim );
+		using saecreate_action = action_wrapper< "saecreate"_n, &SimpleAssets::saecreate >;
+
+		/*
+		* Action for notification after claiming the assets.
+		*
+		* This action will notify author with help of require_recepient
+		* after claiming the assets.
+		*
+		* @param claimer is account claiming the asset.
+		* @param assetids is array of asset id's to claim.
+		* @return no return value.
+		*/
+		ACTION saeclaim( name author, name claimer, map< uint64_t, name >& assetids );
+		using saeclaim_action = action_wrapper< "saeclaim"_n, &SimpleAssets::saeclaim >;
 
 	public:
 		enum id_type { asset_id = 0, deferred_id = 1, offer_id = 2, md_id = 3 };

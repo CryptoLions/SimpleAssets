@@ -758,3 +758,107 @@ TERM
 This Contract expires at the conclusion of code execution.
 by CryptoLions [ https://cryptolions.io ]
 
+<h1 class="contract"> saetransfer </h1>
+
+---
+spec_version: 0.0.2
+title: Internal action used for creating log
+summary: Internal action used for creating log
+icon: https://cryptolions.io/assets/images/sa-icons-256/transfer.png#23227a4901414db5cd0973d1cc5df13f9b82375b21c6315fd3402cb4acd50cbf
+---
+
+This action is called during transfer in deferred transaction 
+
+Input parameters:
+`author`   - asset's author;
+`from`     - account who sends the asset;
+`to`       - account of receiver;
+`assetids` - array of assetid's to transfer;
+`memo`     - transfers comment;
+
+TERM
+This Contract expires at the conclusion of code execution.
+by CryptoLions [ https://cryptolions.io ]
+
+<h1 class="contract"> saeburn </h1>
+
+---
+spec_version: 0.0.2
+title: Internal action used for creating log
+summary: Internal action used for creating log
+icon: https://cryptolions.io/assets/images/sa-icons-256/burn.png#76954820d84563187e968b461a706ab089a9c00f5332df96a4e5bb2e69ed5e84
+---
+
+This action is called during burn in deferred transaction 
+
+Input parameters:
+`author`   - asset's author;
+`owner`    - current asset owner account;
+`assetids` - array of assetid's to burn;
+`memo`     - memo for burn action;
+
+TERM
+This Contract expires at the conclusion of code execution.
+by CryptoLions [ https://cryptolions.io ]
+
+<h1 class="contract"> saechauthor </h1>
+
+---
+spec_version: 0.0.2
+title: Internal action used for creating log
+summary: Internal action used for creating log
+icon: https://cryptolions.io/assets/images/sa-icons-256/regauthor.png#c6a539be8e7dfd1a4c466ba9cabfd13571cd77d5c988c652d2e8f87096f3548e
+---	
+
+Input parameters:
+`author`         - asset's author, who will able to change author name asset's;
+`newauthor`      - asset's new author name;
+`owner`          - assets owner;
+`assetids`       - array of assetid's
+
+TERM
+This Contract expires at the conclusion of code execution.
+by CryptoLions [ https://cryptolions.io ]
+
+<h1 class="contract"> saecreate </h1>
+
+---
+spec_version: 0.0.2
+title: Internal action used for creating log
+summary: Internal action used for creating log
+icon: https://cryptolions.io/assets/images/sa-icons-256/create.png#db2bc53cef5dbbce5247543a91234373ec4bd1baf743301a0d92a35b053eeb70
+---	
+
+Input parameters:
+`author`         - asset's author, who will able to updated asset's mdata;
+`category`       - assets category;
+`owner`          - assets owner;
+`idata`          - stringified json with immutable assets data
+`mdata`          - stringified json with mutable assets data, can be changed only by author
+`requireclaim`   - true or false. If disabled, upon creation, the asset will be transfered to owner (but 
+				   but AUTHOR'S memory will be used until the asset is transferred again).  If enabled,
+				   author will remain the owner, but an offer will be created for the account specified in 
+				   the owner field to claim the asset using the account's RAM.
+
+TERM
+This Contract expires at the conclusion of code execution.
+by CryptoLions [ https://cryptolions.io ]
+
+<h1 class="contract"> saeclaim </h1>
+
+---
+spec_version: 0.0.2
+title: Internal action used for creating log
+summary: Internal action used for creating log
+icon: https://cryptolions.io/assets/images/sa-icons-256/claim.png#8c3fdf140ea14a3cb9762a0f6ec0f0d73f8c2eeeec3ea2f109f394a9f35f472d
+---
+
+Input parameters:
+`author`   - asset's author, who will able to updated asset's mdata;
+`claimer`  - account claiming the asset
+`assetids` - array of assetid's to claim
+
+TERM
+This Contract expires at the conclusion of code execution.
+by CryptoLions [ https://cryptolions.io ]
+

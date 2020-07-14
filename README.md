@@ -1,5 +1,5 @@
 # SimpleAssets  
-*document version 24 June 2020*
+*document version 14 July 2020*
 
 ## Scope:
 1. [Introduction](#introduction)   
@@ -639,6 +639,12 @@ to be the main image.
 
 -----------------
 # Change Logs
+## Change Log v1.5.2
+- Re-enabled event notifications for the following actions:  
+  saeburn, saeclaim, saetransfer, saechauthor, saecreate.  
+  Changed notification logic.  
+  If an author's contract needs to be notified about changes in scope of an asset, please see this example:  
+  https://github.com/CryptoLions/SimpleAssets-EventReceiverExample
 
 ## Change Log v1.5.1
 - Added burnlog, burnflog, burnnttlog added
