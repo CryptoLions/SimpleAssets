@@ -501,7 +501,6 @@ name SIMPLEASSETSCONTRACT = "simpleassets"_n;
 asset wood;
 wood.amount = 20;
 wood.symbol = symbol("WOOD", 0);
-
 name from = "lioninjungle"_n;
 name to = get_self();
 name author = get_self();
@@ -540,8 +539,38 @@ saRes1.send();
 ---
 # 更新日志
 
-## 更新日志v1.4.0
+## 更新日志v1.5.2
+* 重新启用事件通知，执行如下操作：
+saeburn, saeclaim, saetransfer, saechauthor, saecreate.
+* 更改了通知的逻辑
+如果需要将有关资产范围的变化通知给创建者的合约，请参考例子
+https://github.com/CryptoLions/SimpleAssets-EventReceiverExample
 
+---
+## 更新日志v1.5.1
+* 增加了burnlog, burnflog, burnnttlog
+* 增加了对集装器中附加资产的烧录的限制
+* 增加了对附加到委托资产的限制
+* 代码更新
+* SAE通知暂停使用
+
+---
+## 更新日志v1.5.0
+* 增加了将SimpleAssets.hpp添加或包含至其他项目中的可能性。这有助于技术开发人员轻松地将简单资产(Simple Assets)集成整合至其它合约中
+* 增加了技术开发人员功能sa_getnextid，用来轻松获取新创建资产的id
+* 增加了更多数据功能(actions mdremove, mdupdate, mdaddlog, mdadd)。这提供了一个简单资产列表，该列表可以存储NFTs的其它或者重复的信息，并且保持最小占用RAM
+
+---
+## 更新日志v1.4.1
+* 重命名"Author Registration"(创建者注册)中的字段和操作，以提高工作效率
+regauthor -> authorreg
+data -> dappinfo
+stemplate -> fieldtypes
+imgpriority -> priorityimg
+* 在自述文件中添加了"Author Registration"(创建者注册)文档
+
+---
+## 更新日志v1.4.0
 * 重新委托资产。（资产的借出人可以允许他们重新借出）
 * 在委托动作中添加了新的参数`bool reelegate`，它允许资产重新委托
 * 在表委托中添加了新的字段`bool reelegate`=>在自部署合约的情况下需要迁移！
