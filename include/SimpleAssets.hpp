@@ -1,7 +1,7 @@
 /*
  * @file
  * @author  (C) 2020 by CryptoLions [ https://CryptoLions.io ]
- * @version 1.5.2
+ * @version 1.6.0
  *
  * @section LICENSE
  *
@@ -809,6 +809,31 @@ CONTRACT SimpleAssets : public contract{
 		ACTION saeclaim( name author, name claimer, map< uint64_t, name >& assetids );
 		using saeclaim_action = action_wrapper< "saeclaim"_n, &SimpleAssets::saeclaim >;
 
+		/*
+		* Action for setting a ram payer for author and category.
+		*
+		* This action will add new record (only if regre is no same records for author and category) 
+		* and set from_id to last avalable assetsid. It will works only for new created assets.
+		*
+		* @param author is account claiming the asset.
+		* @param category is asset category.
+		* @param usearam is flag for using ram 
+		* @return no return value.
+		*/
+		ACTION setarampayer( name author, name category, bool usearam );
+		using setarampayer_action = action_wrapper< "setarampayer"_n, &SimpleAssets::setarampayer >;
+
+		/*
+		* Action for deleting a ram payer for author and category.
+		*
+		* This action will delete record for arampayer table
+		*
+		* @param id is id of arampayer record
+		* @return no return value.
+		*/
+		ACTION delarampayer( uint64_t id );
+		using delarampayer_action = action_wrapper< "delarampayer"_n, &SimpleAssets::delarampayer >;
+
 	public:
 		enum id_type { asset_id = 0, deferred_id = 1, offer_id = 2, md_id = 3 };
 
@@ -863,6 +888,9 @@ CONTRACT SimpleAssets : public contract{
 		}
 
 	private:
+		const uint16_t MAX_MEMO_SIZE = 512;
+		const uint64_t IMPOSSIBLE_ID = 1;
+
 		/*
 		* Get new asset id.
 		*
@@ -887,7 +915,9 @@ CONTRACT SimpleAssets : public contract{
 		void sub_balancef( name owner, name author, asset value );
 		void add_balancef( name owner, name author, asset value, name ram_payer );
 		void check_empty_vector( vector< uint64_t >& vector_ids, string vector_name = "assetids" );
+		void check_memo_size( const string & memo );
 		std::string timeToWait( uint64_t time_in_seconds );
+		name get_payer( name author, name category, uint64_t id );
 
 		template<typename... Args>
 		void sendEvent( name author, name rampayer, name seaction, const tuple<Args...> &tup );
@@ -1121,6 +1151,28 @@ CONTRACT SimpleAssets : public contract{
 		> moredata;
 
 		/*
+		* Ram payer table
+		*/
+		TABLE sarampayer{
+			uint64_t	id;
+			name		author;
+			name		category;
+			bool		usearam;
+			uint64_t	from_id;
+
+			auto primary_key() const {
+				return id;
+			}
+
+			uint64_t by_author() const {
+				return author.value;
+			}
+		};
+		typedef eosio::multi_index< "arampayers"_n, sarampayer,
+			eosio::indexed_by< "author"_n, eosio::const_mem_fun< sarampayer, uint64_t, &sarampayer::by_author > >
+		> arampayers;
+
+		/*
 		* global singelton table, used for assetid building. Scope: self
 		*/
 		TABLE global {
@@ -1132,7 +1184,6 @@ CONTRACT SimpleAssets : public contract{
 
 			EOSLIB_SERIALIZE( global, ( lnftid )( defid )( mdid )( spare2 ) )
 		};
-
 		typedef eosio::singleton< "global"_n, global > conf; /// singleton
 
 		/*
@@ -1149,12 +1200,12 @@ CONTRACT SimpleAssets : public contract{
 		typedef singleton< "tokenconfigs"_n, tokenconfigs > Configs;
 
 		private:
-		moredata moredatat	= { _self, _self.value };
-		offers offert		= { _self, _self.value };
-		offerfs offerft		= { _self, _self.value };
-		delegates delegatet	= { _self, _self.value };
-		authors authort		= { _self, _self.value };
-		nttoffers nttoffert	= { _self, _self.value };
-
+		moredata moredatat		= { _self, _self.value };
+		offers offert			= { _self, _self.value };
+		offerfs offerft			= { _self, _self.value };
+		delegates delegatet		= { _self, _self.value };
+		authors authort			= { _self, _self.value };
+		nttoffers nttoffert		= { _self, _self.value };
+		arampayers arampayert	= { _self, _self.value };
 		global _cstate; /// global state
 };

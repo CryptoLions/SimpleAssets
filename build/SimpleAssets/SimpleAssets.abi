@@ -516,6 +516,16 @@
             ]
         },
         {
+            "name": "delarampayer",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
             "name": "delegate",
             "base": "",
             "fields": [
@@ -918,6 +928,32 @@
             ]
         },
         {
+            "name": "sarampayer",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "category",
+                    "type": "name"
+                },
+                {
+                    "name": "usearam",
+                    "type": "bool"
+                },
+                {
+                    "name": "from_id",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
             "name": "sasset",
             "base": "",
             "fields": [
@@ -1008,6 +1044,24 @@
                 {
                     "name": "memo",
                     "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "setarampayer",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "category",
+                    "type": "name"
+                },
+                {
+                    "name": "usearam",
+                    "type": "bool"
                 }
             ]
         },
@@ -1394,6 +1448,11 @@
             "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: createlog (internal)\nsummary: createlog (internal) \nicon: https://cryptolions.io/assets/images/sa-icons-256/claimf.png#80086207646470fa9cbaf4638ba0dedec96ea0e84d5059b567adc9e4b8543c30\n---"
         },
         {
+            "name": "delarampayer",
+            "type": "delarampayer",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Action for deleting a ram payer record;\nsummary: Action for deleting a ram payer record;\nicon: https://cryptolions.io/assets/images/sa-icons-256/claim.png#8c3fdf140ea14a3cb9762a0f6ec0f0d73f8c2eeeec3ea2f109f394a9f35f472d\n---\n\nInput parameters:\n`id` - is id of a ram payer record;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
             "name": "delegate",
             "type": "delegate",
             "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Delegates asset\nsummary: Delegates asset\nicon: https://cryptolions.io/assets/images/sa-icons-256/delegate.png#f8d91c1b9c0f376464e69aadf41142a17492af1e75d394601872b6a992b420bc\n---\n\nThis action changes the asset owner by calling the transfer action. It also adds a record in the delegates table to record the asset as borrowed. This block the asset from all owner actions (transfers, offers, burning by borrower).\n\nInput parameters:\n`owner`     - current asset owner account;\n`to`        - borrower account name;\n`assetids`  - array of assetid's to delegate;\n`period`    - time in seconds that the asset will be lent. Lender cannot undelegate until \n\t\t\t  the period expires, however the receiver can transfer back at any time;\n`memo`      - memo for delegate action;\n`autoreturn`- automatic return for delegated action;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
@@ -1466,7 +1525,7 @@
         {
             "name": "saeclaim",
             "type": "saeclaim",
-            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Internal action used for creating log\nsummary: Internal action used for creating log\nicon: https://cryptolions.io/assets/images/sa-icons-256/claim.png#8c3fdf140ea14a3cb9762a0f6ec0f0d73f8c2eeeec3ea2f109f394a9f35f472d\n---\n\nInput parameters:\n`author`   - asset's author, who will able to updated asset's mdata;\n`claimer`  - account claiming the asset\n`assetids` - array of assetid's to claim\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Internal action used for creating log\nsummary: Internal action used for creating log\nicon: https://cryptolions.io/assets/images/sa-icons-256/claim.png#8c3fdf140ea14a3cb9762a0f6ec0f0d73f8c2eeeec3ea2f109f394a9f35f472d\n---\n\nInput parameters:\n`author`   - asset's author, who will able to updated asset's mdata;\n`claimer`  - account claiming the asset;\n`assetids` - array of assetid's to claim;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "saecreate",
@@ -1477,6 +1536,11 @@
             "name": "saetransfer",
             "type": "saetransfer",
             "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Internal action used for creating log\nsummary: Internal action used for creating log\nicon: https://cryptolions.io/assets/images/sa-icons-256/transfer.png#23227a4901414db5cd0973d1cc5df13f9b82375b21c6315fd3402cb4acd50cbf\n---\n\nThis action is called during transfer in deferred transaction \n\nInput parameters:\n`author`   - asset's author;\n`from`     - account who sends the asset;\n`to`       - account of receiver;\n`assetids` - array of assetid's to transfer;\n`memo`     - transfers comment;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
+        },
+        {
+            "name": "setarampayer",
+            "type": "setarampayer",
+            "ricardian_contract": "---\nspec_version: 0.0.2\ntitle: Action for setting a ram payer for author and category.\nsummary: Action for setting a ram payer for author and category.\nicon: https://cryptolions.io/assets/images/sa-icons-256/claim.png#8c3fdf140ea14a3cb9762a0f6ec0f0d73f8c2eeeec3ea2f109f394a9f35f472d\n---\n\nInput parameters:\n`author`   - asset's author, who will able to updated asset's mdata;\n`category` - assets category;\n`usearam`  - flag for on or off author is a ram payer functionaity;\n\nTERM\nThis Contract expires at the conclusion of code execution.\nby CryptoLions [ https://cryptolions.io ]"
         },
         {
             "name": "transfer",
@@ -1518,6 +1582,13 @@
         {
             "name": "accounts",
             "type": "account",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "arampayers",
+            "type": "sarampayer",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
