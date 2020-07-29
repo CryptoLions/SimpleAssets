@@ -1,5 +1,5 @@
 # SimpleAssets  
-*document version 14 July 2020*
+*document version 29 July 2020*
 
 ## Scope:
 1. [Introduction](#introduction)   
@@ -34,7 +34,8 @@ EOS: **simpleassets**
 WAX: **simpleassets**  
 MEETONE: **smplassets.m**  
 TELOS: **simpleassets**  
-PROTON: **simpleassets**
+PROTON: **simpleassets**  
+EUROPECHAIN: **simpleassets**  
 
   
 Simple Assets is a separate contract which other Dapps can call to manage their digital assets.  This serves as an additional guarantee to users of the Dapp that the ownership of assets is managed by a reputable outside authority, and that once created, the Dapp can only manage the asset's mdata.  All the ownership-related functionality exists outside the game.    
@@ -125,6 +126,7 @@ https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp
 ```bash
 authorreg		( name author, string dappinfo, string fieldtypes, string priorityimg )
 authorupdate		( name author, string dappinfo, string fieldtypes, string priorityimg )
+setarampayer		( name author, name category, bool usearam ) 
 
 
  # -- For Non-Fungible Tokens (NFTs)---
@@ -333,6 +335,25 @@ moredata{
 	name			author;	// author of the more data 
 	string			data;	// more data. recommended format: strigified JSON
 }
+```
+
+## Author RAM Payer
+```
+sarampayer{
+      uint64_t 			id;
+      name    			author;
+      name    			category;
+      bool    			usearam;
+      uint64_t  		from_id;
+
+      auto primary_key() const {
+        return id;
+      }
+
+      uint64_t by_author() const {
+        return author.value;
+      }
+    };
 ```
 
 # EXAMPLES: how to use Simple Assets in smart contracts
@@ -639,6 +660,14 @@ to be the main image.
 
 -----------------
 # Change Logs
+
+## Change Log v1.6.0
+- Added author ram payer option
+- Added actions setarampayer, delarampayer
+- detach and detachf for author only
+- Memo increased to 512
+- Code improvement
+
 ## Change Log v1.5.2
 - Re-enabled event notifications for the following actions:  
   saeburn, saeclaim, saetransfer, saechauthor, saecreate.  

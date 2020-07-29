@@ -855,8 +855,42 @@ icon: https://cryptolions.io/assets/images/sa-icons-256/claim.png#8c3fdf140ea14a
 
 Input parameters:
 `author`   - asset's author, who will able to updated asset's mdata;
-`claimer`  - account claiming the asset
-`assetids` - array of assetid's to claim
+`claimer`  - account claiming the asset;
+`assetids` - array of assetid's to claim;
+
+TERM
+This Contract expires at the conclusion of code execution.
+by CryptoLions [ https://cryptolions.io ]
+
+<h1 class="contract"> setarampayer </h1>
+
+---
+spec_version: 0.0.2
+title: Action for setting a ram payer for author and category.
+summary: Action for setting a ram payer for author and category.
+icon: https://cryptolions.io/assets/images/sa-icons-256/claim.png#8c3fdf140ea14a3cb9762a0f6ec0f0d73f8c2eeeec3ea2f109f394a9f35f472d
+---
+
+Input parameters:
+`author`   - asset's author, who will able to updated asset's mdata;
+`category` - assets category;
+`usearam`  - flag for on or off author is a ram payer functionaity;
+
+TERM
+This Contract expires at the conclusion of code execution.
+by CryptoLions [ https://cryptolions.io ]
+
+<h1 class="contract"> delarampayer </h1>
+
+---
+spec_version: 0.0.2
+title: Action for deleting a ram payer record;
+summary: Action for deleting a ram payer record;
+icon: https://cryptolions.io/assets/images/sa-icons-256/claim.png#8c3fdf140ea14a3cb9762a0f6ec0f0d73f8c2eeeec3ea2f109f394a9f35f472d
+---
+
+Input parameters:
+`id` - is id of a ram payer record;
 
 TERM
 This Contract expires at the conclusion of code execution.
