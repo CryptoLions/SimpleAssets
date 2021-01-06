@@ -266,7 +266,7 @@ CONTRACT SimpleAssets : public contract{
 		/*
 		* Update assets data.
 		*
-		* This action updates asset's mutable data (mdata) field. It is only available for the author of an asset.
+		* This action updates asset's mutable data (mdata) field. It is only available for the author or owner of an asset.
 		*
 		* @param author	is author account.
 		* @param owner is current asset owner.

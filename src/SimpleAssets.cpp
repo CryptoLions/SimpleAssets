@@ -318,13 +318,13 @@ ACTION SimpleAssets::saetransfer(name author, name from, name to, vector<uint64_
 
 ACTION SimpleAssets::update( name author, name owner, uint64_t assetid, string mdata ) {
 
-	require_auth( author );
+	require_auth( has_auth( author ) ? author : owner );
 	sassets assets_f( _self, owner.value );
 	const auto itr = assets_f.require_find( assetid, string("asset id: " + to_string(assetid) + " not found").c_str() );
 
 	check( itr->author == author, "Only for author allowed to update asset. Asset id: " + to_string(assetid) + " has author: " + itr->author.to_string() + " ,you entered author: " + author.to_string() );
 
-	assets_f.modify( itr, author, [&]( auto& a ) {
+	assets_f.modify( itr, has_auth( author ) ? author : owner, [&]( auto& a ) {
 		a.mdata = mdata;
 	});
 }
@@ -544,9 +544,7 @@ ACTION SimpleAssets::detach( name owner, uint64_t assetidc, vector<uint64_t>& as
 
 	const auto ac_ = assets_f.require_find( assetidc, string("assetidc: "  + to_string(assetidc) +  " cannot be found").c_str() );
 
-	const auto author = ac_->author;
-
-	require_auth( author );
+	require_auth( owner );
 
 	check( delegatet.find( assetidc ) == delegatet.end(), 
 		"Cannot detach asset id: " + to_string( assetidc ) + " is delegated." );
@@ -557,7 +555,7 @@ ACTION SimpleAssets::detach( name owner, uint64_t assetidc, vector<uint64_t>& as
 		for ( auto j = 0; j < ac_->container.size(); ++j ) {
 			auto acc = ac_->container[j];
 			if ( assetids[i] == acc.id ) {
-				assets_f.emplace( author, [&]( auto& s ) {
+				assets_f.emplace( owner, [&]( auto& s ) {
 					s.id         = acc.id;
 					s.owner      = owner;
 					s.author     = acc.author;
@@ -573,7 +571,7 @@ ACTION SimpleAssets::detach( name owner, uint64_t assetidc, vector<uint64_t>& as
 			}
 		}
 
-		assets_f.modify( ac_, author, [&]( auto& a ) {
+		assets_f.modify( ac_, owner, [&]( auto& a ) {
 			a.container = newcontainer;
 		});
 	}

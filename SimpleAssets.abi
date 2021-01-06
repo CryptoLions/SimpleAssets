@@ -1,0 +1,1676 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT ",
+    "version": "eosio::abi/1.1",
+    "types": [],
+    "structs": [
+        {
+            "name": "account",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "balance",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "attach",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "assetidc",
+                    "type": "uint64"
+                },
+                {
+                    "name": "assetids",
+                    "type": "uint64[]"
+                }
+            ]
+        },
+        {
+            "name": "attachf",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                },
+                {
+                    "name": "assetidc",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "authorreg",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "dappinfo",
+                    "type": "string"
+                },
+                {
+                    "name": "fieldtypes",
+                    "type": "string"
+                },
+                {
+                    "name": "priorityimg",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "authorupdate",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "dappinfo",
+                    "type": "string"
+                },
+                {
+                    "name": "fieldtypes",
+                    "type": "string"
+                },
+                {
+                    "name": "priorityimg",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "burn",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "assetids",
+                    "type": "uint64[]"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "burnf",
+            "base": "",
+            "fields": [
+                {
+                    "name": "from",
+                    "type": "name"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "burnflog",
+            "base": "",
+            "fields": [
+                {
+                    "name": "from",
+                    "type": "name"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "burnlog",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "assetids",
+                    "type": "uint64[]"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "burnntt",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "assetids",
+                    "type": "uint64[]"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "burnnttlog",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "assetids",
+                    "type": "uint64[]"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "canceloffer",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "assetids",
+                    "type": "uint64[]"
+                }
+            ]
+        },
+        {
+            "name": "cancelofferf",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "ftofferids",
+                    "type": "uint64[]"
+                }
+            ]
+        },
+        {
+            "name": "changeauthor",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "newauthor",
+                    "type": "name"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "assetids",
+                    "type": "uint64[]"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "claim",
+            "base": "",
+            "fields": [
+                {
+                    "name": "claimer",
+                    "type": "name"
+                },
+                {
+                    "name": "assetids",
+                    "type": "uint64[]"
+                }
+            ]
+        },
+        {
+            "name": "claimf",
+            "base": "",
+            "fields": [
+                {
+                    "name": "claimer",
+                    "type": "name"
+                },
+                {
+                    "name": "ftofferids",
+                    "type": "uint64[]"
+                }
+            ]
+        },
+        {
+            "name": "claimntt",
+            "base": "",
+            "fields": [
+                {
+                    "name": "claimer",
+                    "type": "name"
+                },
+                {
+                    "name": "assetids",
+                    "type": "uint64[]"
+                }
+            ]
+        },
+        {
+            "name": "closef",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "symbol",
+                    "type": "symbol"
+                }
+            ]
+        },
+        {
+            "name": "create",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "category",
+                    "type": "name"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "idata",
+                    "type": "string"
+                },
+                {
+                    "name": "mdata",
+                    "type": "string"
+                },
+                {
+                    "name": "requireclaim",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "createf",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "maximum_supply",
+                    "type": "asset"
+                },
+                {
+                    "name": "authorctrl",
+                    "type": "bool"
+                },
+                {
+                    "name": "data",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "createlog",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "category",
+                    "type": "name"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "idata",
+                    "type": "string"
+                },
+                {
+                    "name": "mdata",
+                    "type": "string"
+                },
+                {
+                    "name": "assetid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "requireclaim",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "createntt",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "category",
+                    "type": "name"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "idata",
+                    "type": "string"
+                },
+                {
+                    "name": "mdata",
+                    "type": "string"
+                },
+                {
+                    "name": "requireclaim",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "createnttlog",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "category",
+                    "type": "name"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "idata",
+                    "type": "string"
+                },
+                {
+                    "name": "mdata",
+                    "type": "string"
+                },
+                {
+                    "name": "assetid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "requireclaim",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "currency_stats",
+            "base": "",
+            "fields": [
+                {
+                    "name": "supply",
+                    "type": "asset"
+                },
+                {
+                    "name": "max_supply",
+                    "type": "asset"
+                },
+                {
+                    "name": "issuer",
+                    "type": "name"
+                },
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "authorctrl",
+                    "type": "bool"
+                },
+                {
+                    "name": "data",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "delarampayer",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "delegate",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "to",
+                    "type": "name"
+                },
+                {
+                    "name": "assetids",
+                    "type": "uint64[]"
+                },
+                {
+                    "name": "period",
+                    "type": "uint64"
+                },
+                {
+                    "name": "redelegate",
+                    "type": "bool"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "delegatemore",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "assetidc",
+                    "type": "uint64"
+                },
+                {
+                    "name": "period",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "detach",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "assetidc",
+                    "type": "uint64"
+                },
+                {
+                    "name": "assetids",
+                    "type": "uint64[]"
+                }
+            ]
+        },
+        {
+            "name": "detachf",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                },
+                {
+                    "name": "assetidc",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "global",
+            "base": "",
+            "fields": [
+                {
+                    "name": "lnftid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "defid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "mdid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "spare2",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "issuef",
+            "base": "",
+            "fields": [
+                {
+                    "name": "to",
+                    "type": "name"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "mdadd",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "data",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "mdaddlog",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "data",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "mdremove",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "mdupdate",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "data",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "offer",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "newowner",
+                    "type": "name"
+                },
+                {
+                    "name": "assetids",
+                    "type": "uint64[]"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "offerf",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "newowner",
+                    "type": "name"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "openf",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "symbol",
+                    "type": "symbol"
+                },
+                {
+                    "name": "ram_payer",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "pair_uint64_name",
+            "base": "",
+            "fields": [
+                {
+                    "name": "key",
+                    "type": "uint64"
+                },
+                {
+                    "name": "value",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "saeburn",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "assetids",
+                    "type": "uint64[]"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "saechauthor",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "newauthor",
+                    "type": "name"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "assetids",
+                    "type": "pair_uint64_name[]"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "saeclaim",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "claimer",
+                    "type": "name"
+                },
+                {
+                    "name": "assetids",
+                    "type": "pair_uint64_name[]"
+                }
+            ]
+        },
+        {
+            "name": "saecreate",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "category",
+                    "type": "name"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "idata",
+                    "type": "string"
+                },
+                {
+                    "name": "mdata",
+                    "type": "string"
+                },
+                {
+                    "name": "assetid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "requireclaim",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "saetransfer",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "from",
+                    "type": "name"
+                },
+                {
+                    "name": "to",
+                    "type": "name"
+                },
+                {
+                    "name": "assetids",
+                    "type": "uint64[]"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "sarampayer",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "category",
+                    "type": "name"
+                },
+                {
+                    "name": "usearam",
+                    "type": "bool"
+                },
+                {
+                    "name": "from_id",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "sasset",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "category",
+                    "type": "name"
+                },
+                {
+                    "name": "idata",
+                    "type": "string"
+                },
+                {
+                    "name": "mdata",
+                    "type": "string"
+                },
+                {
+                    "name": "container",
+                    "type": "sasset[]"
+                },
+                {
+                    "name": "containerf",
+                    "type": "account[]"
+                }
+            ]
+        },
+        {
+            "name": "sauthor",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "dappinfo",
+                    "type": "string"
+                },
+                {
+                    "name": "fieldtypes",
+                    "type": "string"
+                },
+                {
+                    "name": "priorityimg",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "sdelegate",
+            "base": "",
+            "fields": [
+                {
+                    "name": "assetid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "delegatedto",
+                    "type": "name"
+                },
+                {
+                    "name": "cdate",
+                    "type": "uint64"
+                },
+                {
+                    "name": "period",
+                    "type": "uint64"
+                },
+                {
+                    "name": "redelegate",
+                    "type": "bool"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "setarampayer",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "category",
+                    "type": "name"
+                },
+                {
+                    "name": "usearam",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "smoredata",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "data",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "snttasset",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "category",
+                    "type": "name"
+                },
+                {
+                    "name": "idata",
+                    "type": "string"
+                },
+                {
+                    "name": "mdata",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "snttoffer",
+            "base": "",
+            "fields": [
+                {
+                    "name": "assetid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "offeredto",
+                    "type": "name"
+                },
+                {
+                    "name": "cdate",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "soffer",
+            "base": "",
+            "fields": [
+                {
+                    "name": "assetid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "offeredto",
+                    "type": "name"
+                },
+                {
+                    "name": "cdate",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "sofferf",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                },
+                {
+                    "name": "offeredto",
+                    "type": "name"
+                },
+                {
+                    "name": "cdate",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "tokenconfigs",
+            "base": "",
+            "fields": [
+                {
+                    "name": "standard",
+                    "type": "name"
+                },
+                {
+                    "name": "version",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "transfer",
+            "base": "",
+            "fields": [
+                {
+                    "name": "from",
+                    "type": "name"
+                },
+                {
+                    "name": "to",
+                    "type": "name"
+                },
+                {
+                    "name": "assetids",
+                    "type": "uint64[]"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "transferf",
+            "base": "",
+            "fields": [
+                {
+                    "name": "from",
+                    "type": "name"
+                },
+                {
+                    "name": "to",
+                    "type": "name"
+                },
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "undelegate",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "assetids",
+                    "type": "uint64[]"
+                }
+            ]
+        },
+        {
+            "name": "update",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "assetid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "mdata",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "updatef",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "sym",
+                    "type": "symbol"
+                },
+                {
+                    "name": "data",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "updatentt",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author",
+                    "type": "name"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "assetid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "mdata",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "updatever",
+            "base": "",
+            "fields": [
+                {
+                    "name": "version",
+                    "type": "string"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "name": "attach",
+            "type": "attach",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "attachf",
+            "type": "attachf",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "authorreg",
+            "type": "authorreg",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "authorupdate",
+            "type": "authorupdate",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "burn",
+            "type": "burn",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "burnf",
+            "type": "burnf",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "burnflog",
+            "type": "burnflog",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "burnlog",
+            "type": "burnlog",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "burnntt",
+            "type": "burnntt",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "burnnttlog",
+            "type": "burnnttlog",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "canceloffer",
+            "type": "canceloffer",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "cancelofferf",
+            "type": "cancelofferf",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "changeauthor",
+            "type": "changeauthor",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "claim",
+            "type": "claim",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "claimf",
+            "type": "claimf",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "claimntt",
+            "type": "claimntt",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "closef",
+            "type": "closef",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "create",
+            "type": "create",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "createf",
+            "type": "createf",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "createlog",
+            "type": "createlog",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "createntt",
+            "type": "createntt",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "createnttlog",
+            "type": "createnttlog",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "delarampayer",
+            "type": "delarampayer",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "delegate",
+            "type": "delegate",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "delegatemore",
+            "type": "delegatemore",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "detach",
+            "type": "detach",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "detachf",
+            "type": "detachf",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "issuef",
+            "type": "issuef",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "mdadd",
+            "type": "mdadd",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "mdaddlog",
+            "type": "mdaddlog",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "mdremove",
+            "type": "mdremove",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "mdupdate",
+            "type": "mdupdate",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "offer",
+            "type": "offer",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "offerf",
+            "type": "offerf",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "openf",
+            "type": "openf",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "saeburn",
+            "type": "saeburn",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "saechauthor",
+            "type": "saechauthor",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "saeclaim",
+            "type": "saeclaim",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "saecreate",
+            "type": "saecreate",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "saetransfer",
+            "type": "saetransfer",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "setarampayer",
+            "type": "setarampayer",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "transfer",
+            "type": "transfer",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "transferf",
+            "type": "transferf",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "undelegate",
+            "type": "undelegate",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "update",
+            "type": "update",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "updatef",
+            "type": "updatef",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "updatentt",
+            "type": "updatentt",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "updatever",
+            "type": "updatever",
+            "ricardian_contract": ""
+        }
+    ],
+    "tables": [
+        {
+            "name": "accounts",
+            "type": "account",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "arampayers",
+            "type": "sarampayer",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "authors",
+            "type": "sauthor",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "delegates",
+            "type": "sdelegate",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "global",
+            "type": "global",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "moredata",
+            "type": "smoredata",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "nttoffers",
+            "type": "snttoffer",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "offerfs",
+            "type": "sofferf",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "offers",
+            "type": "soffer",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "sassets",
+            "type": "sasset",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "snttassets",
+            "type": "snttasset",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "stat",
+            "type": "currency_stats",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "tokenconfigs",
+            "type": "tokenconfigs",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        }
+    ],
+    "ricardian_clauses": [],
+    "variants": []
+}
