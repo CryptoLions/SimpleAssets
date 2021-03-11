@@ -66,7 +66,7 @@ Events Receiver Example for authors: https://github.com/CryptoLions/SimpleAssets
 ## Token Types
 
 
-### Non-Fungible Tokens (FTs)
+### Non-Fungible Tokens (NFTs)
 
 NFTs are the most common type of digital assets.  They are used to express unique tokens.  
 
