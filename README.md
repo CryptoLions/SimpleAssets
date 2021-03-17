@@ -1,9 +1,10 @@
 # SimpleAssets  
-*document version 29 July 2020*
+*document version 17 March 2021*
 
 ## Scope:
 1. [Introduction](#introduction)   
 	- [Resources](#resources)   
+	- [Author RAM Payer](#author-ram-payer)  
 	- [Token Types](#token-types)   
 2. [Contract actions](#contract-actions)   
 3. [Data Structures](#data-structures)   
@@ -61,6 +62,12 @@ https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp
 
 Events Receiver Example for authors: https://github.com/CryptoLions/SimpleAssets-EventReceiverExample    
 
+---------------------------
+## Author RAM Payer
+
+NFT authors can enable Author RAM Payer for some or all of their NFTs, and pay for all the RAM associated with transfers so that users don't have to.
+
+[Read more about Author RAM Payer](https://simpleassets.io/simple-assets-author-ram-payer-solution-post/)
 
 ---------------------------
 ## Token Types
@@ -78,7 +85,7 @@ Both are stringified JSONs.  For example: `{\"key1\":\"some-string\", \"key2\":5
 
 **Category** is an optional field that lets you group your NFTs for convenience.  Category names must be less than or equal to 12 characters (a-z, 1-5).
 
-**Offer/Claim** versus **Transfer** - If you transfer an NFT, the sender pays for RAM.  As an alternative, you can simply offer the NFT, and the user claiming will pay for their RAM.  *(Note: we are working toward a feature that allows NFT authors to reserve a lot of RAM which will spare users for paying for transfers.)*
+**Offer/Claim** versus **Transfer** - If you transfer an NFT, the sender pays for RAM.  As an alternative, you can simply offer the NFT, and the user claiming will pay for their RAM.  *(Note: We've deployed an [Author RAM Payer](https://simpleassets.io/simple-assets-author-ram-payer-solution-post/) feature that allows NFT authors to pay for all the RAM of their NFTs.)*
 
 #### RAM usage
 
@@ -216,39 +223,46 @@ offers {
 
 ## Authors  
 ```c++
-authors {  
-	name	author;			// assets author, who will be able to create and update assets;  
+authors {
+        name    author;                 // assets author, who will be able to create and update assets;
 
-	string	data;			// author’s data (json) will be used by markets for better display;
-					// recommendations: logo, info, url;  
+        string  dappinfo;               // stringified JSON. Recommendations to include:
+                                        // name - name of the application
+                                        // company - name of the company
+                                        // logo - url to image
+                                        // url - url to the game's websites
+                                        // info - short description of application
+                                        // defaultfee - 100x the % fee you'd like to collect from marketplaces. (for 2%, 200)
 
-	string	stemplate;		// data (json) schema to tell third-party markets how to display each NFT field.
-					// key: state values, where key is the key from mdata or idata;
-					// recommended values: 
-					// txt    | default type
-					// url    | show as clickable URL
-					// img    | link to img file
-					// webgl  | link to webgl file
-					// mp3    | link to mp3 file
-					// video  | link to video file
-					// hide   | do not show
-					// imgb   | image as string in binary format
-					// webglb | webgl binary
-					// mp3b   | mp3 binary
-					// videob | video binary
+        string  fieldtypes;             // data (json) schema to tell third-party markets how to display each NFT field.
+                                        // key: state values, where key is the key from mdata or idata;
+                                        // recommended values:
 
-	string	imgpriority;		// Specifies primary image field for categories of NFTs.
-					//
-					// This is used when you want your NFTs primary image to be something other
-					// than a URL to an image field specified in the field img.  It also allows you to
-					// create categories of NFTs with different primary image fields.
-					// 
-					// data is a strigified json.
-					// key: NFT categories.
-					// value: a field from idata or mdata to be used as the primary image for 
-					// all NFTs of that category.
+                                        // txt    | default type
+                                        // url    | show as clickable URL
+                                        // img    | link to img file
+                                        // webgl  | link to webgl file
+                                        // mp3    | link to mp3 file
+                                        // video  | link to video file
+                                        // hide   | do not show
+                                        // imgb   | image as string in binary format
+                                        // webglb | webgl binary
+                                        // mp3b   | mp3 binary
+                                        // videob | video binary
+                                        //
 
-}  
+        string  priorityimg;            // Specifies primary image field for categories of NFTs.
+                                        //
+                                        // This is used when you want your NFTs primary image to be something other
+                                        // than a URL to an image field specified in the field img.  It also allows you to
+                                        // create categories of NFTs with different primary image fields.
+                                        //
+                                        // data is a strigified json.
+                                        // key: NFT categories.
+                                        // value: a field from idata or mdata to be used as the primary image for
+                                        // all NFTs of that category.
+
+}
 ```
 
 ## Delegates  
@@ -319,9 +333,8 @@ snttassets {
 ```c++
 nttoffers {
 	uint64_t	id;		// id of the offer for claim (increments automatically) 
-	name		author;		// ft author
-	name		owner;		// ft owner
-	asset		quantity;	// quantity
+	name		author;		// ntt author
+	name		owner;		// ntt owner
 	name		offeredto;	// account who can claim the offer
 	uint64_t	cdate;		// offer creation date
 }
@@ -660,6 +673,13 @@ to be the main image.
 
 -----------------
 # Change Logs
+
+## Change Log v1.6.1
+- support for token-back NFT contract
+- Changed map structure type to vector in `saeclaim` and `saechautor` log actions
+- Code refactoring
+- Typo fixed
+- Added new developers function: `sa_time_to_wait`
 
 ## Change Log v1.6.0
 - Added author ram payer option
