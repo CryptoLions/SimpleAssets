@@ -788,20 +788,6 @@
             ]
         },
         {
-            "name": "pair_uint64_name",
-            "base": "",
-            "fields": [
-                {
-                    "name": "key",
-                    "type": "uint64"
-                },
-                {
-                    "name": "value",
-                    "type": "name"
-                }
-            ]
-        },
-        {
             "name": "saeburn",
             "base": "",
             "fields": [
@@ -841,7 +827,7 @@
                 },
                 {
                     "name": "assetids",
-                    "type": "pair_uint64_name[]"
+                    "type": "tuple_uint64_name[]"
                 },
                 {
                     "name": "memo",
@@ -863,7 +849,7 @@
                 },
                 {
                     "name": "assetids",
-                    "type": "pair_uint64_name[]"
+                    "type": "tuple_uint64_name[]"
                 }
             ]
         },
@@ -1246,6 +1232,20 @@
                 {
                     "name": "memo",
                     "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "tuple_uint64_name",
+            "base": "",
+            "fields": [
+                {
+                    "name": "field_0",
+                    "type": "uint64"
+                },
+                {
+                    "name": "field_1",
+                    "type": "name"
                 }
             ]
         },

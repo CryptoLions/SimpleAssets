@@ -1,5 +1,5 @@
 # SimpleAssets  
-*document version 29 July 2020*
+*document version 17 March 2021*
 
 ## Scope:
 1. [Introduction](#introduction)   
@@ -219,12 +219,18 @@ offers {
 authors {  
 	name	author;			// assets author, who will be able to create and update assets;  
 
-	string	data;			// author’s data (json) will be used by markets for better display;
-					// recommendations: logo, info, url;  
+	string	dappinfo;		// stringified JSON. Recommendations to include: 
+					// name - name of the application
+					// company - name of the company
+					// logo - url to image
+					// url - url to the game's websites
+					// info - short description of application
+					// defaultfee - 100x the % fee you'd like to collect from marketplaces. (for 2%, 200)
 
-	string	stemplate;		// data (json) schema to tell third-party markets how to display each NFT field.
+	string	fieldtypes;		// data (json) schema to tell third-party markets how to display each NFT field.
 					// key: state values, where key is the key from mdata or idata;
 					// recommended values: 
+					
 					// txt    | default type
 					// url    | show as clickable URL
 					// img    | link to img file
@@ -236,8 +242,9 @@ authors {
 					// webglb | webgl binary
 					// mp3b   | mp3 binary
 					// videob | video binary
+					//
 
-	string	imgpriority;		// Specifies primary image field for categories of NFTs.
+	string	priorityimg;		// Specifies primary image field for categories of NFTs.
 					//
 					// This is used when you want your NFTs primary image to be something other
 					// than a URL to an image field specified in the field img.  It also allows you to
@@ -319,9 +326,8 @@ snttassets {
 ```c++
 nttoffers {
 	uint64_t	id;		// id of the offer for claim (increments automatically) 
-	name		author;		// ft author
-	name		owner;		// ft owner
-	asset		quantity;	// quantity
+	name		author;		// ntt author
+	name		owner;		// ntt owner
 	name		offeredto;	// account who can claim the offer
 	uint64_t	cdate;		// offer creation date
 }
@@ -660,6 +666,13 @@ to be the main image.
 
 -----------------
 # Change Logs
+
+## Change Log v1.6.1
+- support for token-back NFT contract
+- Changed map structure type to vector in `saeclaim` and `saechautor` log actions
+- Code refactoring
+- Typo fixed
+- Added new developers function: `sa_time_to_wait`
 
 ## Change Log v1.6.0
 - Added author ram payer option

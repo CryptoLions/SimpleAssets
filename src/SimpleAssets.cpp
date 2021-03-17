@@ -1,4 +1,6 @@
 #include <SimpleAssets.hpp>
+#include <backtoken.hpp>
+const name BACKTOKEN_CONTRACT = "simplebacked"_n; // BackToken CONTRACT
 
 ACTION SimpleAssets::updatever( string version ) {
 
@@ -15,7 +17,7 @@ ACTION SimpleAssets::changeauthor( name author, name newauthor, name owner, vect
 
 	sassets assets_f( _self, owner.value );
 
-	map< name, map< uint64_t, name > > uniqauthor;
+	map< name, vector< tuple<uint64_t, name> > > uniqauthor;
 
 	for ( auto i = 0; i < assetids.size(); ++i ) {
 
@@ -40,7 +42,7 @@ ACTION SimpleAssets::changeauthor( name author, name newauthor, name owner, vect
 		assets_f.modify( itr, author, [&]( auto& a ) {
 			a.author = newauthor;
 		});
-		uniqauthor[itr->author][assetids[i]] = itr->owner;
+		uniqauthor[itr->author].emplace_back(make_tuple(assetids[i], itr->owner));
 	}
 
 	// Send Event as deferred
@@ -50,7 +52,7 @@ ACTION SimpleAssets::changeauthor( name author, name newauthor, name owner, vect
 	}
 }
 
-ACTION SimpleAssets::saechauthor( name author, name newauthor, name owner, map< uint64_t, name >& assetids, string memo ) {
+ACTION SimpleAssets::saechauthor( name author, name newauthor, name owner, vector< tuple<uint64_t, name> >& assetids, string memo ) {
 	require_recipient( author );
 }
 
@@ -154,7 +156,7 @@ ACTION SimpleAssets::claim( name claimer, vector<uint64_t>& assetids ) {
 		});
 	}
 
-	map< name, map< uint64_t, name > > uniqauthor;
+	map< name, vector< tuple<uint64_t, name> > > uniqauthor;
 	for ( auto i = 0; i < assetids.size(); ++i ) {
 
 		auto itrc = offert.require_find( assetids[i], string("Cannot find offer for asset id:  " + to_string(assetids[i]) + " that you're attempting to claim.").c_str() );
@@ -182,7 +184,7 @@ ACTION SimpleAssets::claim( name claimer, vector<uint64_t>& assetids ) {
 		});
 
 		//Events
-		uniqauthor[itr->author][assetids[i]] = itrc->owner;
+		uniqauthor[itr->author].emplace_back(make_tuple(assetids[i], itr->owner));
 
 		assets_f.erase( itr );
 		offert.erase( itrc );
@@ -198,7 +200,7 @@ ACTION SimpleAssets::claim( name claimer, vector<uint64_t>& assetids ) {
 	}
 }
 
-ACTION SimpleAssets::saeclaim(name author, name claimer, map< uint64_t, name >& assetids) {
+ACTION SimpleAssets::saeclaim(name author, name claimer, vector< tuple<uint64_t, name> >& assetids) {
 	require_recipient(author);
 }
 
@@ -265,7 +267,7 @@ ACTION SimpleAssets::transfer( name from, name to, vector<uint64_t>& assetids, s
 				}
 			}
 			else {
-				check( false, "Asset id: " + to_string(assetids[i]) + " cannot be transferred because it is delegated to " + itrd->delegatedto.to_string() );
+				check( false, "Asset id: " + to_string(assetids[i]) + " cannot be transferred because it is delegated from " + itrd->delegatedto.to_string() );
 			}
 		}
 
@@ -394,20 +396,38 @@ ACTION SimpleAssets::burn( name owner, vector<uint64_t>& assetids, string memo )
 	require_auth( owner );
 	sassets assets_f( _self, owner.value );
 	map< name, vector<uint64_t> > uniqauthor;
+	backtoken::backtokens backtokent = { BACKTOKEN_CONTRACT, BACKTOKEN_CONTRACT.value };
 
 	for ( auto i = 0; i < assetids.size(); ++i ) {
 
-		auto itr = assets_f.require_find( assetids[i], string("Asset id: " + to_string(assetids[i]) + " was not found.").c_str() );
-		check( !(itr->container.size() != 0),  "Asset id: " + to_string(assetids[i]) + " has " + to_string(itr->container.size())  + " attached NFT assets. Detach them before burning." );
-		check( !(itr->containerf.size() != 0), "Asset id: " + to_string(assetids[i]) + " has " + to_string(itr->containerf.size()) + " attached FT assets. Detach them before burning." );
-		check( owner.value == itr->owner.value, "Asset id: " + to_string(assetids[i]) + " you're attempting to burn is not yours. Owner is " + itr->owner.to_string() + ", you entered owner " + owner.to_string() );
-		check( offert.find( assetids[i] ) == offert.end(), "Asset id: " + to_string(assetids[i]) + " has an open offer and cannot be burned." );
-		check( delegatet.find( assetids[i] ) == delegatet.end(), "Asset id: " + to_string(assetids[i]) + " is delegated and cannot be burned." );
+		const auto assetid = assetids[i];
+
+		auto itr = assets_f.require_find( assetid, string("Asset id: " + to_string( assetid ) + " was not found.").c_str() );
+		check( !(itr->container.size() != 0),  "Asset id: " + to_string( assetid ) + " has " + to_string(itr->container.size())  + " attached NFT assets. Detach them before burning." );
+		check( !(itr->containerf.size() != 0), "Asset id: " + to_string( assetid ) + " has " + to_string(itr->containerf.size()) + " attached FT assets. Detach them before burning." );
+		check( owner.value == itr->owner.value, "Asset id: " + to_string( assetid ) + " you're attempting to burn is not yours. Owner is " + itr->owner.to_string() + ", you entered owner " + owner.to_string() );
+		check( offert.find( assetid ) == offert.end(), "Asset id: " + to_string( assetid ) + " has an open offer and cannot be burned." );
+		check( delegatet.find( assetid ) == delegatet.end(), "Asset id: " + to_string( assetid ) + " is delegated and cannot be burned." );
 
 		checkwaxauthor( itr->author );
+
+		if (backtokent.find( assetid ) != backtokent.end())
+		{
+			if (is_account(BACKTOKEN_CONTRACT))
+			{
+
+				action(
+					permission_level{ get_self(), "active"_n },
+					BACKTOKEN_CONTRACT,
+					"onburn"_n,
+					make_tuple( owner, assetid )
+				).send();
+			}
+		}
+
 		//Events
-		uniqauthor[itr->author].push_back( assetids[i] );
-		assets_f.erase(itr);
+		uniqauthor[itr->author].push_back( assetid );
+		assets_f.erase( itr );
 	}
 
 	//Send Event as deferred
@@ -505,13 +525,13 @@ ACTION SimpleAssets::undelegate( name owner, vector<uint64_t>& assetids ) {
 
 		const auto itrc = delegatet.require_find( assetids[i], string( "Asset id: " + to_string( assetids[i] ) + " is not delegated").c_str() );
 		check( owner == itrc->owner, "You are not the owner of asset id: " + to_string( assetids[i]) + ". Owner is: " + itrc->owner.to_string() + " , you entered: " + owner.to_string() );
-		check( !(from != itrc->delegatedto), "All delegated assets in assetids must be delegated to one account. For asset id: " + to_string( assetids[i] ) + " delegatedto = " + itrc->delegatedto.to_string() + " but it must be same with first asset which has delegatedto = " + from.to_string());
+		check( !(from != itrc->delegatedto), "All delegated assets in assetids must be delegated from one account. For asset id: " + to_string( assetids[i] ) + " delegatedto = " + itrc->delegatedto.to_string() + " but it must be same with first asset which has delegatedto = " + from.to_string());
 
 		const auto itr = assets_f.require_find(assetids[i], string("Asset id: " + to_string(assetids[i]) + " cannot be found in scope " + from.to_string()).c_str());
 		check( itr->owner == itrc->delegatedto, "Owner does not match DELEGATEDTO for asset id: " + to_string( assetids[i] ) + " .Owner = " + itr->owner.to_string() + " but it must be " + itrc->delegatedto.to_string() + " for this asset");
 
 		check((itrc->cdate + itrc->period) < current_time_point().sec_since_epoch(), 
-			"Cannot undelegate until the PERIOD expires. " + timeToWait(abs((int)((uint64_t)(itrc->cdate + itrc->period) - (uint64_t)current_time_point().sec_since_epoch()))));
+			"Cannot undelegate until the PERIOD expires. " + sa_time_to_wait(abs((int)((uint64_t)(itrc->cdate + itrc->period) - (uint64_t)current_time_point().sec_since_epoch()))));
 
 		if ( i != 0 ) {
 			assetidsmemo += ", ";
@@ -883,7 +903,7 @@ void SimpleAssets::attachdeatch( name owner, name author, asset quantity, uint64
 	check( itr->author == author, "Different authors. For asset id: " + to_string( assetidc ) + " author is " + itr->author.to_string() + " you entered author = " + author.to_string() );
 
 	const auto itr_delegeted = delegatet.find( assetidc );
-	check( itr_delegeted == delegatet.end(), "Asset id: " + to_string( assetidc ) + " is delegated to " + itr_delegeted->delegatedto.to_string() );
+	check( itr_delegeted == delegatet.end(), "Asset id: " + to_string( assetidc ) + " is delegated from " + itr_delegeted->delegatedto.to_string() );
 
 	const auto itr_offered = offert.find( assetidc );
 	check( itr_offered == offert.end(), "Asset id: " + to_string( assetidc ) + " has an open offer to " + itr_offered->offeredto.to_string() + "and cannot be delegated." );
@@ -1022,7 +1042,7 @@ ACTION SimpleAssets::claimntt( name claimer, vector<uint64_t>& assetids ) {
 	require_auth( claimer );
 	require_recipient( claimer );
 	snttassets assets_claimer( _self, claimer.value );
-	map< name, map< uint64_t, name > > uniqauthor;
+	map< name, vector< tuple<uint64_t, name> > > uniqauthor;
 
 	for ( auto i = 0; i < assetids.size(); ++i ) {
 
@@ -1046,7 +1066,7 @@ ACTION SimpleAssets::claimntt( name claimer, vector<uint64_t>& assetids ) {
 		});
 
 		//Events
-		uniqauthor[itr->author][assetids[i]] = itrc->owner;
+		uniqauthor[itr->author].emplace_back(make_tuple(assetids[i], itr->owner));
 
 		assets_owner.erase( itr );
 		nttoffert.erase( itrc );
@@ -1197,25 +1217,6 @@ asset SimpleAssets::get_balance( name token_contract_account, name owner, name a
 	accounts accountstable( token_contract_account, owner.value );
 	return accountstable.get( statstable.get( sym_code.raw() ).id ).balance;
 }
-
-std::string SimpleAssets::timeToWait( uint64_t time_in_seconds ){
-
-	uint64_t s, h, m = 0;
-	m = time_in_seconds / 60;
-	h = m / 60;
-	return "Time to wait " + std::to_string(int(h)) + " hours " + std::to_string(int(m % 60)) + " minutes " + std::to_string(int(time_in_seconds % 60)) + " seconds";
-}
-
-EOSIO_DISPATCH( SimpleAssets, ( create )( createlog )( transfer )( burn )( update )
-( offer )( canceloffer )( claim )
-( authorreg )( authorupdate )
-( delegate )( undelegate )( delegatemore )( attach )( detach )
-( createf )( updatef )( issuef )( transferf )( burnf )
-( offerf )( cancelofferf )( claimf )
-( attachf )( detachf )( openf )( closef )
-( updatever )( createntt )( burnntt )( createnttlog )( claimntt )( updatentt )( changeauthor ) 
-( mdadd )( mdupdate )( mdremove )( mdaddlog ) ( burnlog ) ( burnnttlog ) ( burnflog ) 
-( saetransfer ) ( saeburn ) ( saechauthor ) ( saecreate ) ( saeclaim ) ( setarampayer ) ( delarampayer ) )
 
 
 //============================================================================================================

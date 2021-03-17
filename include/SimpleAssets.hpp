@@ -1,7 +1,7 @@
 /*
  * @file
- * @author  (C) 2020 by CryptoLions [ https://CryptoLions.io ]
- * @version 1.6.0
+ * @author  (C) 2021 by CryptoLions [ https://CryptoLions.io ]
+ * @version 1.6.1
  *
  * @section LICENSE
  *
@@ -23,6 +23,8 @@
  *    Presentation:   https://medium.com/@cryptolions/introducing-simple-assets-b4e17caafaa4
  *    Event Receiver: https://github.com/CryptoLions/SimpleAssets-EventReceiverExample
  */
+
+#pragma once
 
 #include <eosio/eosio.hpp>
 #include <eosio/asset.hpp>
@@ -450,7 +452,7 @@ CONTRACT SimpleAssets : public contract{
 		* Update the data field of a fungible token.
 		*
 		* @param author is fungible token author.
-		* @param sym is fingible token symbol ("GOLD", "WOOD", etc.).
+		* @param sym is fungible token symbol ("GOLD", "WOOD", etc.).
 		* @param data is stringified JSON (recommend including keys `img` and `name` for better displaying by markets).
 		* @return no return value.
 		*/
@@ -772,7 +774,7 @@ CONTRACT SimpleAssets : public contract{
 		* @param memo is memo for change author action.
 		* @return no return value.
 		*/
-		ACTION saechauthor( name author, name newauthor, name owner, map< uint64_t, name >& assetids, string memo );
+		ACTION saechauthor( name author, name newauthor, name owner, vector< tuple<uint64_t, name> >& assetids, string memo );
 		using saechauthor_action = action_wrapper< "saechauthor"_n, &SimpleAssets::saechauthor >;
 
 		/*
@@ -806,7 +808,7 @@ CONTRACT SimpleAssets : public contract{
 		* @param assetids is array of asset id's to claim.
 		* @return no return value.
 		*/
-		ACTION saeclaim( name author, name claimer, map< uint64_t, name >& assetids );
+		ACTION saeclaim( name author, name claimer, vector< tuple<uint64_t, name> >& assetids );
 		using saeclaim_action = action_wrapper< "saeclaim"_n, &SimpleAssets::saeclaim >;
 
 		/*
@@ -887,7 +889,13 @@ CONTRACT SimpleAssets : public contract{
 			return result;
 		}
 
-	private:
+		static string sa_time_to_wait(uint64_t time_in_seconds) {
+			uint64_t s, h, m = 0;
+			m = time_in_seconds / 60;
+			h = m / 60;
+			return "Time to wait " + to_string(int(h)) + " hours " + to_string(int(m % 60)) + " minutes " + to_string(int(time_in_seconds % 60)) + " seconds";
+		}
+private:
 		const uint16_t MAX_MEMO_SIZE = 512;
 		const uint64_t IMPOSSIBLE_ID = 1;
 
@@ -933,7 +941,6 @@ CONTRACT SimpleAssets : public contract{
 		void add_balancef( name owner, name author, asset value, name ram_payer );
 		void check_empty_vector( vector< uint64_t >& vector_ids, string vector_name = "assetids" );
 		void check_memo_size( const string & memo );
-		std::string timeToWait( uint64_t time_in_seconds );
 		name get_payer( name author, name category, uint64_t id );
 
 		template<typename... Args>
