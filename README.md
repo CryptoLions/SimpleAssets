@@ -73,7 +73,7 @@ NFT authors can enable Author RAM Payer for some or all of their NFTs, and pay f
 ## Token Types
 
 
-### Non-Fungible Tokens (FTs)
+### Non-Fungible Tokens (NFTs)
 
 NFTs are the most common type of digital assets.  They are used to express unique tokens.  
 
