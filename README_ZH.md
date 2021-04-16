@@ -1,10 +1,16 @@
 
 ﻿﻿﻿﻿﻿﻿﻿﻿﻿简单资产（Simple Assets）
+	 
+文件版本更新于2020.07.29
+
 =========================
 
 ## 目录
 
 1.[简介](#简介)
+
+   * [相关资源](###相关资源)
+   * [代币类型](###代币类型)
 
 2.[合约操作](#合约操作)
 
@@ -12,28 +18,18 @@
 
 4.[示例: 如何在智能合约中使用简单资产](#示例如何在智能合约中使用简单资产)
 
-5.[更新日志](#更新日志)
+5.[创建者日志](#创建者日志)
 
+6.[更新日志](#更新日志)
 
 ---
 # 简介
 
 一款EOSIO区块链上的数字资产标准，适用于不可替代代币（Non-Fungible Tokens，NFTs）、可替代代币(Fungible Tokens，FTs) 和 不可转让代币（Non-Transferable Tokens，NTTs），由[CryptoLions](https://CryptoLions.io)开发创建。    
   
-web: [http://simpleassets.io](http://simpleassets.io/)
-
-Git: [https://github.com/CryptoLions/SimpleAssets](https://github.com/CryptoLions/SimpleAssets)
-
-Telegram: [https://t.me/simpleassets](https://t.me/simpleassets)  
-
-简介和演示：https://medium.com/\@cryptolions/introducing-simple-assets-b4e17caafaa4  
-
-作者的事件接收器示例：https://github.com/CryptoLions/SimpleAssets-EventReceiverExample  
-
-**警告**现在最小基于eosio.cdt v1.6.3版。
+**警告**现在最低基于eosio.cdt v1.6.3版。
 
 ---
-
 通过调用简单资产（Simple Assets）合约来使用Simple Assets。这就像是Dapps的Dapp。 
  
 丛林测试网:**`simpleassets`**  
@@ -42,58 +38,80 @@ EOS 主网: **`simpleassets`**
 WAX 主网： **`simpleassets`**  
 MEETONE 主网: **`smplassets.m`**  
 TELOS 主网: **`simpleassets`**   
-PROTON: **`simpleassets`**
+PROTON 主网: **`simpleassets`**
+EUROPECHAIN 主网: **`simpleassets`**
 
 简单资产（Simple Assets）是一个独立的合约，其他Dapps可以直接调用它来管理自己的数字资产。这为Dapp用户提供了额外的保证，即资产的所有权由信誉良好的外部机构管理，并且一旦创建，Dapp只能管理资产的mdata部分。 所有与所有权相关的功能都存在于游戏之外。
 
-我们正在创建一个DAC，它将在部署至EOSIO主网后对简单资产（Simple Assets）策划更新。
-
 [相关信息：理解所有权。](https://medium.com/@cryptolions/digital-assets-we-need-to-think-about-ownership-authority-a2b0465c17f6)
 
-运用regauthor操作发送自己的NFTs信息至第三方商城。
+请使用`authorreg`操作发送自己的NFTs信息至第三方商城。
 
-或者，dapps可以自行部署简单资产（Simple Assets）副本并进行修改以更好地控制其功能。部署前，应修改简单资产（Simple Assets）以防止任何人创建资产。
+此外，dapps可以自行部署简单资产（Simple Assets）副本并进行修改以更好地使用控制其功能，但是这有可能会损害其与钱包以及某些EOSIO基础结构的兼容性。部署前，应修改简单资产（Simple Assets）以防止任何人创建资产。
 
 ---
+### 相关资源
+web: [http://simpleassets.io](http://simpleassets.io/)
 
-## RAM使用情况
+Git: [https://github.com/CryptoLions/SimpleAssets](https://github.com/CryptoLions/SimpleAssets)
 
-NFT的RAM使用量取决于idata和mdata字段中存储的数据量。如果它们都为空，则每个NFT占用276个字节。
+Telegram: [https://t.me/simpleassets](https://t.me/simpleassets)  
+
+简介和演示：https://medium.com/\@cryptolions/introducing-simple-assets-b4e17caafaa4  
+
+（对开发人员很重要）此处可以查阅每个参数的详细说明：https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp
+
+创建者的事件接收器示例：https://github.com/CryptoLions/SimpleAssets-EventReceiverExample
+
+---
+### 代币类型
+
+#### 不可替代代币（NFTs）
+NFTs(Non-Fungible Tokens)是最常见的数字资产类型。它们用于表示唯一的代币资产类型。
+
+**NFT结构**
+简单资产的NFTs分为 **mdata**(创建者可以随时更新的数据，不需考虑所有权)和 **idata**(NFTs创建时设置的数据，永远不可更新)。
+
+两者都是字符串化的JSONs。例如：`{\"key1\":\"some-string\", \"key2\":5}`
+
+**Category**是一个可选字段，它让您更方便地对NFTs进行分组。Category名称必须小于或等于12个字符(a-z，1-5)。
+
+**Offer/Claim** 与 **Transfer** 如果你交易转让一个NFT，则发送者将为RAM付费。或者，你可以简单地提供该NFT，申领用户将为其RAM付费。
+(*注意：我们正在努力开发一种新功能，该功能允许NFT创建者保留大量RAM，这将节省用户间用于转让交易的费用。*)
+
+*NFTs也译作非同质化代币*
+
+**RAM使用情况**
+
+NFTs的RAM使用量取决于idata和mdata字段中存储的数据量。如果它们都为空，则每个NFT占用276个字节。
 
 idata和mdata中的每个符号都是+1字节。
 
----
+#### 可替代代币(FTs)
 
-## 可替代代币(FTs)
+需要FTs(Fungible Tokens)的Dapps应该在使用标准eosio.token合约和“简单资产（Simple Assets）”合约之间做出决定。 区别如下：
 
-需要可替代代币的Dapps应该在使用标准eosio.token合约和“简单资产（Simple Assets）”合约之间做出决定。 区别如下：
+在简单资产中(Simple Assets)
 
-在简单资产中（Simple Assets）
+* 范围(Scope)是创建者(Author)而不是符号(Symbol)。 
+* 统计信息表(Stat table)还包含有关每个FT的其他数据(详见下面的货币统计信息[Currency Stats](#currency-stats-fungible-token))
+* 对于交易转让(Transfers)，您需要使用简单资产合约中的`transferf`操作。
+* 如果创建者设置了`authorcontrol`标志，则创建者可以独立于用户的同意授权而转让/刻录等用户的FTs。
+* 追踪FTs表包含创建者的帐户名，从而允许在不同的dapps内具有相同名称的FTs(例如: https://bloks.io/contract?tab=Tables&table=accounts&account=simpleassets&scope=bohdanbohdan&limit=100)。
 
-```
-* Scope is Author instead of Symbol
-* Stat table includes also additional data about each FT (see [Currency Stats](#currency-stats-fungible-token) below)
-* For transfers you need to use ```transferf``` action from SA contract.
-* If author sets ```authorcontrol``` flag, the author can transfers/burn/etc user's FTs independent of user's consent.
-* The table which tracks FTs includes the author's account name, allowing different dapps to have FTs with the 
-   same name.  (Example: https://bloks.io/contract?tab=Tables&table=accounts&account=simpleassets&scope=bohdanbohdan&limit=100)
-```
+*(注意：FTs还具有**offer/claim**功能，可以作为**Transfers**的替代方法。对于FTs，发送者唯一要支付RAM的时间就是接收者之前从未持有过这些FTs。创建FT表大约使用300个字节。)*
 
----
+#### 不可转让代币(NTTs)
 
-## 不可转让代币(NTTs)
+不可转让代币(Non-Transferrable Tokens，NTTs)最可能的的两种用例是
 
-不可转让代币(NTTs)最可能的的两种用例是
-```
-* licenses which can be granted to an account, but not transfered.
-* prizes and awards given to a particular account.
-```
+* 可以授予帐户许可证，但该许可证不能转让。
+* 向特定账户提供奖品和奖励。
 
 使用不可转让代币(NTTs)的原因：
-```
-* the NTTs appearing in third party asset explorers.
-* some functionality is handled by Simple Assets.
-```
+
+* NTTs出现在第三方资产浏览器中。
+* 简单资产处理一些功能。
 
 更多有关NTTs的信息: https://medium.com/@cryptolions/introducing-non-transferable-tokens-ntts-2f1a532bf170
 
@@ -105,8 +123,9 @@ idata和mdata中的每个符号都是+1字节。
 ```
 authorreg		( name author, string dappinfo, string fieldtypes, string priorityimg )
 authorupdate		( name author, string dappinfo, string fieldtypes, string priorityimg )
+setarampayer		( name author, name category, bool usearam ) 
 
-\# -- For Non-Fungible Tokens （NTFs） ---
+# -- For Non-Fungible Tokens （NTFs） ---
 
 create (author, category, owner, idata, mdata, requireсlaim)
 update (author, owner, assetid, mdata)
@@ -132,7 +151,7 @@ mdupdate (id, author, data)
 mdremove (id)
 mdaddlog (id, author, data)
 
-\# -- For Fungible Tokens (FTs)---
+# -- For Fungible Tokens (FTs)---
 
 createf (author, maximum_supply, authorctrl, data)
 updatef (author, sym, data)
@@ -147,7 +166,7 @@ claimf (claimer, [ftofferid1,...,ftofferidn])
 openf (owner, author, symbol, ram_payer)
 closef (owner, author, symbol)
 
-\# -- For Non-Transferable Tokens (NTTs) ---
+# -- For Non-Transferable Tokens (NTTs) ---
 
  createntt      (author, category, owner, idata, mdata, requireсlaim)  
  updatentt      (author, owner, assetid, mdata)  
@@ -173,7 +192,7 @@ account[] containerf;   // FTs(可替代代币)附加到此资产
 
 }
 ```
-//为帮助第三方资产浏览器，我们建议在`idata`或`mdata`请包含以下字段：//`name`（文本）//`img` (图像的网页链接) //以及 `desc`（文本描述）的信息。
+为帮助第三方资产浏览器，我们建议在`idata`或`mdata`请包含以下字段：//`name`（文本）//`img` (图像的网页链接) //以及 `desc`（文本描述）的信息。
 
 ---
 
@@ -232,12 +251,13 @@ string imgpriority;  //指定NFTs类别的主图像字段
 ```
 delegates{
 
-uint64_t assetid;   // 提供用于claim的资产ID;
-name owner;         // 资产所有者;
-name delegatedto;   // claim该资产者;
-uint64_t cdate;     // 提供创建日期;
+uint64_t assetid;   // 提供用于claim的资产ID
+name owner;         // 资产所有者
+name delegatedto;   // claim该资产者
+uint64_t cdate;     // 提供创建日期
 uint64_t period;    // 借出资产时间（以秒为单位），借出人不可取消，直到期限到期
                     // 期限到期，但接收方可随时转回
+bool redelegate;    // 是否允许更多重新委托账户
 string memo;        // 合约参数备忘录，最长64字节
 
 }
@@ -288,7 +308,7 @@ uint64_t cdate; // offer创建日期
 
 ---
 
-## NTT
+## 不可转让代币NTT
 ```
 snttassets {  
     uint64_t    id;         // NTT id 用于 claim 或 burn;  
@@ -296,8 +316,11 @@ snttassets {
     name        author;     // 资产创建者 (游戏合约, 不可变);  
     name        category;   // 资产类别, 有创建者选择, 不可变;  
     string      idata;      // 不可变资产数据. 可以是 JSON 字符串化或只是 sha256 字符串;  
-    string      mdata;      // 可变资产数据, 有创建者创建或更新资产时添加  
-                    // 可以是 JSON 字符串化或只是 sha256 字符串;  
+    string      mdata;      // 可变资产数据, 有创建者创建或更新资产时添加；
+                            // 可以是 JSON 字符串化或只是 sha256 字符串;  
+			    // 使用除JSON字符串之外的格式不会干扰简单资产的功能
+			    // 但会损害与第三方的兼容性
+			    // 与尝试分散资产的第三方浏览器的兼容性
 } 
 ```
 
@@ -319,6 +342,26 @@ moredata{
 	string			data;	// more data
 }
 ```
+## 创建者RAM付款人
+```
+sarampayer{
+      uint64_t 			id;
+      name    			author;
+      name    			category;
+      bool    			usearam;
+      uint64_t  		from_id;
+
+      auto primary_key() const {
+        return id;
+      }
+
+      uint64_t by_author() const {
+        return author.value;
+      }
+    };
+    
+```
+
 ---
 # 示例:如何在智能合约中使用简单资产
 
@@ -453,6 +496,30 @@ std::make_tuple(author, owner, assetid, mdata.dump())
 saUpdate.send();
 ```
 
+## 交易转让资产
+```
+name SIMPLEASSETSCONTRACT = "simpleassets"_n;
+
+name author = get_self();
+name from = "lioninjungle"_n;
+name to = "ohtigertiger"_n;
+
+uint64_t assetid = 100000000000187;
+
+std::vector<uint64_t> assetids;
+assetids.push_back(assetid);
+
+string memo = "Transfer one asset";
+
+action saTransfer = action(
+	permission_level{from, "active"_n},
+	SIMPLEASSETSCONTRACT,
+	"transfer"_n,
+	std::make_tuple(from, to, assetids, memo)
+);
+saTransfer.send();
+```
+
 ## 将两个资产转移到具有相同备忘录的同一接收器
 ```
 name SIMPLEASSETSCONTRACT = "simpleassets"_n;
@@ -471,6 +538,29 @@ std::make_tuple(from, to, assetids, memo)
 );
 
 saUpdate.send();
+```
+
+## 烧录资产
+```
+name SIMPLEASSETSCONTRACT = "simpleassets"_n;
+
+name owner = "lioninjungle"_n;
+uint64_t assetid1 = 100000000000187;
+uint64_t assetid2 = 100000000000188;
+
+std::vector<uint64_t> assetids;
+assetids.push_back(assetid1);
+assetids.push_back(assetid2);
+
+string memo = "Transfer two asset"
+
+action saBurn = action(
+	permission_level{owner, "active"_n},
+	SIMPLEASSETSCONTRACT,
+	"transfer"_n,
+	std::make_tuple(owner, assetids, memo)
+);
+saBurn.send();
 ```
 
 ## issuef创建代币问题（可替代代币）
@@ -535,9 +625,48 @@ action saRes1 = action(
 );
 saRes1.send();
 ```
+---
+# 创建者日志
+
+## authorreg操作
+创建者可以在创建者注册表(authorreg)中进行注册，与第三方资产浏览器、钱包和市场进行连接通信。
+
+`ACTION authorreg( name author, string dappinfo, string fieldtypes, string priorityimg );`
+
+@param **author** 是将创建资产的创建者帐户
+
+@param **dappinfo** 是字符串化的JSON。建议包含：名称-应用程序名称
+company - 公司名称
+logo - 网址图片
+url - 游戏网址
+info - 应用程序简介
+defaultfee - 您要从市场上收取的费用的x%比的100x (例 2%, 200)
+
+@param **fieldtypes** 是带有key：state值的字符串化JSON，其中key是来自 mdata 或 idata 的密钥，state指示显示字段的推荐方式。有关最新的推荐值，请查阅 https://github.com/CryptoLions/SimpleAssets/blob/master/include/SimpleAssets.hpp.
+@param priorityimg 是JSON，它将NFT类别与 idata 或 mdata 中的字段名称相关联，该字段名称指定该NFTs类别的主图像字段。这可能是一种不常见的用例，可以空白。如果希望NFTs的类别具有除.img之外的主图像字段，则可以使用"CATEGORY":"otherfieldname"。如果您希望以webgls或其他格式作为主要图像格式，这是最可能的用例。
+
+## authorreg和authorupdate的Cleos示例
+
+**authorreg**
+```
+./cleos.sh.jungle push action simpleassets authorreg '["ilovekolobok", "{\"name\": \"Kolobok Breeding Game\", \"company\": \"CryptoLions\", \"info\": \"Breed your Kolobok\", \"logo\": \"https://imgs.cryptolions.io/logo_256.png\", \"url\": \"https://kolobok.io\", \"defaultfee\":200}", "{\"bdate\":\"timestamp\"},{\"cd\":\"timestamp\"},{\"img\":\"img\"},{\"st\":\"hide\"},{\"url\":\"url\"}", "{\"kolobok\":\"img\"},{\"*\":\"img\"}" ]' -p ilovekolobok
+```
+
+**authorupdate**
+```
+./cleos.sh.jungle push action simpleassets authorupdate '["ilovekolobok", "{\"name\": \"Kolobok Breeding Game\", \"company\": \"CryptoLions\", \"info\": \"Breed your Kolobok\", \"logo\": \"https://imgs.cryptolions.io/logo_256.png\", \"url\": \"https://kolobok.io\", \"defaultfee\":200}", "{\"bdate\":\"timestamp\"},{\"cd\":\"timestamp\"},{\"img\":\"img\"},{\"st\":\"hide\"},{\"url\":\"url\"}", "{\"kolobok\":\"img\"},{\"*\":\"img\"}" ]' -p ilovekolobok
+```
 
 ---
 # 更新日志
+
+## 更新日志v1.6.0
+* 添加了创建者RAM付款人选项
+* 添加了setarampayer，dellampayer操作
+* detach and detachf只针对创建者
+* 备注增加至512
+* 代码改进
+
 
 ## 更新日志v1.5.2
 * 重新启用事件通知，执行如下操作：
