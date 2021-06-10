@@ -286,7 +286,7 @@ CONTRACT SimpleAssets : public contract{
 		* specified in {{newowner}} is able to make a claim, and take control of the asset using their RAM.
 		* Offer action is not available if an asset is delegated (borrowed).
 		*
-		* @param owner is the accout of current owner.
+		* @param owner is the account of current owner.
 		* @param newowner is the future owner of the asset.
 		* @param assetids is array of asset id's to offer.
 		* @param memo is memo for offer action.
@@ -547,7 +547,7 @@ CONTRACT SimpleAssets : public contract{
 		using burnf_action = action_wrapper< "burnf"_n, &SimpleAssets::burnf >;
 
 		/*
-		* Open accoutns table.
+		* Open accounts table.
 		*
 		* This action opens accounts table for specified fungible token.
 		*
