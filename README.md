@@ -553,12 +553,12 @@ std::vector<uint64_t> assetids;
 assetids.push_back(assetid1);
 assetids.push_back(assetid2);
 
-string memo = "Transfer two asset"
+string memo = "Burn two assets"
 
 action saBurn = action(
 	permission_level{owner, "active"_n},
 	SIMPLEASSETSCONTRACT,
-	"transfer"_n,
+	"burn"_n,
 	std::make_tuple(owner, assetids, memo)
 );
 saBurn.send();
