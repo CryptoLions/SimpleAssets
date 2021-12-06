@@ -674,6 +674,10 @@ to be the main image.
 -----------------
 # Change Logs
 
+## Change Log v1.6.2
+- deprecated sae* actions + brunlog
+- createflog and offerflog added
+
 ## Change Log v1.6.1
 - support for token-back NFT contract
 - Changed map structure type to vector in `saeclaim` and `saechautor` log actions
