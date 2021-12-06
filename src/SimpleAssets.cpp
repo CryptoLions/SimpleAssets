@@ -17,8 +17,6 @@ ACTION SimpleAssets::changeauthor( name author, name newauthor, name owner, vect
 
 	sassets assets_f( _self, owner.value );
 
-	map< name, vector< tuple<uint64_t, name> > > uniqauthor;
-
 	for ( auto i = 0; i < assetids.size(); ++i ) {
 
 		const auto itr = assets_f.require_find( assetids[i], string("asset id: " + to_string(assetids[i]) +" was not found").c_str() );
@@ -38,22 +36,10 @@ ACTION SimpleAssets::changeauthor( name author, name newauthor, name owner, vect
 				+ " has usearam = true. Set usearam = false before changing author. Asset id: " + to_string(assetids[i]));
 		}
 
-
 		assets_f.modify( itr, author, [&]( auto& a ) {
 			a.author = newauthor;
 		});
-		uniqauthor[itr->author].emplace_back(make_tuple(assetids[i], itr->owner));
 	}
-
-	// Send Event as deferred
-	for ( auto uniqauthorIt = uniqauthor.begin(); uniqauthorIt != uniqauthor.end(); ++uniqauthorIt ) {
-		name keyauthor = move( uniqauthorIt->first );
-		sendEvent( _self, author, "saechauthor"_n, make_tuple( author, newauthor, owner, uniqauthor[keyauthor], memo ) );
-	}
-}
-
-ACTION SimpleAssets::saechauthor( name author, name newauthor, name owner, vector< tuple<uint64_t, name> >& assetids, string memo ) {
-	require_recipient( author );
 }
 
 ACTION SimpleAssets::authorreg( name author, string dappinfo, string fieldtypes, string priorityimg ) {
@@ -126,12 +112,7 @@ ACTION SimpleAssets::create( name author, name category, name owner, string idat
 	});
 
 	//Events
-	sendEvent( _self, author, "saecreate"_n, make_tuple( author, category, owner, idata, mdata, newID, requireclaim ) );
 	SEND_INLINE_ACTION( *this, createlog, { {_self, "active"_n} }, { author, category, owner, idata, mdata, newID, requireclaim } );
-}
-
-ACTION SimpleAssets::saecreate( name author, name category, name owner, string idata, string mdata, uint64_t assetid, bool requireclaim ) {
-	require_recipient( author );
 }
 
 ACTION SimpleAssets::createlog( name author, name category, name owner, string idata, string mdata, uint64_t assetid, bool requireclaim ) {
@@ -157,6 +138,7 @@ ACTION SimpleAssets::claim( name claimer, vector<uint64_t>& assetids ) {
 	}
 
 	map< name, vector< tuple<uint64_t, name> > > uniqauthor;
+
 	for ( auto i = 0; i < assetids.size(); ++i ) {
 
 		auto itrc = offert.require_find( assetids[i], string("Cannot find offer for asset id:  " + to_string(assetids[i]) + " that you're attempting to claim.").c_str() );
@@ -193,15 +175,6 @@ ACTION SimpleAssets::claim( name claimer, vector<uint64_t>& assetids ) {
 	if (empty_scope) {
 		assets_t.erase(assets_t.find(IMPOSSIBLE_ID));
 	}
-
-	for ( auto uniqauthorIt = uniqauthor.begin(); uniqauthorIt != uniqauthor.end(); ++uniqauthorIt ) {
-		name keyauthor = move( uniqauthorIt->first );
-		sendEvent( _self, claimer, "saeclaim"_n, make_tuple( keyauthor, claimer, uniqauthor[keyauthor] ) );
-	}
-}
-
-ACTION SimpleAssets::saeclaim(name author, name claimer, vector< tuple<uint64_t, name> >& assetids) {
-	require_recipient(author);
 }
 
 void SimpleAssets::check_empty_vector( vector<uint64_t>& vector_ids, string vector_name ) {
@@ -306,12 +279,6 @@ ACTION SimpleAssets::transfer( name from, name to, vector<uint64_t>& assetids, s
 	if ( empty_scope ) {
 		assets_t.erase( assets_t.find( IMPOSSIBLE_ID ) );
 	}
-
-	//Send Event as deferred
-	for ( auto uniqauthorIt = uniqauthor.begin(); uniqauthorIt != uniqauthor.end(); ++uniqauthorIt ) {
-		name keyauthor = move( uniqauthorIt->first );
-		sendEvent( _self, authorized_account, "saetransfer"_n, make_tuple( keyauthor, from, to, uniqauthor[keyauthor], memo ) );
-	}
 }
 
 name SimpleAssets::get_payer( name author, name category, uint64_t id )
@@ -328,10 +295,6 @@ name SimpleAssets::get_payer( name author, name category, uint64_t id )
 	}
 
 	return result;
-}
-
-ACTION SimpleAssets::saetransfer(name author, name from, name to, vector<uint64_t>& assetids, string memo) {
-	require_recipient(author);
 }
 
 ACTION SimpleAssets::update( name author, name owner, uint64_t assetid, string mdata ) {
@@ -429,29 +392,9 @@ ACTION SimpleAssets::burn( name owner, vector<uint64_t>& assetids, string memo )
 		uniqauthor[itr->author].push_back( assetid );
 		assets_f.erase( itr );
 	}
-
-	//Send Event as deferred
-	for ( auto uniqauthorIt = uniqauthor.begin(); uniqauthorIt != uniqauthor.end(); ++uniqauthorIt ) {
-		name keyauthor = move( uniqauthorIt->first );
-		sendEvent(_self, owner, "saeburn"_n, make_tuple( keyauthor, owner, uniqauthor[keyauthor], memo ) );
-	}
-
-	SEND_INLINE_ACTION(*this, burnlog, { {_self, "active"_n} }, { owner, assetids, memo });
-}
-
-ACTION SimpleAssets::saeburn(name author, name owner, vector<uint64_t>& assetids, string memo) {
-	require_recipient(author);
 }
 
 ACTION SimpleAssets::burnflog( name from, name author, asset quantity, string memo ) {
-	require_auth(get_self());
-}
-
-ACTION SimpleAssets::burnnttlog(name owner, vector<uint64_t>& assetids, string memo) {
-	require_auth(get_self());
-}
-
-ACTION SimpleAssets::burnlog( name owner, vector<uint64_t>& assetids, string memo ) {
 	require_auth(get_self());
 }
 
@@ -639,14 +582,22 @@ ACTION SimpleAssets::createf( name author, asset maximum_supply, bool authorctrl
 	stats statstable( _self, author.value );
 	check( statstable.find( sym.code().raw() ) == statstable.end(), "token with symbol already exists" );
 
+	const auto newID = getid(asset_id);
+
 	statstable.emplace( author, [&]( auto& s ) {
 		s.supply.symbol = maximum_supply.symbol;
 		s.max_supply    = maximum_supply;
 		s.issuer        = author;
-		s.id            = getid( asset_id );
+		s.id            = newID;
 		s.authorctrl    = authorctrl;
 		s.data          = data;
 	});
+
+	SEND_INLINE_ACTION(*this, createflog, { {_self, "active"_n} }, { newID, author, maximum_supply, authorctrl, data });
+}
+
+ACTION SimpleAssets::createflog(uint64_t newID, name author, asset maximum_supply, bool authorctrl, string data) {
+	require_auth(get_self());
 }
 
 ACTION SimpleAssets::updatef( name author, symbol sym, string data ) {
@@ -751,8 +702,10 @@ ACTION SimpleAssets::offerf( name owner, name newowner, name author, asset quant
 		}
 	}
 
+	const auto newID = getid(offer_id);
+
 	offerft.emplace( owner, [&]( auto& s ) {
-		s.id        = getid( offer_id );
+		s.id        = newID;
 		s.author    = author;
 		s.quantity  = quantity;
 		s.offeredto = newowner;
@@ -760,6 +713,12 @@ ACTION SimpleAssets::offerf( name owner, name newowner, name author, asset quant
 		s.cdate     = current_time_point().sec_since_epoch();
 	});
 	sub_balancef( owner, author, quantity );
+
+	SEND_INLINE_ACTION(*this, offerflog, { {_self, "active"_n} }, { newID, owner, newowner, author, quantity, memo });
+}
+
+ACTION SimpleAssets::offerflog(uint64_t newID, name owner, name newowner, name author, asset quantity, string memo) {
+	require_auth(get_self());
 }
 
 ACTION SimpleAssets::cancelofferf( name owner, vector<uint64_t>& ftofferids ) {
@@ -1042,6 +1001,7 @@ ACTION SimpleAssets::claimntt( name claimer, vector<uint64_t>& assetids ) {
 	require_auth( claimer );
 	require_recipient( claimer );
 	snttassets assets_claimer( _self, claimer.value );
+
 	map< name, vector< tuple<uint64_t, name> > > uniqauthor;
 
 	for ( auto i = 0; i < assetids.size(); ++i ) {
@@ -1071,11 +1031,6 @@ ACTION SimpleAssets::claimntt( name claimer, vector<uint64_t>& assetids ) {
 		assets_owner.erase( itr );
 		nttoffert.erase( itrc );
 	}
-
-	//for ( auto uniqauthorIt = uniqauthor.begin(); uniqauthorIt != uniqauthor.end(); ++uniqauthorIt ) {
-	//	name keyauthor = move( uniqauthorIt->first );
-	//	sendEvent( keyauthor, claimer, "saeclaim"_n, make_tuple( claimer, uniqauthor[keyauthor] ) );
-	//}
 }
 
 ACTION SimpleAssets::burnntt( name owner, vector<uint64_t>& assetids, string memo ) {
@@ -1098,13 +1053,6 @@ ACTION SimpleAssets::burnntt( name owner, vector<uint64_t>& assetids, string mem
 
 		assets_ntt.erase( itr_asset );
 	}
-
-	//Send Event as deferred
-	//for ( auto uniqauthorIt = uniqauthor.begin(); uniqauthorIt != uniqauthor.end(); ++uniqauthorIt ) {
-	//	name keyauthor = move( uniqauthorIt->first );
-	//	sendEvent( keyauthor, owner, "saeburn"_n, make_tuple( owner, uniqauthor[keyauthor], memo ) );
-	//}
-	SEND_INLINE_ACTION(*this, burnnttlog, { {_self, "active"_n} }, { owner, assetids, memo });
 }
 
 ACTION SimpleAssets::mdadd( name author, string data ) {

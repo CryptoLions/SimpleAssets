@@ -576,30 +576,12 @@ summary: createlog (internal)
 icon: @ICON_BASE_URL@/@CLAIMF_ICON_URI@
 ---
 
-<h1 class="contract"> burnlog </h1>
-
----
-spec_version: 0.0.2
-title: burnlog (internal)
-summary: burnlog (internal) 
-icon: @ICON_BASE_URL@/@BURN_ICON_URI@
----
-
 <h1 class="contract"> burnflog </h1>
 
 ---
 spec_version: 0.0.2
 title: burnflog (internal)
 summary: burnflog (internal) 
-icon: @ICON_BASE_URL@/@BURN_ICON_URI@
----
-
-<h1 class="contract"> burnnttlog </h1>
-
----
-spec_version: 0.0.2
-title: burnnttlog (internal)
-summary: burnnttlog (internal) 
 icon: @ICON_BASE_URL@/@BURN_ICON_URI@
 ---
 
@@ -758,110 +740,6 @@ TERM
 This Contract expires at the conclusion of code execution.
 by CryptoLions [ https://cryptolions.io ]
 
-<h1 class="contract"> saetransfer </h1>
-
----
-spec_version: 0.0.2
-title: Internal action used for creating log
-summary: Internal action used for creating log
-icon: @ICON_BASE_URL@/@TRANSFER_ICON_URI@
----
-
-This action is called during transfer in deferred transaction 
-
-Input parameters:
-`author`   - asset's author;
-`from`     - account who sends the asset;
-`to`       - account of receiver;
-`assetids` - array of assetid's to transfer;
-`memo`     - transfers comment;
-
-TERM
-This Contract expires at the conclusion of code execution.
-by CryptoLions [ https://cryptolions.io ]
-
-<h1 class="contract"> saeburn </h1>
-
----
-spec_version: 0.0.2
-title: Internal action used for creating log
-summary: Internal action used for creating log
-icon: @ICON_BASE_URL@/@BURN_ICON_URI@
----
-
-This action is called during burn in deferred transaction 
-
-Input parameters:
-`author`   - asset's author;
-`owner`    - current asset owner account;
-`assetids` - array of assetid's to burn;
-`memo`     - memo for burn action;
-
-TERM
-This Contract expires at the conclusion of code execution.
-by CryptoLions [ https://cryptolions.io ]
-
-<h1 class="contract"> saechauthor </h1>
-
----
-spec_version: 0.0.2
-title: Internal action used for creating log
-summary: Internal action used for creating log
-icon: @ICON_BASE_URL@/@REGAUTHOR_ICON_URI@
----	
-
-Input parameters:
-`author`         - asset's author, who will able to change author name asset's;
-`newauthor`      - asset's new author name;
-`owner`          - assets owner;
-`assetids`       - array of assetid's
-
-TERM
-This Contract expires at the conclusion of code execution.
-by CryptoLions [ https://cryptolions.io ]
-
-<h1 class="contract"> saecreate </h1>
-
----
-spec_version: 0.0.2
-title: Internal action used for creating log
-summary: Internal action used for creating log
-icon: @ICON_BASE_URL@/@CREATE_ICON_URI@
----	
-
-Input parameters:
-`author`         - asset's author, who will able to updated asset's mdata;
-`category`       - assets category;
-`owner`          - assets owner;
-`idata`          - stringified json with immutable assets data
-`mdata`          - stringified json with mutable assets data, can be changed only by author
-`requireclaim`   - true or false. If disabled, upon creation, the asset will be transfered to owner (but 
-				   but AUTHOR'S memory will be used until the asset is transferred again).  If enabled,
-				   author will remain the owner, but an offer will be created for the account specified in 
-				   the owner field to claim the asset using the account's RAM.
-
-TERM
-This Contract expires at the conclusion of code execution.
-by CryptoLions [ https://cryptolions.io ]
-
-<h1 class="contract"> saeclaim </h1>
-
----
-spec_version: 0.0.2
-title: Internal action used for creating log
-summary: Internal action used for creating log
-icon: @ICON_BASE_URL@/@CLAIM_ICON_URI@
----
-
-Input parameters:
-`author`   - asset's author, who will able to updated asset's mdata;
-`claimer`  - account claiming the asset;
-`assetids` - array of assetid's to claim;
-
-TERM
-This Contract expires at the conclusion of code execution.
-by CryptoLions [ https://cryptolions.io ]
-
 <h1 class="contract"> setarampayer </h1>
 
 ---
@@ -895,4 +773,34 @@ Input parameters:
 TERM
 This Contract expires at the conclusion of code execution.
 by CryptoLions [ https://cryptolions.io ]
+
+<h1 class="contract"> createflog </h1>
+
+---
+spec_version: 0.0.2
+title: createlog (internal)
+summary: createlog (internal) 
+icon: @ICON_BASE_URL@/@CLAIMF_ICON_URI@
+---
+
+TERM
+This Contract expires at the conclusion of code execution.
+by CryptoLions [ https://cryptolions.io ]
+
+<h1 class="contract"> offerflog </h1>
+
+---
+spec_version: 0.0.2
+title: offerflog (internal)
+summary: offerflog (internal) 
+icon: @ICON_BASE_URL@/@CLAIMF_ICON_URI@
+---
+
+TERM
+This Contract expires at the conclusion of code execution.
+by CryptoLions [ https://cryptolions.io ]
+
+
+
+
 
