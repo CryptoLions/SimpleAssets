@@ -1,7 +1,7 @@
 /*
  * @file
  * @author  (C) 2021 by CryptoLions [ https://CryptoLions.io ]
- * @version 1.6.0
+ * @version 1.6.2
  *
  * @section LICENSE
  *
@@ -188,38 +188,6 @@ CONTRACT SimpleAssets : public contract{
 		using createlog_action = action_wrapper< "createlog"_n, &SimpleAssets::createlog >;
 
 		/*
-		* Create a new log entry for burn action.
-		*
-		* This action is doeing nothing, and it can only be called by SimpleAsset contract. It creates an entry
-		* in transaction trace, so that that third party explorers can retrieve burn asset IDs and other
-		* information.
-		*
-		* @param owner is current asset owner.
-		* @param assetids is array of asset id's to burn.
-		* @param memo is burn comment.
-		* @return no return value.
-		*/
-
-		ACTION burnlog( name owner, vector<uint64_t>& assetids, string memo );
-		using burnlog_action = action_wrapper< "burnlog"_n, &SimpleAssets::burnlog >;
-
-		/*
-		* Create a new log entry for burnnttlog action.
-		*
-		* This action is doeing nothing, and it can only be called by SimpleAsset contract. It creates an entry
-		* in transaction trace, so that that third party explorers can retrieve burn asset IDs and other
-		* information.
-		*
-		* @param owner is current asset owner.
-		* @param assetids is array of asset id's to burnnttlog.
-		* @param memo is burnnttlog comment.
-		* @return no return value.
-		*/
-
-		ACTION burnnttlog( name owner, vector<uint64_t>& assetids, string memo );
-		using burnnttlog_action = action_wrapper< "burnnttlog"_n, &SimpleAssets::burnnttlog >;
-
-		/*
 		* Create a new log entry for burnflog action.
 		*
 		* This action is doeing nothing, and it can only be called by SimpleAsset contract. It creates an entry
@@ -235,6 +203,41 @@ CONTRACT SimpleAssets : public contract{
 
 		ACTION burnflog( name from, name author, asset quantity, string memo );
 		using burnflog_action = action_wrapper< "burnflog"_n, &SimpleAssets::burnflog >;
+
+		/*
+		* Create a new log entry for createflog action.
+		*
+		* This action is doeing nothing, and it can only be called by SimpleAsset contract. It creates an entry
+		* in transaction trace, so that that third party explorers can retrieve burn asset IDs and other
+		* information.
+		*
+		* @param author	is the fungible token author.
+		* @param maximum_supply is created symbol and quantity of fungible tokens. Example "1.00 WOOD".
+		* @param authorctrl is new owner of fungible token.
+		* @param owner is the owner who offer fungible token.
+		* @return no return value.
+		*/
+
+		ACTION createflog(uint64_t newID, name author, asset maximum_supply, bool authorctrl, string data);
+		using createflog_action = action_wrapper< "createflog"_n, &SimpleAssets::createflog >;
+
+		/*
+		* Create a new log entry for offerflog action.
+		*
+		* This action is doeing nothing, and it can only be called by SimpleAsset contract. It creates an entry
+		* in transaction trace, so that that third party explorers can retrieve burn asset IDs and other
+		* information.
+		*
+		* @param newID is id of offer fungible token.
+		* @param author	is the fungible token author.
+		* @param quantity is offered quantity of fungible tokens.
+		* @param newowner is new owner of fungible token.
+		* @param owner is the owner who offer fungible token.
+		* @return no return value.
+		*/
+
+		ACTION offerflog(uint64_t newID, name owner, name newowner, name author, asset quantity, string memo);
+		using offerflog_action = action_wrapper< "offerflog"_n, &SimpleAssets::offerflog >;
 
 		/*
 		* Claim asset.
@@ -728,88 +731,6 @@ CONTRACT SimpleAssets : public contract{
 		*/
 		ACTION mdremove( uint64_t id );
 		using mdremove_action = action_wrapper< "mdremove"_n, &SimpleAssets::mdremove >;
-
-		/*
-		* Action for notification after transfering one or more assets.
-		*
-		* This action will notify author with help of require_recepient 
-		* after transfers one or more assets.
-		*
-		* @param author is author of the asset.
-		* @param from is account who sends the asset.
-		* @param to is account of receiver.
-		* @param assetids is array of assetid's to transfer.
-		* @param memo is transfers comment.
-		* @return no return value.
-		*/
-		ACTION saetransfer( name author, name from, name to, vector<uint64_t>& assetids, string memo );
-		using saetransfer_action = action_wrapper< "saetransfer"_n, &SimpleAssets::saetransfer >;
-
-		/*
-		* Action for notification after burning asset.
-		*
-		* This action will notify author with help of require_recepient
-		* after burn one or more assets.
-		*
-		* @param author is author of the asset.
-		* @param owner is current asset owner account.
-		* @param assetids is array of asset id's to burn.
-		* @param memo is memo for burn action.
-		* @return no return value.
-		*/
-		ACTION saeburn( name author, name owner, vector<uint64_t>& assetids, string memo );
-		using saeburn_action = action_wrapper< "saeburn"_n, &SimpleAssets::saeburn >;
-
-		/*
-		* Action for notification after changing author of asset.
-		*
-		* This action will notify author with help of require_recepient
-		* after chaning of one or more assets author.
-		*
-		* @param author is author of the asset.
-		* @param newauthor is new author of the asset.
-		* @param owner is current asset owner account.
-		* @param assetids is array of asset id's to change author.
-		* @param memo is memo for change author action.
-		* @return no return value.
-		*/
-		ACTION saechauthor( name author, name newauthor, name owner, vector< tuple<uint64_t, name> >& assetids, string memo );
-		using saechauthor_action = action_wrapper< "saechauthor"_n, &SimpleAssets::saechauthor >;
-
-		/*
-		* Action for notification after creating a new asset.
-		*
-		* This action will notify author with help of require_recepient
-		* after creating a new asset.
-		*
-		* @param author	is the asset's author. This account is allowed to update the asset's mdata.
-		* @param category is asset category.
-		* @param owner is asset owner.
-		* @param idata is stringified JSON or sha256 string with immutable asset data.
-		* @param mdata is stringified JSON or sha256 string with mutable asset data. It can be changed only by author.
-		* @param assetid is new asset id.
-		* @param requireclaim is true or false. If set to "false", the newly created asset will be transferred to the
-		*                     owner (but author's RAM will be used until the asset is transferred again). If set to
-		*                     "true", the author will remain to be the owner, but an offer will be created for the
-		*                     account specified in the owner field to claim the asset using the owner's RAM.
-		* @return no return value.
-		*/
-		ACTION saecreate( name author, name category, name owner, string idata, string mdata, uint64_t assetid, bool requireclaim );
-		using saecreate_action = action_wrapper< "saecreate"_n, &SimpleAssets::saecreate >;
-
-		/*
-		* Action for notification after claiming the assets.
-		*
-		* This action will notify author with help of require_recepient
-		* after claiming the assets.
-		*
-		* @param claimer is account claiming the asset.
-		* @param assetids is array of asset id's to claim.
-		* @return no return value.
-		*/
-
-		ACTION saeclaim(name author, name claimer, vector< tuple<uint64_t, name> >& assetids);
-		using saeclaim_action = action_wrapper< "saeclaim"_n, &SimpleAssets::saeclaim >;
 
 		/*
 		* Action for setting a ram payer for author and category.
